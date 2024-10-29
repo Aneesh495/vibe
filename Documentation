@@ -1,3 +1,19 @@
 Documentation:
 - Work allocation
 - Document all the code written here and explain methods/files for ease of communication
+
+General Documentation and requirements:
+1. User Class. 
+  a. Database to store username and passwords.
+  b. Private methods to access?
+
+2. Make a server/client setup to allow for messaging. No need to implement messaging yet.
+  a. Single server
+  b. Multiple clients for each user/user pair who uses it.
+  c. Make it thread safe.
+
+3. Add documentation as required after discussion
+
+
+
+
