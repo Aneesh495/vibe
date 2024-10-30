@@ -1,0 +1,11 @@
+Documentation:
+- Work allocation
+- Document all the code written here and explain methods/files for ease of communication
+
+User Class:
+  
+
+
+
+
+
