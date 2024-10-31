@@ -3,6 +3,59 @@ Documentation:
 - Document all the code written here and explain methods/files for ease of communication
 
 User Class:
+1. Fields: Username, password, bio, pfp, friendlist, blockedlist
+2. Methods:  get/set username/pfp/bio/friendlist
+
+Use hashmaps where required.
+
+Behaves as a client. All of these methods send a call to the server to make changes to the respective files according to the method called.
+
+The user class defines the basic functionality and ability that every user would have, along with the individual attributes.
+
+Databases:
+1. userpassword.txt: text file containing all the usernames and their passwords separated by an identifier.
+2. userinfo.txt: text file containing all user info which can be referenced when displaying
+3. friendlist
+
+make arraylist of every single user?
+
+Server Class:
+- methods to parse through these files.
+- check/get password, bio, etc, etc.
+- All the methods which result in changes to any of the files.
+  - create/update/edit userinfo
+  - 
+
+Message Class:
+- sender, receiver username
+- message ID
+0 
+
+
+
+Interface List:
+1. User
+- normal user class
+- admin users class who can see reported messages
+2. Server.java
+3. Message.java
+4. Error Class
+
+Class List:
+1. NormalUser
+2. AdminUser
+3. 
+
+Files List:
+1. Username and password (use hashmap)
+2. userinfo.txt for all users and their informations
+3. msgs.txt for every single message
+4. one file for each user blocked list (blocked.txt) (user1: blocked1, blocked2)
+5. one file for each user friend list (friends.txt (user2: friend1, friend2)
+6. one file for all reported messages (reported.txt)
+
+
+
   
 
 
