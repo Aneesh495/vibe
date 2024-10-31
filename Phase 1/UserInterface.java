@@ -1,33 +1,26 @@
 import java.util.ArrayList;
-import java.io.*;
-import java.util.*;
 
 public interface UserInterface {
-    public void setUsername();
+    public void setUsername(String newUsername);
 
-    public void setPassword();
+    public void setPassword(String newPassword);
 
-    public void setPFP();
+    public void setProfilePicture(String imgPath);
 
-    public void setBio();
+    public void setBio(String bio);
 
-    public void addFriend();
+    public void addFriend(User friend);
 
-    public void removeFriend();
+    public void removeFriend(User friend);
 
-    public void blockUser();
+    public void blockUser(User user);
 
-    public void unblockUser();
+    public void unblockUser(User user);
 
     public String getUsername();
-
     public String getPassword();
-
-    public String getPFP();
-
+    public String getProfilePicture();
     public String getBio();
-
     public ArrayList<User> getFriends();
-
     public ArrayList<User> getBlocked();
 }
