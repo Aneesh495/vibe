@@ -27,7 +27,7 @@ public interface UserInterface {
 
     public String getBio();
 
-    public ArrayList<String> getFriends();
+    public ArrayList<User> getFriends();
 
-    public ArrayList<String> getBlocked();
+    public ArrayList<User> getBlocked();
 }
