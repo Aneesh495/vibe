@@ -1,11 +1,11 @@
-public interface MessageInterface {
-  String getSender();
+import java.io.IOException;
 
-  String getReceiver();
+public interface Server {
+    public void createUser(String username, String password, String profilePicture);
 
-  String getContent();
+    public void editUserInfo(User user, String newUsername) throws IOException;
 
-  long getTimestamp();
+    public void blockUser(String UserId);
 
-  void setContent(String content);
+    public void getMessage(String UserId1);
 }
