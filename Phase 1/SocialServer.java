@@ -16,7 +16,7 @@ public class SocialServer implements Server {
         super();
     }
 
-    public void createUser(String username, String password) { // Create user with username/password/default pfp
+    public void createUser(String username, String password) throws UsernameNotValidException { // Create user with username/password/default pfp
         try (PrintWriter pw = new PrintWriter(new FileWriter(Users))) {
             pw.write(username + " | " + password + " | " + "Default PFP");
         } catch (Exception e) {
@@ -24,7 +24,8 @@ public class SocialServer implements Server {
         }
     }
 
-    public void createUser(String username, String password, String profilePicture) { // Creater user with
+    @Override
+    public void createUser(String username, String password, String profilePicture) throws UsernameNotValidException { // Creater user with
                                                                                       // username/password/pfp
         try (PrintWriter pw = new PrintWriter(new FileWriter(Users))) {
             pw.write(username + " | " + password + " | " + profilePicture);
@@ -81,7 +82,7 @@ public class SocialServer implements Server {
         pw.close();
     }
 
-    public void editUserPassword(User user, String newPassword) throws IOException {
+    public void editUserPassword(User user, String newPassword) throws PasswordNotValidException {
         BufferedReader bfr = new BufferedReader(new FileReader(UserInfo));
         PrintWriter pw = new PrintWriter(new FileWriter(UserInfo));
 
@@ -158,24 +159,32 @@ public class SocialServer implements Server {
         pw.close();
     }
 
-    public void blockUser(String userId) {
+    public void blockUser(String userId) throws UserBlockedException {
 
     }
 
-    public void getMessage(String userId) {
+    public void getMessage(String userId) throws IOException {
 
     }
 
     public static boolean confirmWithPassword(User user) {
         Scanner sc = new Scanner(System.in);
         System.out.print("Enter your password to confirm action: ");
-        String inputPw = sc.nextLine();
-        sc.close();
-        if (inputPw.equals(user.getPassword())) {
-            return true;
-        } else {
-            System.out.println("Incorrect Password");
-            return false;
+    
+        try {
+            String inputPw = sc.nextLine(); 
+            sc.close();
+            if (inputPw.equals(user.getPassword())) {
+                return true;
+            } else {
+                System.out.println("Incorrect Password");
+                return false;
+            }
+        } catch (NoSuchElementException e) {
+            System.err.println("Error reading password input: " + e.getMessage());
+            return false; 
+        } finally {
+            sc.close(); // Ensure the scanner is closed in all cases
         }
     }
 }
