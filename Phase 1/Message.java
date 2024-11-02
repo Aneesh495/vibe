@@ -1,3 +1,5 @@
+import java.time.Instant;
+
 public class Message implements MessageInterface {
 
     private final String sender;
