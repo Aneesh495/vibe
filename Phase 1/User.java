@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -22,7 +23,7 @@ class User implements UserInterface {
 
     // Setter methods
    
-    public void setUsername(String newUsername) {
+    public void setUsername(String newUsername) throws UsernameNotValidException {
         System.out.println("Enter current password to confirm username change:");
         try (Scanner sc = new Scanner(System.in)) {
             String check = sc.nextLine();
@@ -36,7 +37,7 @@ class User implements UserInterface {
     }
 
    
-    public void setPassword(String newPassword) {
+    public void setPassword(String newPassword) throws PasswordNotValidException {
         System.out.println("Enter current password to change to a new password:");
         try (Scanner sc = new Scanner(System.in)) {
             String check = sc.nextLine();
@@ -56,13 +57,13 @@ class User implements UserInterface {
     }
 
    
-    public void setBio(String bio) {
+    public void setBio(String bio) throws UserBlockedException, UserNotFoundException {
         this.bio = bio;
         System.out.println("Bio updated.");
     }
 
    
-    public void addFriend(User friend) {
+    public void addFriend(User friend) throws UserBlockedException {
         if (!friends.contains(friend)) {
             friends.add(friend);
         }
@@ -76,14 +77,14 @@ class User implements UserInterface {
     }
 
    
-    public void blockUser(User user) {
+    public void blockUser(User user) throws UserNotFriendException, UserNotBlockedException {
         if (!blocked.contains(user)) {
             blocked.add(user);
         }
     }
 
    
-    public void unblockUser(User user) {
+    public void unblockUser(User user) throws UserNotFriendException{
         if (blocked.contains(user)) {
             blocked.remove(user);
         }
@@ -110,12 +111,12 @@ class User implements UserInterface {
     }
 
    
-    public ArrayList<User> getFriends() {
+    public ArrayList<User> getFriends() throws UserNotFriendException {
         return friends;
     }
 
    
-    public ArrayList<User> getBlocked() {
+    public ArrayList<User> getBlocked() throws UserBlockedException{
         return blocked;
     }
 }
