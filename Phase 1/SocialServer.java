@@ -142,7 +142,7 @@ public class SocialServer implements Server {
 
             ArrayList<String> updatedUserinfo = new ArrayList<>();
             for (String[] details : userinfodetailed) { // 63-69 makes changes to arraylist
-                if (details[1] == user.getPassword() && confirmWithPassword(user)) {
+                if (details[0] == user.getUsername() && confirmWithPassword(user)) {
                     details[1] = newPassword;
                 }
                 updatedUserinfo.add(details[0] + " | " + details[1] + " | " + details[2]);
@@ -184,7 +184,7 @@ public class SocialServer implements Server {
 
             ArrayList<String> updatedUserinfo = new ArrayList<>();
             for (String[] details : userinfodetailed) { // 63-69 makes changes to arraylist
-                if (details[2] == user.getUsername() && confirmWithPassword(user)) {
+                if (details[0] == user.getUsername() && confirmWithPassword(user)) {
                     details[2] = newPFP;
                 }
                 updatedUserinfo.add(details[0] + " | " + details[1] + " | " + details[2]);
