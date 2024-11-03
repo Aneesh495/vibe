@@ -6,7 +6,7 @@ User Class:
 1. Fields: Username, password, bio, pfp, friendlist, blockedlist
 2. Methods:  get/set username/pfp/bio/friendlist
 
-Use hashmaps where required.
+Use hashmaps whereever required.
 
 Behaves as a client. All of these methods send a call to the server to make changes to the respective files according to the method called.
 
@@ -34,7 +34,7 @@ Message Class:
 
 
 Interface List:
-1. User
+1. User.java
 - normal user class
 - admin users class who can see reported messages
 2. Server.java
@@ -42,9 +42,9 @@ Interface List:
 4. Error Class
 
 Class List:
-1. NormalUser
-2. AdminUser
-3. 
+1. NormalUser.java
+2. AdminUser.java
+3. SocialServer.java
 
 Files List:
 1. Username and password (use hashmap)
@@ -53,7 +53,6 @@ Files List:
 4. one file for each user blocked list (blocked.txt) (user1: blocked1, blocked2)
 5. one file for each user friend list (friends.txt (user2: friend1, friend2)
 6. one file for all reported messages (reported.txt)
-
 
 
   
