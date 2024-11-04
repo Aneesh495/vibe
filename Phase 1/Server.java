@@ -1,20 +1,15 @@
-import InvalidBioException;
-import PasswordNotValidException;
-import UserAlreadyBlockedException;
-import UsernameNotValidException;
-import UserExceptions.UserNotFoundException;
+import ServerException.*;
 
- 
+import java.io.*;
 public interface Server {
-    public void createUser(User user) 
-           throws UsernameNotValidException, PasswordNotValidException, IOException;
-
-    public void editUserInfo(User user) 
-           throws UserNotFoundException, InvalidBioException, IOException;
-
-    public void blockUser(String UserId) 
-           throws UserNotFoundException, UserAlreadyBlockedException;
-
-    public void getMessage(String UserId1) 
-           throws UserNotFoundException, UserBlockedException;
-}
+       
+       public void createUser(User user) throws InvalidCredentialsException, IOException;
+       
+       public void createUser(String username, String password) throws InvalidCredentialsException, IOException;
+       
+       public void editUserInfo(User user) throws UserNotFoundException, UserInputException, IOException;
+   
+       public void blockUser(String userId) throws UserNotFoundException, BlockedActionException;
+   
+       public void getMessage(String userId1) throws UserNotFoundException, BlockedActionException;
+   }

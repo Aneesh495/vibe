@@ -1,6 +1,6 @@
 import java.io.*;
 import java.util.*;
-
+import ServerException.*;
 public class SocialServer implements Server {
     // private BufferedReader br;
     // private PrintWriter pw;
@@ -17,8 +17,7 @@ public class SocialServer implements Server {
     }
 
     public static boolean confirmWithPassword(User user) {
-        try {
-            Scanner sc = new Scanner(System.in);
+        Scanner sc = new Scanner(System.in);
             System.out.print("Enter your password to confirm action: ");
 
             try {
@@ -31,40 +30,41 @@ public class SocialServer implements Server {
                     return false;
                 }
             } catch (NoSuchElementException e) {
-                System.err.println("Error reading password input: " + e.getMessage());
+                System.out.println("Error reading password input: " + e.getMessage());
                 return false;
             } finally {
-                sc.close(); // Ensure the scanner is closed in all cases
+                sc.close(); 
             }
-        } catch (IOException e) {
-            System.out.println("Invalid user");
+        }
+
+    public void createUser(User user) throws InvalidCredentialsException, IOException {
+        if (user.getUsername().length() < 3) {
+            throw new InvalidCredentialsException("Invalid username: must be at least 3 characters.");
+        }
+        if (user.getUsername().length() < 6) {
+            throw new InvalidCredentialsException("Invalid password: must be at least 6 characters.");
+        }
+        try (PrintWriter pw = new PrintWriter(new FileWriter("Users.txt"))) {
+            pw.write(user.toString());
         }
     }
+        
 
-    public void createUser(String username, String password) throws UsernameNotValidException,
-            PasswordNotValidException { // Create user with username/password/default pfp
-        try (PrintWriter pw = new PrintWriter(new FileWriter(Users))) {
-            pw.write(username + " | " + password + " | " + "Default PFP");
-        } catch (UsernameNotValidException unve) {
-            System.out.println("Invalid username");
-        } catch (PasswordNotValidException pnve) {
-            System.out.println("Invalid password");
-        }
+    public void createUser(String username, String password) throws InvalidCredentialsException, IOException {
+    if (username.length() < 3) {
+        
+    }
+    if (password.length() < 6) {
+        throw new InvalidCredentialsException("Invalid password: must be at least 6 characters.");
     }
 
-    @Override
-    public void createUser(String username, String password, String profilePicture)
-            throws UsernameNotValidException, PasswordNotValidException { // Creater user with // username/password/pfp
-        try (PrintWriter pw = new PrintWriter(new FileWriter(Users))) {
-            pw.write(username + " | " + password + " | " + profilePicture);
-        } catch (UsernameNotValidException unve) {
-            System.out.println("Invalid username");
-        } catch (PasswordNotValidException pnve) {
-            System.out.println("Invalid password");
-        }
+    try (PrintWriter pw = new PrintWriter(new FileWriter("Users.txt"))) {
+        pw.write(username + " | " + password + " | Default PFP" + " | ");
     }
+}
 
-    public void editUsername(User user, String newUsername) throws UsernameNotValidException {
+
+    public void editUsername(User user, String newUsername) throws InvalidCredentialsException, IOException, UserNotFoundException  {
         /*
          * LINES 46 TO 62 CAN BE REUSED EVERYWHERE
          * ArrayList userinfo = first read from UserInfo file
@@ -74,6 +74,9 @@ public class SocialServer implements Server {
          * Make changes to username.
          * ArrayList updatedUserinfo = array after making changes
          */
+        if(newUsername.length()<3){
+            throw new InvalidCredentialsException("Invalid username: must be at least 3 characters.");
+        }
         try {
             BufferedReader bfr = new BufferedReader(new FileReader(UserInfo));
             PrintWriter pw = new PrintWriter(new FileWriter(UserInfo));
@@ -105,17 +108,26 @@ public class SocialServer implements Server {
                 }
                 updatedUserinfo.add(details[0] + " | " + details[1] + " | " + details[2]);
             }
+
+            if (updatedUserinfo.isEmpty()) {
+                throw new UserNotFoundException("User not found in the system.");
+            }
+
             for (String updatedLine : updatedUserinfo) {
                 pw.write(updatedLine);
             }
             bfr.close();
             pw.close();
-        } catch (UsernameNotValidException unve) {
-            System.out.println("Username taken");
+        } catch (IOException e) {
+            throw new IOException(e.getMessage());
         }
     }
 
     public void editUserPassword(User user, String newPassword) throws PasswordNotValidException {
+        
+        if (newPassword.length() < 6) {
+            throw new InvalidCredentialsException("Invalid password: must be at least 6 characters.");
+        }
         try {
             BufferedReader bfr = new BufferedReader(new FileReader(UserInfo));
             PrintWriter pw = new PrintWriter(new FileWriter(UserInfo));
@@ -147,17 +159,22 @@ public class SocialServer implements Server {
                 }
                 updatedUserinfo.add(details[0] + " | " + details[1] + " | " + details[2]);
             }
+
+            if (updatedUserinfo.isEmpty()) {
+                throw new UserNotFoundException("User not found in the system.");
+            }
+
             for (String updatedLine : updatedUserinfo) {
                 pw.write(updatedLine);
             }
             bfr.close();
             pw.close();
-        } catch (PasswordNotValidException pnve) {
-            System.out.println("Invalid password");
+        } catch (IOException e) {
+            throw new IOException(e.getMessage());
         }
     }
 
-    public void editUserPFP(User user, String newPFP) throws IOException {// will have to add overloaded methods
+    public void editUserPFP(User user, String newPFP) throws IOException, UserNotFoundException {// will have to add overloaded methods
         try {
             BufferedReader bfr = new BufferedReader(new FileReader(UserInfo));
             PrintWriter pw = new PrintWriter(new FileWriter(UserInfo));
@@ -189,6 +206,11 @@ public class SocialServer implements Server {
                 }
                 updatedUserinfo.add(details[0] + " | " + details[1] + " | " + details[2]);
             }
+
+            if (updatedUserinfo.isEmpty()) {
+                throw new UserNotFoundException("User not found in the system.");
+            }
+            
             for (String updatedLine : updatedUserinfo) {
                 pw.write(updatedLine);
             }
