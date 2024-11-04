@@ -1,11 +1,15 @@
 import java.io.IOException;
 
-public interface Server {
-    public void createUser(String username, String password, String profilePicture);
+import java.io.IOException;
 
-    public void editUserInfo(User user, String newUsername) throws IOException;
-
-    public void blockUser(String UserId);
-
-    public void getMessage(String UserId1);
+public interface MessageInterface {
+    public String getSender();
+    public String getReceiver();
+    public String getContent();
+    public void setContent(String content);
+    public long getTimestamp();
+    public void setTimestamp(long time);
+    public void setReported();
+    public String toString();
 }
+
