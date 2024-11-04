@@ -47,16 +47,23 @@ class User implements UserInterface {
 
     // User setters
     public void setUsername(String newUsername) throws UserActionException {
-        if (confirmWithPassword(this.user)) {
-            this.userName = newUsername;
-            System.out.println("Username changed successfully.");
-        } else {
-            throw new UserActionException("Incorrect password. Unable to change username.");
+        System.out.println("Enter current password to confirm username change:");
+        try (Scanner sc = new Scanner(System.in)) {
+            String check = sc.nextLine();
+            if (check.equals(userPassword)) {
+                this.userName = newUsername;
+                System.out.println("Username changed successfully.");
+            } else {
+                throw new UserActionException("Incorrect password. Unable to change username.");
+            }
         }
     }
 
     public void setPassword(String newPassword) throws UserActionException {
-            if (confirmWithPassword(this.user)) {
+        System.out.println("Enter current password to change to a new password:");
+        try (Scanner sc = new Scanner(System.in)) {
+            String check = sc.nextLine();
+            if (check.equals(userPassword)) {
                 this.userPassword = newPassword;
                 System.out.println("Password changed successfully.");
             } else {
@@ -117,7 +124,7 @@ class User implements UserInterface {
         System.out.println("User unblocked successfully.");
     }
 
-
+    
     // User getters
     public String getUsername() {
         return userName;
