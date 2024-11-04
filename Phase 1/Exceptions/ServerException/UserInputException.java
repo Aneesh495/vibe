@@ -1,4 +1,4 @@
-package Exceptions.ServerException;
+package ServerException;
 
 public class UserInputException extends Exception {
     public UserInputException(String message) {

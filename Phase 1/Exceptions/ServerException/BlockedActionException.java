@@ -1,4 +1,4 @@
-package Exceptions.ServerException;
+package ServerException;
 
 public class BlockedActionException extends Exception {
     public BlockedActionException(String message) {

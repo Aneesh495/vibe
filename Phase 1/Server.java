@@ -1,4 +1,5 @@
 import Exceptions.ServerException.*;
+import ServerException.InvalidCredentialsException;
 
 import java.io.*;
 public interface Server {

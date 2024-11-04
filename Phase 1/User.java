@@ -1,21 +1,19 @@
 // import Exceptions.*;
-import Exceptions.UserExceptions.*;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
-
+import UserExceptions.*;
 class User implements UserInterface {
     private static int totalUsers = 0;
     private String userName;
     private String userPassword;
     private File profilePicture;
     private String bio;
-    private ArrayList<User> friends;
-    private ArrayList<User> blocked;
+    private ArrayList<String> friends;
+    private ArrayList<String> blocked;
 
     // User initializers
-    public User(String username, String password, String profilePicture, String bio, ArrayList<User> friends, ArrayList<User> blocked) {
+    public User(String username, String password, String profilePicture, String bio, ArrayList<String> friends, ArrayList<String> blocked) {
         this.userName = username;
         this.userPassword = password;
         this.profilePicture = new File(profilePicture);
@@ -35,7 +33,7 @@ class User implements UserInterface {
         totalUsers++;
     }
 
-    public User(String username, String password, String bio, ArrayList<User> friends, ArrayList<User> blocked) {
+    public User(String username, String password, String bio, ArrayList<String> friends, ArrayList<String> blocked) {
         this.userName = username;
         this.userPassword = password;
         this.profilePicture = new File("Phase 1/Database/ProfilePictures/default.png");
@@ -86,7 +84,7 @@ class User implements UserInterface {
         System.out.println("Bio updated.");
     }
 
-    public void addFriend(User friend) throws FriendActionException, BlockedActionException {
+    public void addFriend(String friend) throws FriendActionException, BlockedActionException {
         if (friends.contains(friend)) {
             throw new FriendActionException("User is already a friend!");
         }
@@ -97,7 +95,7 @@ class User implements UserInterface {
         System.out.println("Friend added successfully.");
     }
 
-    public void removeFriend(User friend) throws FriendActionException {
+    public void removeFriend(String friend) throws FriendActionException {
         if (!friends.contains(friend)) {
             throw new FriendActionException("User isn't a friend!");
         }
@@ -105,7 +103,7 @@ class User implements UserInterface {
         System.out.println("Friend removed successfully.");
     }
 
-    public void blockUser(User user) throws BlockedActionException, FriendActionException {
+    public void blockUser(String user) throws BlockedActionException, FriendActionException {
         if (friends.contains(user)) {
             throw new FriendActionException("Cannot block a friend! Unfriend them first.");
         }
@@ -116,7 +114,7 @@ class User implements UserInterface {
         System.out.println("User blocked successfully.");
     }
 
-    public void unblockUser(User user) throws BlockedActionException {
+    public void unblockUser(String user) throws BlockedActionException {
         if (!blocked.contains(user)) {
             throw new BlockedActionException("User isn't blocked.");
         }
@@ -142,11 +140,11 @@ class User implements UserInterface {
         return bio;
     }
 
-    public ArrayList<User> getFriends() {
+    public ArrayList<String> getFriends() {
         return friends;
     }
 
-    public ArrayList<User> getBlocked() {
+    public ArrayList<String> getBlocked() {
         return blocked;
     }
 

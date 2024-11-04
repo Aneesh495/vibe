@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 // import Exceptions.*;
-import Exceptions.UserExceptions.*;
+import UserExceptions.*;
 
 
 public interface UserInterface {
@@ -12,13 +12,13 @@ public interface UserInterface {
 
     public void setBio(String bio);
 
-    public void addFriend(User friend) throws FriendActionException, BlockedActionException;
+    public void addFriend(String friend) throws FriendActionException, BlockedActionException;
 
-    public void removeFriend(User friend) throws FriendActionException;
+    public void removeFriend(String friend) throws FriendActionException;
 
-    public void blockUser(User user) throws BlockedActionException, FriendActionException;
+    public void blockUser(String user) throws BlockedActionException, FriendActionException;
 
-    public void unblockUser(User user) throws BlockedActionException;
+    public void unblockUser(String user) throws BlockedActionException;
 
     public String getUsername();
 
@@ -28,7 +28,7 @@ public interface UserInterface {
 
     public String getBio();
 
-    public ArrayList<User> getFriends() throws FriendActionException, BlockedActionException;
+    public ArrayList<String> getFriends() throws FriendActionException, BlockedActionException;
 
-    public ArrayList<User> getBlocked() throws BlockedActionException,FriendActionException;
+    public ArrayList<String> getBlocked() throws BlockedActionException,FriendActionException;
 }

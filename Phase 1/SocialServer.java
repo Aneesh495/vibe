@@ -1,7 +1,6 @@
 import java.io.*;
 import java.util.*;
-import Exceptions.ServerException.*;
-
+import ServerException.*;
 public class SocialServer implements Server {
     // private BufferedReader br;
     // private PrintWriter pw;
@@ -42,7 +41,7 @@ public class SocialServer implements Server {
         if (user.getUsername().length() < 3) {
             throw new InvalidCredentialsException("Invalid username: must be at least 3 characters.");
         }
-        if (user.getUsername().length() < 6) {
+        if (user.getPassword().length() < 6) {
             throw new InvalidCredentialsException("Invalid password: must be at least 6 characters.");
         }
         try (PrintWriter pw = new PrintWriter(new FileWriter("Users.txt"))) {
@@ -53,7 +52,7 @@ public class SocialServer implements Server {
 
     public void createUser(String username, String password) throws InvalidCredentialsException, IOException {
     if (username.length() < 3) {
-        
+        throw new InvalidCredentialsException("Invalid username: must be at least 3 characters.");
     }
     if (password.length() < 6) {
         throw new InvalidCredentialsException("Invalid password: must be at least 6 characters.");
@@ -63,7 +62,9 @@ public class SocialServer implements Server {
         pw.write(username + " | " + password + " | Default PFP" + " | ");
     }
 }
+    public void editUserInfo(User user){
 
+    }
 
     public void editUsername(User user, String newUsername) throws InvalidCredentialsException, IOException, UserNotFoundException  {
         /*
@@ -124,7 +125,7 @@ public class SocialServer implements Server {
         }
     }
 
-    public void editUserPassword(User user, String newPassword) throws InvalidCredentialsException, UserNotFoundException, IOException {
+    public void editUserPassword(User user, String newPassword) throws InvalidCredentialsException, IOException, UserNotFoundException {
         
         if (newPassword.length() < 6) {
             throw new InvalidCredentialsException("Invalid password: must be at least 6 characters.");
@@ -161,15 +162,16 @@ public class SocialServer implements Server {
                 updatedUserinfo.add(details[0] + " | " + details[1] + " | " + details[2]);
             }
 
-            if (updatedUserinfo.isEmpty()) {
-                throw new UserNotFoundException("User not found in the system.");
-            }
+
 
             for (String updatedLine : updatedUserinfo) {
                 pw.write(updatedLine);
             }
             bfr.close();
             pw.close();
+            if (updatedUserinfo.isEmpty()) {
+                throw new UserNotFoundException("User not found in the system.");
+            }
         } catch (IOException e) {
             throw new IOException(e.getMessage());
         }
@@ -211,7 +213,7 @@ public class SocialServer implements Server {
             if (updatedUserinfo.isEmpty()) {
                 throw new UserNotFoundException("User not found in the system.");
             }
-            
+
             for (String updatedLine : updatedUserinfo) {
                 pw.write(updatedLine);
             }
@@ -222,22 +224,101 @@ public class SocialServer implements Server {
         }
     }
 
-    /*public void blockUser(String userId) {
-        try {
 
-        } catch (UserBlockedException ube) {
-            System.out.println("User already blocked!");
+
+    public void blockUser(String userId, String blockId) throws BlockedActionException,UserNotFoundException,IOException {
+        try{
+            PrintWriter pw = new PrintWriter(new FileWriter(UserInfo));
+            User user =findUser(userId);
+
+            pw.write(user.getUsername() + " | ");
+            for (String blockedUser : user.getBlocked()) {
+                pw.write(blockedUser + " | ");
+            }
+            pw.write(blockId);
+
+        }catch(UserNotFoundException e ){
+            throw new UserNotFoundException(e.getMessage());
+        }catch(IOException e){
+            throw new IOException(e.getMessage());
         }
-    }*/
+    }
 
-    /*public void getMessage(String userId) throws IOException {
+    public void getMessage(String userId) throws IOException {
+        
         try {
 
         } catch (IOException io) {
             System.out.println("Invalid message");
         }
-    }*/
-}
+    }
 
-// garvt | garvtpassword | garvtpfp | bio
-// abc | password | pfp | bio
+    public User findUser(String username) throws IOException, UserNotFoundException {
+        String[] foundUser=null;
+        try {
+            BufferedReader bfr = new BufferedReader(new FileReader(UserInfo));
+            ArrayList<String> userinfo = new ArrayList<>();
+            String line = bfr.readLine();
+            while (line != null) {
+                userinfo.add(line);
+                bfr.readLine();
+            }
+            boolean userFound=false;
+            for (int i = 0; i < userinfo.size(); i++) {
+                String[] data = userinfo.get(i).split(" | ");
+                if(data[0].equals(username)){
+                    foundUser= data;
+                    userFound=true;
+                }
+            }
+            bfr.close();
+            if(!userFound){
+                throw new UserNotFoundException("User not found in the system.");
+            }
+
+            // reads friend file
+            BufferedReader friendbfr = new BufferedReader(new FileReader(FriendList));
+            ArrayList<String> friends = new ArrayList<>();
+            String friendLine = friendbfr.readLine();
+
+            while (friendLine != null) {
+                String[] data = friendLine.split(" \\| ");
+                if (data[0].equals(username)) {
+                    for (int i = 1; i < data.length; i++) {
+                        friends.add(data[i]);
+                    }
+                    break;
+                }
+                friendLine = friendbfr.readLine();
+            }
+            friendbfr.close();
+            
+            // reads blocked User File
+            
+            BufferedReader blockedbfr = new BufferedReader(new FileReader(FriendList));
+            ArrayList<String> blocked = new ArrayList<>();
+            String blockedLine = blockedbfr.readLine();
+
+            while (blockedLine != null) {
+                String[] data = blockedLine.split(" \\| ");
+                if (data[0].equals(username)) {
+                    for (int i = 1; i < data.length; i++) {
+                        blocked.add(data[i]);
+                    }
+                    break;
+                }
+                blockedLine = blockedbfr.readLine();
+            }
+            blockedbfr.close();
+
+
+            return new User(foundUser[0],foundUser[1],foundUser[2],foundUser[3],friends,blocked);
+            
+                        
+    
+            
+        } catch (IOException e) {
+            throw new IOException(e.getMessage());
+        }
+    }
+}
