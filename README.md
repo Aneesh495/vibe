@@ -92,5 +92,5 @@ Groupmember Contributions - Phase 1:
 1. Aneesh: Authored readme file, custom exception classes, and threw exceptions in existing classes.
 2. Garv: Authored testcases, SocialServer.java, user.java
 3. Lakshay: Authored user.java, messages.java, SocialServer.java
-4. Tasha: Co-authored readme file and oversaw exceptions
-5. Amelia: Co-authored message.java
+4. Tasha: Co-authored readme file and exceptions
+5. Amelia: Oversaw operations 
