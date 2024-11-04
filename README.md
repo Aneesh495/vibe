@@ -55,7 +55,7 @@ Message.java:
   7. toString - returns a string representation of a message, including the sender, receiver, content and the timestamp of the message.
   8. setTimeStamp - Sets the timestamp of a message. 
 
-ServerInterface.java: 
+Server.java: 
   Provides the interface for social server - consisting of the createUser method.
 
 SocialServer.java:
@@ -65,11 +65,9 @@ SocialServer.java:
   4. editUsername - Modifies the username of the specified user, throws InvalidCredentialsException, IO Exception and UserNotFoundException. 
   5. editUserPassword - Modifies the passowrd of the specified user, throws InvalidCredentialsException, UserNotFoundException, and IOException.
   6. editUserPFP - Updates the profile picture of the specified user, throws IOException, and UserNotFoundException.
-  7. blockUser - Blocks the specified user by the userID, throws UserNotFoundException, and UserBlockedException.
-  8. getMessage - Retrieves all the messages a user sent. 
   
   UserInterface.java: 
-  Provides the interface for User.java - setUsername, setPassword, setProfilePicture, setBio, addFriend, removeFriend, blockUser, unblockUser, getUsername, getPassword, getProfilePicture, getBio, getFriends, and getBlocked
+  Provides the interface for User.java - setUsername, setPassword, setProfilePicture, setBio, addFriend, removeFriend, getUsername, getPassword, getProfilePicture, getBio, getFriends, and getBlocked
 
   User.java: 
   1. User - Default user constructor that initalizes the username, password, profile, bio, friendlist and blocklist to the given parameters.
