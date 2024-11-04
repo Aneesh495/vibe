@@ -9,7 +9,7 @@ public interface Server {
        
        // public void editUserInfo(User user) throws UserNotFoundException, UserInputException, IOException;
    
-       public void blockUser(String userId) throws UserNotFoundException, BlockedActionException;
+       // public void blockUser(String userId) throws UserNotFoundException, BlockedActionException;
    
-       public void getMessage(String userId1) throws UserNotFoundException, BlockedActionException;
+       // public void getMessage(String userId1) throws UserNotFoundException, BlockedActionException;
    }

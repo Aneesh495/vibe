@@ -124,7 +124,7 @@ public class SocialServer implements Server {
         }
     }
 
-    public void editUserPassword(User user, String newPassword) throws PasswordNotValidException {
+    public void editUserPassword(User user, String newPassword) throws InvalidCredentialsException, UserNotFoundException, IOException {
         
         if (newPassword.length() < 6) {
             throw new InvalidCredentialsException("Invalid password: must be at least 6 characters.");
@@ -222,21 +222,22 @@ public class SocialServer implements Server {
         }
     }
 
-    public void blockUser(String userId) throws UserBlockedException {
+    /*public void blockUser(String userId) {
         try {
 
         } catch (UserBlockedException ube) {
             System.out.println("User already blocked!");
         }
-    }
+    }*/
 
-    public void getMessage(String userId) throws IOException {
+    /*public void getMessage(String userId) throws IOException {
         try {
 
         } catch (IOException io) {
             System.out.println("Invalid message");
         }
-    }
+    }*/
 }
 
 // garvt | garvtpassword | garvtpfp | bio
+// abc | password | pfp | bio
