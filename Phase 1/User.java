@@ -46,23 +46,16 @@ class User implements UserInterface {
 
     // User setters
     public void setUsername(String newUsername) throws UserActionException {
-        System.out.println("Enter current password to confirm username change:");
-        try (Scanner sc = new Scanner(System.in)) {
-            String check = sc.nextLine();
-            if (check.equals(userPassword)) {
-                this.userName = newUsername;
-                System.out.println("Username changed successfully.");
-            } else {
-                throw new UserActionException("Incorrect password. Unable to change username.");
-            }
+        if (confirmWithPassword(this.user)) {
+            this.userName = newUsername;
+            System.out.println("Username changed successfully.");
+        } else {
+            throw new UserActionException("Incorrect password. Unable to change username.");
         }
     }
 
     public void setPassword(String newPassword) throws UserActionException {
-        System.out.println("Enter current password to change to a new password:");
-        try (Scanner sc = new Scanner(System.in)) {
-            String check = sc.nextLine();
-            if (check.equals(userPassword)) {
+            if (confirmWithPassword(this.user)) {
                 this.userPassword = newPassword;
                 System.out.println("Password changed successfully.");
             } else {
