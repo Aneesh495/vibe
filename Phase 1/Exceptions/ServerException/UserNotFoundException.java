@@ -1,4 +1,4 @@
-package ServerException;
+package Exceptions.ServerException;
 
 public class UserNotFoundException extends Exception {
     public UserNotFoundException(String message) {
