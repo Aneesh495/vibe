@@ -26,6 +26,7 @@ Albeit not all exceptions are finalized yet, these are the ones we decided to in
 Test Cases: 
   UserTest.java - JUnit Testcases
    a. setUp - Creates 3 different users: user, friend, and blockedUser to run the test cases.
+   
    b. testUserConstructor - Verifies that setUp properly initalizes the user information.
    c. testSetUsername - Tests the setUsername method
    d. testSetUsernameFailure - Ensures that setting a empty string as username throws the userAction exception.
