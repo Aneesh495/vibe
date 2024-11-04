@@ -10,7 +10,7 @@ Files:
 1. blocked.txt - Consists of a list of every user and who they have blocked.
 2. friends.txt - Consists of a list of every user and their list of friends.
 3. msgs.txt - Consists of a list of every direct message chat history.
-4. userInfo.txt - Conists of a every user's profile information such as username as user bio.
+4. userInfo.txt - Conists of every user's profile information such as username as user bio.
 5. userPasswords.txt - Consists of every user's current password used for login.
 
 Exceptions:
