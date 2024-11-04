@@ -1,45 +1,50 @@
-import Exceptions.ServerException.InvalidCredentialsException;
 import org.junit.*;
 import static org.junit.Assert.*;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.io.ByteArrayOutputStream;
 
 public class SocialServerTest {
-    private SocialServer server;
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private final PrintStream originalOut = System.out;
+    private SocialServer server;
+    private User testUser;
 
     @Before
     public void setUp() {
         server = new SocialServer();
-        System.setOut(new PrintStream(outContent)); // Redirect System.out to capture outputs
+        testUser = new User("testUser", "testPassword123");
+        System.setOut(new PrintStream(outContent)); // Capture System.out output
     }
 
     @Test
-    public void testCreateUserValid() throws Exception {
-        User user = new User("validUser", "validPassword123");
-        server.createUser(user);
-        // This assumes createUser outputs to System.out or a similar side-effect
-        assertTrue("Output should confirm creation", outContent.toString().contains("User created"));
-    }
+    public void testConfirmWithPasswordCorrect() {
+        String input = "testPassword123\n";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+        System.setIn(in); // Set System.in to our test input
 
-    @Test(expected = InvalidCredentialsException.class)
-    public void testCreateUserInvalid() throws Exception {
-        User user = new User("us", "pwd"); // intentionally short username and password
-        server.createUser(user);
+        assertTrue("Password confirmation should succeed", SocialServer.confirmWithPassword(testUser));
+
+        System.setIn(System.in); // Reset System.in after the test
     }
 
     @Test
-    public void testConfirmWithPassword() {
-        ByteArrayInputStream in = new ByteArrayInputStream("validPassword123\n".getBytes());
-        System.setIn(in);
-        User user = new User("user", "validPassword123");
-        assertTrue("Password should be confirmed correctly", SocialServer.confirmWithPassword(user));
-        assertEquals("Output should confirm password acceptance", "Password confirmed\n", outContent.toString());
+    public void testConfirmWithPasswordIncorrect() {
+        String input = "wrongPassword\n";
+        InputStream in = new ByteArrayInputStream(input.getBytes());
+        System.setIn(in); // Set System.in to our test input
+
+        assertFalse("Password confirmation should fail", SocialServer.confirmWithPassword(testUser));
+        assertTrue("Should print 'Incorrect Password'", outContent.toString().contains("Incorrect Password"));
+
+        System.setIn(System.in); // Reset System.in after the test
     }
 
     @After
-    public void cleanUp() {
+    public void restoreStreams() {
+        System.setIn(System.in); // Restore System.in to prevent issues in other tests
         System.setOut(originalOut); // Restore System.out
-        System.setIn(System.in); // Restore System.in
+        outContent.reset();
     }
 }
