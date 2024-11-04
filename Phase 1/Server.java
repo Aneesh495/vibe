@@ -1,7 +1,7 @@
 import Exceptions.ServerException.*;
 
 import java.io.*;
-public interface Server {
+public interface ServerInterface {
        
        public void createUser(User user) throws InvalidCredentialsException, IOException;
        
