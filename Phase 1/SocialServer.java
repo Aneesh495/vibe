@@ -19,24 +19,24 @@ public class SocialServer implements Server {
 
     public static boolean confirmWithPassword(User user) {
         Scanner sc = new Scanner(System.in);
-        System.out.print("Enter your password to confirm action: ");
+            System.out.print("Enter your password to confirm action: ");
 
-        try {
-            String inputPw = sc.nextLine();
-            sc.close();
-            if (inputPw.equals(user.getPassword())) {
-                return true;
-            } else {
-                System.out.println("Incorrect Password");
+            try {
+                String inputPw = sc.nextLine();
+                sc.close();
+                if (inputPw.equals(user.getPassword())) {
+                    return true;
+                } else {
+                    System.out.println("Incorrect Password");
+                    return false;
+                }
+            } catch (NoSuchElementException e) {
+                System.out.println("Error reading password input: " + e.getMessage());
                 return false;
+            } finally {
+                sc.close(); 
             }
-        } catch (NoSuchElementException e) {
-            System.out.println("Error reading password input: " + e.getMessage());
-            return false;
-        } finally {
-            sc.close();
         }
-    }
 
     public void createUser(User user) throws InvalidCredentialsException, IOException {
         if (user.getUsername().length() < 3) {
@@ -49,20 +49,20 @@ public class SocialServer implements Server {
             pw.write(user.toString());
         }
     }
-
+        
 
     public void createUser(String username, String password) throws InvalidCredentialsException, IOException {
-        if (username.length() < 3) {
-
-        }
-        if (password.length() < 6) {
-            throw new InvalidCredentialsException("Invalid password: must be at least 6 characters.");
-        }
-
-        try (PrintWriter pw = new PrintWriter(new FileWriter("Users.txt"))) {
-            pw.write(username + " | " + password + " | Default PFP" + " | ");
-        }
+    if (username.length() < 3) {
+        
     }
+    if (password.length() < 6) {
+        throw new InvalidCredentialsException("Invalid password: must be at least 6 characters.");
+    }
+
+    try (PrintWriter pw = new PrintWriter(new FileWriter("Users.txt"))) {
+        pw.write(username + " | " + password + " | Default PFP" + " | ");
+    }
+}
 
 
     public void editUsername(User user, String newUsername) throws InvalidCredentialsException, IOException, UserNotFoundException  {
@@ -125,7 +125,7 @@ public class SocialServer implements Server {
     }
 
     public void editUserPassword(User user, String newPassword) throws InvalidCredentialsException, UserNotFoundException, IOException {
-
+        
         if (newPassword.length() < 6) {
             throw new InvalidCredentialsException("Invalid password: must be at least 6 characters.");
         }
@@ -211,7 +211,7 @@ public class SocialServer implements Server {
             if (updatedUserinfo.isEmpty()) {
                 throw new UserNotFoundException("User not found in the system.");
             }
-
+            
             for (String updatedLine : updatedUserinfo) {
                 pw.write(updatedLine);
             }
@@ -222,6 +222,21 @@ public class SocialServer implements Server {
         }
     }
 
+    /*public void blockUser(String userId) {
+        try {
+
+        } catch (UserBlockedException ube) {
+            System.out.println("User already blocked!");
+        }
+    }*/
+
+    /*public void getMessage(String userId) throws IOException {
+        try {
+
+        } catch (IOException io) {
+            System.out.println("Invalid message");
+        }
+    }*/
 }
 
 // garvt | garvtpassword | garvtpfp | bio
