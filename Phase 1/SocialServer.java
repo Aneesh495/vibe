@@ -219,25 +219,9 @@ public class SocialServer implements Server {
             pw.close();
         } catch (IOException io) {
             System.out.println("Invalid image");
+            }
         }
     }
-
-    /*public void blockUser(String userId) {
-        try {
-
-        } catch (UserBlockedException ube) {
-            System.out.println("User already blocked!");
-        }
-    }*/
-
-    /*public void getMessage(String userId) throws IOException {
-        try {
-
-        } catch (IOException io) {
-            System.out.println("Invalid message");
-        }
-    }*/
-}
 
 // garvt | garvtpassword | garvtpfp | bio
 // abc | password | pfp | bio
