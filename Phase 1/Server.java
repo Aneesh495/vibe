@@ -1,10 +1,13 @@
-import InvalidBioException;
-import PasswordNotValidException;
-import UserAlreadyBlockedException;
-import UsernameNotValidException;
-import UserExceptions.UserNotFoundException;
+// import InvalidBioException;
+// import PasswordNotValidException;
+// import UserAlreadyBlockedException;
+// import UsernameNotValidException;
+import Exceptions.UserExceptions.*;
+import Exceptions.*;
 
- 
+import java.io.IOException;
+
+
 public interface Server {
     public void createUser(User user) 
            throws UsernameNotValidException, PasswordNotValidException, IOException;

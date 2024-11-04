@@ -1,8 +1,9 @@
+// import Exceptions.*;
+import Exceptions.UserExceptions.*;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
-
-import UserExceptions.*;
 
 class User implements UserInterface {
     private static int totalUsers = 0;
