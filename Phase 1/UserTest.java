@@ -1,9 +1,9 @@
-// import static org.junit.Assert.*;
-// import org.junit.Before;
-// import org.junit.Test;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 import java.util.ArrayList;
 // import Exceptions.*;
-import UserExceptions.*;
+import Exceptions.UserExceptions.*;
 
 public class UserTest {
     private User user;
