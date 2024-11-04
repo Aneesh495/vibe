@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.*;
-import ServerException.*;
+import Exceptions.ServerException.*;
+
 public class SocialServer implements Server {
     // private BufferedReader br;
     // private PrintWriter pw;
@@ -237,3 +238,5 @@ public class SocialServer implements Server {
         }
     }
 }
+
+// garvt | garvtpassword | garvtpfp | bio

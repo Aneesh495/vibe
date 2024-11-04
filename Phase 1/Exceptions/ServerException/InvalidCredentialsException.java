@@ -1,4 +1,4 @@
-package ServerException;
+package Exceptions.ServerException;
 
 public class InvalidCredentialsException extends Exception {
     public InvalidCredentialsException(String message) {
