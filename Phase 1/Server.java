@@ -1,5 +1,12 @@
+import InvalidBioException;
+import PasswordNotValidException;
+import UserAlreadyBlockedException;
+import UsernameNotValidException;
+import UserExceptions.UserNotFoundException;
+
+ 
 public interface Server {
-    public void createUser(String username, String password, String profilePicture) 
+    public void createUser(User user) 
            throws UsernameNotValidException, PasswordNotValidException, IOException;
 
     public void editUserInfo(User user) 
