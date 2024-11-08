@@ -1,7 +1,7 @@
 README.file Phase 1 Team Project - 
 by: Aneesh, Lakshay, Garv, Tasha, and Amelia
 
-ALERT: The currentcode is not thread-safe yet as we are not spwanign multilple threads or user inputs yet. The code will be made thread safe when client/server network functions are introduced. 
+ALERT: The currentcode is not thread-safe yet as we are not spawning multilple threads or user inputs yet. The code will be made thread safe when client/server network functions are introduced. 
 
 Database:
 We opt to store the data for our social media app using files. We decided it would be feasible to implement this as we could make use of buffered reader & writer to access user information conviniently.
