@@ -1,2 +1,5 @@
 testUser333 | testpassword333 | Database/ProfilePicture/default.png33 | 
-hahNewUser | newPassworf | new profilePicture | newbio
+lakshaym | password123 | Database/ProfilePicture/default.png | 
+johnnyNew | newpass123 | /path/to/newpic | Updated bio for Johnny
+johnnyNew | newpass123 | /path/to/newpic | Updated bio for Johnny
+alice | alicepass | /path/to/pic | Hello, I am Alice!
