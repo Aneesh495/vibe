@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.*;
 import java.net.*;
 
-public class SocialServer{
+public class SocialServer implements Runnable{
         private final String Users = "./Database/userPassword.txt";
         private final static String UserInfo = "./Database/Data/userInfo.txt";
         private final String FriendList = "./Database/friends.txt";
@@ -99,8 +99,18 @@ public class SocialServer{
                 }
             }
         }
-        
         public static void main(String args[]) throws IOException{
+            ServerSocket serverSocket = new ServerSocket(4242);
+            System.out.println("Server running on port 4242...");
+
+            while(true){
+                Socket socket = new ServerSocket().accept();
+                System.out.println("Client Connected");
+
+                SocialServer server = new SocialServer(socket);
+                new Thread(server).start();
+            }
 
     }
+    
 }
