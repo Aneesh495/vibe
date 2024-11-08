@@ -1,12 +1,12 @@
 Blocked List Format: Username of user: BlockedUser1-BlockedUser2-BlockedUser3...
 
-aneesh.495: 
-garvtayade@771: 
+aneesh.495: Bucaneers91-Amelia99
+garvtayade@771: CristianoRonaldoFan66
 lakshaym432: 
-Amelia99:amy112:  
-TashaN4554: 
+Amelia99: KingAwesome991
+TashaN4554: garvtayade@771-Bucaneers91-CristianoRonaldoFan66
 DunsmoreBuster42:  
-KingAwesome991:  
-MasterChessPlayer321:  
-CristianoRonaldoFan66:  
-Bucaneers91: 
+KingAwesome991: garvtayade@771-TashaN4554
+MasterChessPlayer321: aneesh.495
+CristianoRonaldoFan66: Bucaneers91-TashaN4554
+Bucaneers91: aneesh.495-DunsmoreBuster42
