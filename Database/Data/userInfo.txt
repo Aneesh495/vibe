@@ -1,0 +1,1 @@
+testUser | testpassword | Database/ProfilePicture/default.png | 
