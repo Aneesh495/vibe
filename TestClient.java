@@ -52,7 +52,13 @@ public class TestClient {
             System.out.println("3. Change User Info");
             System.out.println("4. Block User");
             System.out.println("5. Get Blocked Users");
-            System.out.println("6. Exit");
+            System.out.println("6. Unblock User");
+            System.out.println("7. Friend User");
+            System.out.println("8. Get Friends List");
+            System.out.println("9. Unfriend User");
+            System.out.println("10. Send Message");
+            System.out.println("11. Get Messages");
+            System.out.println("12. Exit");
             System.out.print("Enter choice: ");
             int choice = scanner.nextInt();
             scanner.nextLine(); // Consume the newline character
@@ -106,9 +112,64 @@ public class TestClient {
                     break;
 
                 case 6:
+                    // Unblock User
+                    System.out.print("Enter your username: ");
+                    String unblocker = scanner.nextLine();
+                    System.out.print("Enter username to unblock: ");
+                    String unblockee = scanner.nextLine();
+                    client.sendRequest("unblock", unblocker + " | " + unblockee);
+                    break;
+
+                case 7:
+                    // Friend User
+                    System.out.print("Enter your username: ");
+                    String friender = scanner.nextLine();
+                    System.out.print("Enter username to friend: ");
+                    String friendee = scanner.nextLine();
+                    client.sendRequest("friendUser", friender + " | " + friendee);
+                    break;
+
+                case 8:
+                    // Get Friends List
+                    System.out.print("Enter your username to get friends list: ");
+                    username = scanner.nextLine();
+                    client.sendRequest("getFriend", username);
+                    break;
+
+                case 9:
+                    // Unfriend User
+                    System.out.print("Enter your username: ");
+                    String unfriender = scanner.nextLine();
+                    System.out.print("Enter username to unfriend: ");
+                    String unfriendee = scanner.nextLine();
+                    client.sendRequest("unfriend", unfriender + " | " + unfriendee);
+                    break;
+
+                case 10:
+                    // Send Message
+                    System.out.print("Enter sender username: ");
+                    String sender = scanner.nextLine();
+                    System.out.print("Enter receiver username: ");
+                    String receiver = scanner.nextLine();
+                    System.out.print("Enter message: ");
+                    String message = scanner.nextLine();
+                    client.sendRequest("message", sender + " | " + receiver + " | " + message);
+                    break;
+
+                case 11:
+                    // Get Messages
+                    System.out.print("Enter your username: ");
+                    String user1 = scanner.nextLine();
+                    System.out.print("Enter friend's username: ");
+                    String user2 = scanner.nextLine();
+                    client.sendRequest("getMessage", user1 + " | " + user2);
+                    break;
+
+                case 12:
                     // Exit
                     client.closeConnection();
                     System.out.println("Client disconnected.");
+                    scanner.close();
                     return;
 
                 default:

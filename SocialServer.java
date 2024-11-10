@@ -70,7 +70,6 @@ public class SocialServer implements Runnable {
     // Change user information
     public static void changeUserInfo(String username, String newUsername, String password, String profilePicture, String bio) throws OperationFailedException, UserNotFoundException {
         ArrayList < String > userLines = new ArrayList < String > (); // Array to store lines to rewtire
-        System.out.println("run");
 
         try (BufferedReader userBr = new BufferedReader(new FileReader(UserInfo))) {
 
@@ -155,18 +154,18 @@ public class SocialServer implements Runnable {
     public static void unblock(String username, String unblockUser) throws UserNotBlockedException, UserNotFoundException, OperationFailedException {
         ArrayList < String > blockedLines = new ArrayList < > ();
         if (!getBlocked(username).contains(unblockUser)) {
-            System.out.println("User is not blocked");
+
             throw new UserNotBlockedException("User is not blocked");
         }
         if (!(checkUser(username) && checkUser(unblockUser))) {
-            System.out.println("User not found");
+
             throw new UserNotBlockedException("User not found");
         }
         try (BufferedReader userBr = new BufferedReader(new FileReader(BlockedList))) {
 
             String line = userBr.readLine();
             while (line != null) {
-                System.out.println("run");
+
                 String[] userInfo = line.split(" \\| ");
                 if (!userInfo[0].equals(username)) {
                     blockedLines.add(line);
@@ -212,7 +211,7 @@ public class SocialServer implements Runnable {
         if (checkUser(username) && checkUser(friendUser)) {
             try (BufferedReader userBr = new BufferedReader(new FileReader(FriendList))) {
 
-                System.out.println(checkFriend(username));
+  
                 // checks to see if User exists within friend File
                 if (checkFriend(username)) {
                     // checks to see if user is already friend
@@ -249,18 +248,18 @@ public class SocialServer implements Runnable {
     public static void unfriend(String username, String unfriend) throws UserNotFriendException, UserNotFoundException, OperationFailedException {
         ArrayList < String > blockedLines = new ArrayList < > ();
         if (!getBlocked(username).contains(unfriend)) {
-            System.out.println("User is not blocked");
+
             throw new UserNotFriendException("User is not blocked");
         }
         if (!(checkUser(username) && checkUser(unfriend))) {
-            System.out.println("User not found");
+
             throw new UserNotFriendException("User not found");
         }
         try (BufferedReader userBr = new BufferedReader(new FileReader(FriendList))) {
 
             String line = userBr.readLine();
             while (line != null) {
-                System.out.println("run");
+
                 String[] userInfo = line.split(" \\| ");
                 if (!userInfo[0].equals(username)) {
                     blockedLines.add(line);
@@ -297,11 +296,10 @@ public class SocialServer implements Runnable {
             String line = br.readLine();
             while(line !=null){
                 if(line.contains(String.format("%s | %s",sender,reciever))){
-                    System.out.println(line.substring(line.indexOf(" : ")+3));
                     String newMessage= "s"+ line.substring(line.indexOf(" : ")+3);
                     messages.add(newMessage);
                 }else if(line.contains(String.format("%s | %s",reciever,sender))){
-                    System.out.println(line.substring(line.indexOf(" : ")+3));
+
                     String newMessage= "r"+ line.substring(line.indexOf(" : ")+3);
                     messages.add(newMessage);
                 }
@@ -389,6 +387,8 @@ public class SocialServer implements Runnable {
     // Handles Queries
     public static String handleRequest(String action, String data) {
         try {
+            System.out.println("action: "+ action);
+            System.out.println("Data: "+ data);
             switch (action) {
                 case "createUser":
                     String[] userInformation = data.split(" \\| ");
@@ -428,7 +428,7 @@ public class SocialServer implements Runnable {
                     message(userInformation[0], userInformation[1], userInformation[2]);
                 case "getMessage":
                     userInformation=data.split(" \\| ");
-                    getMessage(userInformation[0], userInformation[1]);
+                    return getMessage(userInformation[0], userInformation[1]);
 
             }
             return "Invalid Query";
@@ -468,7 +468,6 @@ public class SocialServer implements Runnable {
 
                     // formats response
                     String[] command = line.split(" ; ");
-                    System.out.println(line);
 
                     // Queries response and sends back results
                     String response = handleRequest(command[0], command[1]);
