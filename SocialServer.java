@@ -10,6 +10,7 @@ public class SocialServer implements Runnable {
     private final static String UserInfo = "./Database/Data/userInfo.txt";
     private final static String FriendList = "./Database/Data/friends.txt";
     private final static String BlockedList = "./Database/Data/blocked.txt";
+    private final static String MessageList = "./Database/Data/msgs.txt";
     private final String Reported = "fileName";
     private Socket clientSocket;
     // private static BufferedReader userBr;
@@ -281,6 +282,61 @@ public class SocialServer implements Runnable {
         }
     }
 
+    // Messages routes
+
+    // gets messages between two users
+    public static String getMessage(String sender, String reciever) throws OperationFailedException, UserNotFoundException, MessagesNotFoundException{
+        ArrayList<String> messages = new ArrayList<>();
+
+        // checks to see if users exist
+        if(!(checkUser(reciever) && checkUser(sender))){
+            throw new UserNotFoundException("User not found");
+        }
+        
+        try(BufferedReader br = new BufferedReader(new FileReader(MessageList))){
+            String line = br.readLine();
+            while(line !=null){
+                if(line.contains(String.format("%s | %s",sender,reciever))){
+                    System.out.println(line.substring(line.indexOf(" : ")+3));
+                    String newMessage= "s"+ line.substring(line.indexOf(" : ")+3);
+                    messages.add(newMessage);
+                }else if(line.contains(String.format("%s | %s",reciever,sender))){
+                    System.out.println(line.substring(line.indexOf(" : ")+3));
+                    String newMessage= "r"+ line.substring(line.indexOf(" : ")+3);
+                    messages.add(newMessage);
+                }
+                line = br.readLine();
+            }
+            if(messages.isEmpty()){
+                throw new MessagesNotFoundException("No messages Found.");
+            }
+            String retMessage="";
+            for(int i =0; i< messages.size();i++){
+                retMessage+= messages.get(i);
+                if(i!=messages.size()-1){
+                    retMessage+=" | ";
+                }
+            }
+            return retMessage;
+        }catch(IOException e){
+            throw new OperationFailedException(e.getMessage()); 
+        }
+    }
+
+    // messages between two users
+    public static void message(String sender, String reciever, String message) throws OperationFailedException, UserNotFoundException{
+        // checks to see if users exist
+        if(!(checkUser(reciever) && checkUser(sender))){
+            throw new UserNotFoundException("User not found");
+        }
+        try {
+            writeToFile(String.format("%s | %s : %s",sender,reciever,message), MessageList);
+        } catch (IOException e) {
+            throw new OperationFailedException(e.getMessage());
+        }
+    }
+    
+
     // verifies user exists in database
     public static boolean checkUser(String username) throws OperationFailedException {
         try {
@@ -367,6 +423,12 @@ public class SocialServer implements Runnable {
                 case "unfriend":
                     userInformation = data.split(" \\| ");
                     unfriend(userInformation[0], userInformation[1]);
+                case "message":
+                    userInformation = data.split(" \\| ");
+                    message(userInformation[0], userInformation[1], userInformation[2]);
+                case "getMessage":
+                    userInformation=data.split(" \\| ");
+                    getMessage(userInformation[0], userInformation[1]);
 
             }
             return "Invalid Query";
@@ -382,6 +444,8 @@ public class SocialServer implements Runnable {
             return "User is already friend";
         } catch (UserNotFriendException e) {
             return "User is not friend.";
+        } catch(MessagesNotFoundException e){
+            return "Users have no messages.";
         } catch (OperationFailedException e) {
             return "500:Internal Server Error - Try again.";
         }
@@ -429,22 +493,22 @@ public class SocialServer implements Runnable {
         }
     }
 
-    public static void main(String args[]) throws UserNotFoundException, OperationFailedException, UserNotBlockedException, UserAlreadFriendException, UserNotFriendException {
-        // try{
-        //     // creates a new server
-        //     ServerSocket serverSocket = new ServerSocket(4242);
-        //     System.out.println("Server running on port 4242...");
+    public static void main(String args[]) throws UserNotFoundException, OperationFailedException, UserNotBlockedException, UserAlreadFriendException, UserNotFriendException, MessagesNotFoundException {
+        try{
+            // creates a new server
+            ServerSocket serverSocket = new ServerSocket(4242);
+            System.out.println("Server running on port 4242...");
 
-        //     // intiializes new thread for each client
-        //     while(true){
-        //         Socket socket = serverSocket.accept();
-        //         System.out.println("Client Connected");
-        //         SocialServer server = new SocialServer(socket);
-        //         new Thread(server).start();
+            // intiializes new thread for each client
+            while(true){
+                Socket socket = serverSocket.accept();
+                System.out.println("Client Connected");
+                SocialServer server = new SocialServer(socket);
+                new Thread(server).start();
 
-        //     }
-        // }catch(IOException e){
-        //     System.out.println("Server Crashed");
-        // }
+            }
+        }catch(IOException e){
+            System.out.println("Server Crashed");
+        }
     }
 }
