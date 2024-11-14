@@ -6,11 +6,11 @@ import ServerException.*;
 import java.net.*;
 //TODO: Add asynchronous for race theory 
 public class SocialServer implements Runnable {
-    private final String Users = "./Database/userPassword.txt";
-    private final static String UserInfo = "./Database/Data/userInfo.txt";
-    private final static String FriendList = "./Database/Data/friends.txt";
-    private final static String BlockedList = "./Database/Data/blocked.txt";
-    private final static String MessageList = "./Database/Data/msgs.txt";
+    private final String Users = "./Database/userPassword.txt"; //assigns usernames and passwords to "userPassword.txt" textfile.
+    private final static String UserInfo = "./Database/Data/userInfo.txt"; //assings unser information to "userInfo.txt" textfile.
+    private final static String FriendList = "./Database/Data/friends.txt"; //assigns user's list of friends to "friends.txt" textfile.
+    private final static String BlockedList = "./Database/Data/blocked.txt"; //asigns user's list of blocked users to "blocked.txt" textfile.
+    private final static String MessageList = "./Database/Data/msgs.txt"; //asgins list of messages sent by each user to "msgs.txt" textfile.
     private final String Reported = "fileName";
     private Socket clientSocket;
     // private static BufferedReader userBr;
@@ -26,43 +26,43 @@ public class SocialServer implements Runnable {
     private static void createUser(String username, String password, String profilePicture, String bio) throws OperationFailedException, UserAlreadyExistsException {
         try {
             if (!checkUser(username)) {
-                writeToFile(String.format("%s | %s | %s | %s", username, password, profilePicture, bio), UserInfo);
+                writeToFile(String.format("%s | %s | %s | %s", username, password, profilePicture, bio), UserInfo); //adds the newly created user's information to textfile.
             } else {
-                throw new UserAlreadyExistsException("User already exists.");
+                throw new UserAlreadyExistsException("User already exists."); //if a user tries making an account with a username that already exists in the databse.
             }
         } catch (IOException e) {
-            throw new OperationFailedException(e.getMessage());
+            throw new OperationFailedException(e.getMessage()); //to handle any irregular input by user.
         }
     }
 
     // Creates a new user
-    private static void createUser(String username, String password) throws OperationFailedException, UserAlreadyExistsException {
+    private static void createUser(String username, String password) throws OperationFailedException, UserAlreadyExistsException { //creates new user with just username and password.
         try {
             if (!checkUser(username)) {
-                writeToFile(String.format("%s | %s | %s | %s", username, password, "Database/ProfilePicture/default.png", ""), UserInfo);
+                writeToFile(String.format("%s | %s | %s | %s", username, password, "Database/ProfilePicture/default.png", ""), UserInfo); //adds the newly created user's information to textfile.
             } else {
-                throw new UserAlreadyExistsException("User already exists.");
+                throw new UserAlreadyExistsException("User already exists."); //if a user tries making an account with a username that already exists in the databse.
             }
         } catch (IOException e) {
-            throw new OperationFailedException(e.getMessage());
+            throw new OperationFailedException(e.getMessage()); //to handle any irregular input by user.
         }
     }
 
     // Returns a new user
     public static String getUser(String username) throws UserNotFoundException, OperationFailedException {
-        try (BufferedReader userBr = new BufferedReader(new FileReader(UserInfo))) {
-            String line = userBr.readLine();
+        try (BufferedReader userBr = new BufferedReader(new FileReader(UserInfo))) { //initalize buffered reader.
+            String line = userBr.readLine(); //temporary variable to store current user being parsed through.
             while (line != null) {
-                String[] userInfo = line.split("\\|");
+                String[] userInfo = line.split("\\|"); //parses through the usernames in UserInfo.
 
-                if (userInfo.length > 0 && userInfo[0].trim().equals(username.trim())) {
-                    return line;
+                if (userInfo.length > 0 && userInfo[0].trim().equals(username.trim())) { //if match found
+                    return line; //return user
                 }
-                line = userBr.readLine();
+                line = userBr.readLine(); //use buffered reader to read from UserInfo textfile.
             }
-            throw new UserNotFoundException("User not found.");
+            throw new UserNotFoundException("User not found."); //for when specified user doesn't exist in database.
         } catch (IOException e) {
-            throw new OperationFailedException(e.getMessage());
+            throw new OperationFailedException(e.getMessage()); //for general input error.
         }
     }
 
@@ -71,46 +71,46 @@ public class SocialServer implements Runnable {
     public static void changeUserInfo(String username, String newUsername, String password, String profilePicture, String bio) throws OperationFailedException, UserNotFoundException {
         ArrayList < String > userLines = new ArrayList < String > (); // Array to store lines to rewtire
 
-        try (BufferedReader userBr = new BufferedReader(new FileReader(UserInfo))) {
+        try (BufferedReader userBr = new BufferedReader(new FileReader(UserInfo))) { //initalize buffered reader. 
 
             // loops through each line and rewrites each line to array and changes line that needs to be changed
             if (checkUser(username)) {
                 String line = userBr.readLine();
                 while (line != null) {
-                    String[] userInfo = line.split(" \\| ");
-                    if (!userInfo[0].equals(username)) {
-                        userLines.add(line);
+                    String[] userInfo = line.split(" \\| "); //parses through users in UserInfo.
+                    if (!userInfo[0].equals(username)) { //if user found
+                        userLines.add(line); //adds user to an array.
                     } else {
                         userLines.add(String.format("%s | %s | %s | %s", newUsername, password, profilePicture, bio));
                     }
-                    line = userBr.readLine();
+                    line = userBr.readLine(); //stores info to temporary variable.
                 }
                 // TODO: throw an error if  nothing found
                 overwriteFile(userLines, UserInfo);
             } else {
-                throw new UserNotFoundException("User doesn't Exist");
+                throw new UserNotFoundException("User doesn't Exist"); //if specified user isn't found.
             }
         } catch (IOException e) {
-            throw new OperationFailedException(e.getMessage());
+            throw new OperationFailedException(e.getMessage()); //for general input error.
         }
     }
 
     // User Blocked route
 
     public static String getBlocked(String username) throws UserNotFoundException, OperationFailedException {
-        try (BufferedReader userBr = new BufferedReader(new FileReader(BlockedList))) {
-            String line = userBr.readLine();
+        try (BufferedReader userBr = new BufferedReader(new FileReader(BlockedList))) { //initalize buffered reader.
+            String line = userBr.readLine(); //temporary variable.
             while (line != null) {
-                String[] userBlockedInfo = line.split(" \\| ");
+                String[] userBlockedInfo = line.split(" \\| "); //parses through BlockList textfile.
 
                 if (userBlockedInfo.length > 0 && userBlockedInfo[0].trim().equals(username.trim())) {
-                    return line.substring(line.indexOf(" | ") + 3);
+                    return line.substring(line.indexOf(" | ") + 3); //returns blocked user.
                 }
-                line = userBr.readLine();
+                line = userBr.readLine(); //stores blockekd info to temporary variable.
             }
-            throw new UserNotFoundException("User not Found!");
+            throw new UserNotFoundException("User not Found!"); //if specified user isn't found.
         } catch (IOException e) {
-            throw new OperationFailedException(e.getMessage());
+            throw new OperationFailedException(e.getMessage()); //for general input error.
         }
     }
 
@@ -119,16 +119,16 @@ public class SocialServer implements Runnable {
 
         // checks to see if both users exist
         if (checkUser(username) && checkUser(blockedUser)) {
-            try (BufferedReader userBr = new BufferedReader(new FileReader(BlockedList))) {
+            try (BufferedReader userBr = new BufferedReader(new FileReader(BlockedList))) { //initialize buffered reader.
 
                 // checks to see if user is already blocked
                 if (getBlocked(username).contains(blockedUser)) {
-                    throw new UserAlreadyBlockedException("User is already blocked.");
+                    throw new UserAlreadyBlockedException("User is already blocked."); 
                 }
                 // checks to see if User exists within blocked File
                 if (checkBlocked(username)) {
                     // If user exists adds to the users list of blocked
-                    String line = userBr.readLine();
+                    String line = userBr.readLine(); //temporary variable.
                     while (line != null) {
                         String[] userInfo = line.split(" \\| ");
                         if (!userInfo[0].equals(username)) {
@@ -136,7 +136,7 @@ public class SocialServer implements Runnable {
                         } else {
                             userLines.add(String.format("%s | %s", line, blockedUser));
                         }
-                        line = userBr.readLine();
+                        line = userBr.readLine(); //stores info to temporary variable.
                     }
                     overwriteFile(userLines, BlockedList);
                 } else {
@@ -145,28 +145,28 @@ public class SocialServer implements Runnable {
                 }
 
             } catch (IOException e) {
-                throw new OperationFailedException(e.getMessage());
+                throw new OperationFailedException(e.getMessage()); //for general input error.
             }
         } else {
-            throw new UserNotFoundException("User does not exist");
+            throw new UserNotFoundException("User does not exist"); //for when specified user doesn't exist.
         }
     }
     public static void unblock(String username, String unblockUser) throws UserNotBlockedException, UserNotFoundException, OperationFailedException {
         ArrayList < String > blockedLines = new ArrayList < > ();
-        if (!getBlocked(username).contains(unblockUser)) {
+        if (!getBlocked(username).contains(unblockUser)) { //checks to see if user isn't blocked.
 
             throw new UserNotBlockedException("User is not blocked");
         }
-        if (!(checkUser(username) && checkUser(unblockUser))) {
+        if (!(checkUser(username) && checkUser(unblockUser))) { //checks to see if use can be blocked.
 
             throw new UserNotBlockedException("User not found");
         }
-        try (BufferedReader userBr = new BufferedReader(new FileReader(BlockedList))) {
+        try (BufferedReader userBr = new BufferedReader(new FileReader(BlockedList))) { //initalize buffered reader.
 
-            String line = userBr.readLine();
+            String line = userBr.readLine(); //temporary variable.
             while (line != null) {
 
-                String[] userInfo = line.split(" \\| ");
+                String[] userInfo = line.split(" \\| "); //parses through useInfo.
                 if (!userInfo[0].equals(username)) {
                     blockedLines.add(line);
                 } else {
@@ -177,31 +177,31 @@ public class SocialServer implements Runnable {
                         newLine += " | ";
                         newLine += names;
                     }
-                    blockedLines.add(newLine);
+                    blockedLines.add(newLine); //stores info to temporary variable.
                 }
-                line = userBr.readLine();
+                line = userBr.readLine(); //stores info to temporary variable.
             }
             overwriteFile(blockedLines, BlockedList);
         } catch (IOException e) {
-            throw new OperationFailedException(e.getMessage());
+            throw new OperationFailedException(e.getMessage()); //for general input error.
         }
     }
 
     // friend routes
     public static String getFriend(String username) throws UserNotFoundException, OperationFailedException {
-        try (BufferedReader userBr = new BufferedReader(new FileReader(FriendList))) {
-            String line = userBr.readLine();
+        try (BufferedReader userBr = new BufferedReader(new FileReader(FriendList))) { //initalize buffered reader.
+            String line = userBr.readLine(); //temporary variable.
             while (line != null) {
                 String[] userFriendInfo = line.split(" \\| ");
 
                 if (userFriendInfo.length > 0 && userFriendInfo[0].trim().equals(username.trim())) {
                     return line.substring(line.indexOf(" | ") + 3);
                 }
-                line = userBr.readLine();
+                line = userBr.readLine(); //stores info to temporary variable.
             }
-            throw new UserNotFoundException("User not Found!");
+            throw new UserNotFoundException("User not Found!"); //if specified user isn't found.
         } catch (IOException e) {
-            throw new OperationFailedException(e.getMessage());
+            throw new OperationFailedException(e.getMessage()); //for general input error.
         }
     }
     public static void friendUser(String username, String friendUser) throws OperationFailedException, UserNotFoundException, UserAlreadFriendException {
@@ -209,7 +209,7 @@ public class SocialServer implements Runnable {
 
         // checks to see if both users exist
         if (checkUser(username) && checkUser(friendUser)) {
-            try (BufferedReader userBr = new BufferedReader(new FileReader(FriendList))) {
+            try (BufferedReader userBr = new BufferedReader(new FileReader(FriendList))) { //initalize buffered reader.
 
   
                 // checks to see if User exists within friend File
@@ -219,7 +219,7 @@ public class SocialServer implements Runnable {
                         throw new UserAlreadFriendException("User is already friend.");
                     }
                     // If user exists adds to the users list of blocked
-                    String line = userBr.readLine();
+                    String line = userBr.readLine(); //temporary variable.
                     while (line != null) {
                         String[] userInfo = line.split(" \\| ");
                         if (!userInfo[0].equals(username)) {
@@ -227,7 +227,7 @@ public class SocialServer implements Runnable {
                         } else {
                             userLines.add(String.format("%s | %s", line, friendUser));
                         }
-                        line = userBr.readLine();
+                        line = userBr.readLine(); //stores info to temporary variable.
                     }
                     overwriteFile(userLines, FriendList);
                 } else {
@@ -236,10 +236,10 @@ public class SocialServer implements Runnable {
                 }
 
             } catch (IOException e) {
-                throw new OperationFailedException(e.getMessage());
+                throw new OperationFailedException(e.getMessage()); //for general input error.
             }
         } else {
-            throw new UserNotFoundException("User does not exist");
+            throw new UserNotFoundException("User does not exist"); //if user doesn't exist.
         }
     }
 
@@ -247,22 +247,22 @@ public class SocialServer implements Runnable {
 
     public static void unfriend(String username, String unfriend) throws UserNotFriendException, UserNotFoundException, OperationFailedException {
         ArrayList < String > blockedLines = new ArrayList < > ();
-        if (!getBlocked(username).contains(unfriend)) {
+        if (!getBlocked(username).contains(unfriend)) { //checks to see if user is a friend in the first place.
 
-            throw new UserNotFriendException("User is not blocked");
+            throw new UserNotFriendException("User is not a friend"); 
         }
-        if (!(checkUser(username) && checkUser(unfriend))) {
+        if (!(checkUser(username) && checkUser(unfriend))) { //checks to see if user can be friended.
 
             throw new UserNotFriendException("User not found");
         }
-        try (BufferedReader userBr = new BufferedReader(new FileReader(FriendList))) {
+        try (BufferedReader userBr = new BufferedReader(new FileReader(FriendList))) { //initalize buffered reader.
 
-            String line = userBr.readLine();
+            String line = userBr.readLine(); //temporary variable.
             while (line != null) {
 
-                String[] userInfo = line.split(" \\| ");
+                String[] userInfo = line.split(" \\| "); //parses through textfile.
                 if (!userInfo[0].equals(username)) {
-                    blockedLines.add(line);
+                    blockedLines.add(line); 
                 } else {
                     ArrayList < String > blockedList = new ArrayList < > (Arrays.asList(line.substring(line.indexOf(" | ") + 3).split(" \\| ")));
                     blockedList.remove(unfriend);
@@ -273,11 +273,11 @@ public class SocialServer implements Runnable {
                     }
                     blockedLines.add(newLine);
                 }
-                line = userBr.readLine();
+                line = userBr.readLine(); //stores info in temporary variable.
             }
             overwriteFile(blockedLines, FriendList);
         } catch (IOException e) {
-            throw new OperationFailedException(e.getMessage());
+            throw new OperationFailedException(e.getMessage()); //for general input error.
         }
     }
 
@@ -289,16 +289,16 @@ public class SocialServer implements Runnable {
 
         // checks to see if users exist
         if(!(checkUser(reciever) && checkUser(sender))){
-            throw new UserNotFoundException("User not found");
+            throw new UserNotFoundException("User not found"); //if specified user isn't found.
         }
         
-        try(BufferedReader br = new BufferedReader(new FileReader(MessageList))){
-            String line = br.readLine();
-            while(line !=null){
+        try(BufferedReader br = new BufferedReader(new FileReader(MessageList))) { //initalize buffered reader.
+            String line = br.readLine(); //temporary variable.
+            while(line !=null) {
                 if(line.contains(String.format("%s | %s",sender,reciever))){
                     String newMessage= "s"+ line.substring(line.indexOf(" : ")+3);
                     messages.add(newMessage);
-                }else if(line.contains(String.format("%s | %s",reciever,sender))){
+                } else if(line.contains(String.format("%s | %s",reciever,sender))){
 
                     String newMessage= "r"+ line.substring(line.indexOf(" : ")+3);
                     messages.add(newMessage);
@@ -306,7 +306,7 @@ public class SocialServer implements Runnable {
                 line = br.readLine();
             }
             if(messages.isEmpty()){
-                throw new MessagesNotFoundException("No messages Found.");
+                throw new MessagesNotFoundException("No messages Found."); //if there is no message history.
             }
             String retMessage="";
             for(int i =0; i< messages.size();i++){
@@ -317,7 +317,7 @@ public class SocialServer implements Runnable {
             }
             return retMessage;
         }catch(IOException e){
-            throw new OperationFailedException(e.getMessage()); 
+            throw new OperationFailedException(e.getMessage()); //for general input error.
         }
     }
 
@@ -325,12 +325,12 @@ public class SocialServer implements Runnable {
     public static void message(String sender, String reciever, String message) throws OperationFailedException, UserNotFoundException{
         // checks to see if users exist
         if(!(checkUser(reciever) && checkUser(sender))){
-            throw new UserNotFoundException("User not found");
+            throw new UserNotFoundException("User not found"); //if specified user isn't found
         }
         try {
             writeToFile(String.format("%s | %s : %s",sender,reciever,message), MessageList);
         } catch (IOException e) {
-            throw new OperationFailedException(e.getMessage());
+            throw new OperationFailedException(e.getMessage()); //for general input error.
         }
     }
     
@@ -339,9 +339,9 @@ public class SocialServer implements Runnable {
     public static boolean checkUser(String username) throws OperationFailedException {
         try {
             getUser(username);
-            return true;
+            return true; //function complete if user is found.
         } catch (UserNotFoundException e) {
-            return false;
+            return false; //function incomplete if user isn't found.
         }
     }
 
@@ -349,9 +349,9 @@ public class SocialServer implements Runnable {
     public static boolean checkFriend(String username) throws OperationFailedException {
         try {
             getFriend(username);
-            return true;
+            return true; //function complete if friend user is found.
         } catch (UserNotFoundException e) {
-            return false;
+            return false; //function incomplete if friend user isn't found.
         }
     }
 
@@ -359,9 +359,9 @@ public class SocialServer implements Runnable {
     public static boolean checkBlocked(String username) throws OperationFailedException {
         try {
             getBlocked(username);
-            return true;
+            return true; //function complete if blocked user is found.
         } catch (UserNotFoundException e) {
-            return false;
+            return false; //function incomplete if blocked user isn't found.
         }
     }
 
@@ -369,8 +369,8 @@ public class SocialServer implements Runnable {
 
     // Writes to user File(appends Information)
     public static void writeToFile(String text, String filePath) throws IOException {
-        try (PrintWriter pw = new PrintWriter(new FileWriter(filePath, true), true)) {
-            pw.println(text);
+        try (PrintWriter pw = new PrintWriter(new FileWriter(filePath, true), true)) { //initialize print writer.
+            pw.println(text); 
         }
     }
 
@@ -391,13 +391,13 @@ public class SocialServer implements Runnable {
             System.out.println("Data: "+ data);
             switch (action) {
                 case "createUser":
-                    String[] userInformation = data.split(" \\| ");
+                    String[] userInformation = data.split(" \\| "); //parses through data
                     if (userInformation.length == 2) {
                         createUser(userInformation[0], userInformation[1]);
-                        return "User created succesfully";
+                        return "User created succesfully"; //function complete.
                     } else {
                         createUser(userInformation[0], userInformation[1], userInformation[2], userInformation[3]);
-                        return "User created succesfully";
+                        return "User created succesfully"; //function complete.
                     }
                 case "getUser":
                     return getUser(data);
@@ -432,6 +432,7 @@ public class SocialServer implements Runnable {
 
             }
             return "Invalid Query";
+            //error handling.
         } catch (UserAlreadyExistsException e) {
             return "User already exist.";
         } catch (UserNotFoundException e) {
@@ -460,7 +461,7 @@ public class SocialServer implements Runnable {
 
             // reads what client seds and send it to handle Request
             while (true) {
-                String line;
+                String line; //temporary variable.
                 try {
                     // retrievers response
                     line = br.readLine();
@@ -493,7 +494,7 @@ public class SocialServer implements Runnable {
     }
 
     public static void main(String args[]) throws UserNotFoundException, OperationFailedException, UserNotBlockedException, UserAlreadFriendException, UserNotFriendException, MessagesNotFoundException {
-        try{
+        try {
             // creates a new server
             ServerSocket serverSocket = new ServerSocket(4242);
             System.out.println("Server running on port 4242...");
@@ -506,8 +507,8 @@ public class SocialServer implements Runnable {
                 new Thread(server).start();
 
             }
-        }catch(IOException e){
-            System.out.println("Server Crashed");
+        } catch(IOException e){
+            System.out.println("Server Crashed"); //if function doesn't go through.
         }
     }
 }
