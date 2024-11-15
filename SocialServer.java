@@ -3,8 +3,10 @@ import java.util.*;
 import java.net.*;
 import java.util.concurrent.locks.ReentrantLock;
 
+import ServerException.CustomException;
+
 //TODO: Add asynchronous for race theory 
-public class SocialServerNew implements Runnable {
+public class  SocialServer implements Runnable {
     private final String Users = "./Database/userPassword.txt";
     private final static String UserInfo = "./Database/Data/userInfo.txt";
     private final static String FriendList = "./Database/Data/friends.txt";
@@ -16,7 +18,7 @@ public class SocialServerNew implements Runnable {
 
     private static final ReentrantLock lock = new ReentrantLock();
 
-    public SocialServerNew(Socket socket) {
+    public  SocialServer(Socket socket) {
         this.clientSocket = socket;
     }
 
@@ -46,6 +48,20 @@ public class SocialServerNew implements Runnable {
         } catch (CustomException e) { //changed the exceptions here
             return false;
         }
+    }
+
+    private static boolean loginWithPassword(String username, String password) throws CustomException{
+        
+        if(checkUser(username)== false){
+            throw new CustomException("User does not exist!");
+        }
+
+        String[] userInfo = getUser(username).split(" | ");
+
+        if(userInfo[1].equals(password)){
+            return true;
+        }
+        throw new CustomException("Incorrect Password!");
     }
 
     // Creates a new user
@@ -243,10 +259,14 @@ public class SocialServerNew implements Runnable {
 
             // Overwrite the file with the updated content
             overwriteFile(blockedLines, BlockedList);
+            
+            // unfriend User
+
 
         } catch (IOException e) {
             throw new CustomException("IO Exception occurred: " + e.getMessage());
         }
+        
     }
 
     // Checks if a user has friended another user
@@ -338,7 +358,7 @@ public class SocialServerNew implements Runnable {
 
             // Overwrite the FriendList file with the updated content
             overwriteFile(userLines, FriendList);
-
+            unfriend(username,friendedUser);
         } catch (IOException e) {
             throw new CustomException("IO Exception occurred: " + e.getMessage());
         }
@@ -347,50 +367,50 @@ public class SocialServerNew implements Runnable {
     // Removes a friend from a user's friend list
     public static void unfriend(String username, String unfriendUser) throws CustomException {
         ArrayList<String> friendLines = new ArrayList<>();
-
+    
         // Check if both users exist
         if (!checkUser(username) || !checkUser(unfriendUser)) {
             throw new CustomException("User not found");
         }
-
+    
         // Check if the user has the specified user friended
         if (!getFriend(username).contains(unfriendUser)) {
             throw new CustomException("User is not friended");
         }
-
+    
         try (BufferedReader userBr = new BufferedReader(new FileReader(FriendList))) {
             String line = userBr.readLine();
-
+    
             while (line != null) {
                 String[] userInfo = line.split(" \\| ");
-
+    
                 // If this line belongs to the friender
                 if (userInfo[0].equals(username)) {
                     // Get the current list of friended users and remove the specified user
                     ArrayList<String> friendedUsers = new ArrayList<>(Arrays.asList(userInfo).subList(1, userInfo.length));
                     friendedUsers.remove(unfriendUser);
-
+    
                     // If there are still friended users, update the line
                     if (!friendedUsers.isEmpty()) {
-                        friendLines.add(username + " \\| " + String.join(" \\| ", friendedUsers));
+                        friendLines.add(username + " | " + String.join(" | ", friendedUsers));
                     }
                     // If no users remain friended, skip adding this line (effectively removing it)
                 } else {
                     // Keep other lines as they are
                     friendLines.add(line);
                 }
-
+    
                 line = userBr.readLine();
             }
-
+    
             // Overwrite the FriendList file with the updated content
             overwriteFile(friendLines, FriendList);
-
+    
         } catch (IOException e) {
             throw new CustomException("IO Exception occurred: " + e.getMessage());
         }
     }
-
+    
     // Messages routes
 
     // gets messages between two users
@@ -605,7 +625,7 @@ public class SocialServerNew implements Runnable {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Client Connected");
 
-                SocialServerNew server = new SocialServerNew(clientSocket);
+                 SocialServer server = new  SocialServer(clientSocket);
                 Thread clientThread = new Thread(server);
                 clientThread.start();
             }
