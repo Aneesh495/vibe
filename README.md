@@ -22,4 +22,27 @@ Exceptions:
 7. UserNotFoundException.java - Throws an exception when user tries searching for a user or passes a user has a parameter who doesn't exist. 
 8. UserNotFriendException.java - Throws an exception when user tries doing a frined-only-interaction with a user they aren't friends with.
 
+Social Client:
+Initializes a "localhost" on socket 8080. Shows GUI to Login. If entered username isn't found, prompts user to create new account. If a correct username is entered, prompts user to confirm login with password.
+
+Social Server:
+Stores user info and user's list of messages, friends and blocked users in respective text files by providing the path for it. Creates a new user with all user info, and provides seperate method to create new user with just username and password. 
+1. getUser - Searcher for user based on username and returns user's information.
+2. changeUserInfo - Edits user's username, password, PFP, and bio information based on input.
+3. getBlocked - Returns user1's list of blocked users.
+4. blockUser - If user2 isn't already blocked by user1, blocks user 2. 
+5. unblockUser - If user2 is blocked by user1, unblocks user2. 
+6. getFriend - Returns user1's list of blocked users.
+7. friendUser - Adds user2 to user1's friend list if not already there.
+8. unfriend - Removes user2 from user1's friend list if user is there.
+9. getMessage - Returns user's message history.
+10. message - Enables user1 to message user2.
+11. checkUser - Searches to see if user with given username exists.
+12. checkBlocked - Searches to see if user2 is blocked by user1.
+13. writeToFile - Uses print writer to write to file.
+14. overwriteFile - Used to edit information already existing in text files.
+15. handleRequests - Used to carry out all user functions.
+16. Main method - Connects to client. 
+
+
 
