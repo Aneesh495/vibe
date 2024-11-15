@@ -55,7 +55,7 @@ Test Files:
 2. friendsExample.txt - List of example users and their example friend lists.
 3. userInfoExample.txt - List of example users with their user info.
 
-   Groupmember Contributions - Phase 1:
+Groupmember Contributions - Phase 1:
 
 Aneesh: Authored readme file, custom exception classes, and test cases.
 Garv: Authored clientServer.java and Server
