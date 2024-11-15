@@ -57,8 +57,8 @@ Test Files:
 
 Groupmember Contributions - Phase 1:
 
-Aneesh: Authored readme file, custom exception classes, and test cases.
-Garv: Authored clientServer.java and Server
-Lakshay: Authored socialServer.java
-Tasha: Co-authored readme file
-Amelia: Oversaw operations
+1. Aneesh: Authored readme file, custom exception classes, and test cases.
+2. Garv: Authored clientServer.java and Server
+3. Lakshay: Authored socialServer.java
+4. Tasha: Co-authored readme file
+5. Amelia: Oversaw operations
