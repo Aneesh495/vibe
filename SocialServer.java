@@ -1,304 +1,416 @@
 import java.io.*;
 import java.util.*;
-
-import ServerException.*;
-
 import java.net.*;
+import java.util.concurrent.locks.ReentrantLock;
+
 //TODO: Add asynchronous for race theory 
-public class SocialServer implements Runnable {
-    private final String Users = "./Database/userPassword.txt"; //assigns usernames and passwords to "userPassword.txt" textfile.
-    private final static String UserInfo = "./Database/Data/userInfo.txt"; //assings unser information to "userInfo.txt" textfile.
-    private final static String FriendList = "./Database/Data/friends.txt"; //assigns user's list of friends to "friends.txt" textfile.
-    private final static String BlockedList = "./Database/Data/blocked.txt"; //asigns user's list of blocked users to "blocked.txt" textfile.
-    private final static String MessageList = "./Database/Data/msgs.txt"; //asgins list of messages sent by each user to "msgs.txt" textfile.
+public class SocialServerNew implements Runnable {
+    private final String Users = "./Database/userPassword.txt";
+    private final static String UserInfo = "./Database/Data/userInfo.txt";
+    private final static String FriendList = "./Database/Data/friends.txt";
+    private final static String BlockedList = "./Database/Data/blocked.txt";
+    private final static String MessageList = "./Database/Data/msgs.txt";
     private final String Reported = "fileName";
     private Socket clientSocket;
-    // private static BufferedReader userBr;
-    // private static PrintWriter userPw;
+    // User file Routes
 
-    public SocialServer(Socket socket) {
+    private static final ReentrantLock lock = new ReentrantLock();
+
+    public SocialServerNew(Socket socket) {
         this.clientSocket = socket;
     }
 
-    // User file Routes
-
-    // Creates a new user
-    private static void createUser(String username, String password, String profilePicture, String bio) throws OperationFailedException, UserAlreadyExistsException {
-        try {
-            if (!checkUser(username)) {
-                writeToFile(String.format("%s | %s | %s | %s", username, password, profilePicture, bio), UserInfo); //adds the newly created user's information to textfile.
-            } else {
-                throw new UserAlreadyExistsException("User already exists."); //if a user tries making an account with a username that already exists in the databse.
-            }
-        } catch (IOException e) {
-            throw new OperationFailedException(e.getMessage()); //to handle any irregular input by user.
-        }
-    }
-
-    // Creates a new user
-    private static void createUser(String username, String password) throws OperationFailedException, UserAlreadyExistsException { //creates new user with just username and password.
-        try {
-            if (!checkUser(username)) {
-                writeToFile(String.format("%s | %s | %s | %s", username, password, "Database/ProfilePicture/default.png", ""), UserInfo); //adds the newly created user's information to textfile.
-            } else {
-                throw new UserAlreadyExistsException("User already exists."); //if a user tries making an account with a username that already exists in the databse.
-            }
-        } catch (IOException e) {
-            throw new OperationFailedException(e.getMessage()); //to handle any irregular input by user.
-        }
-    }
-
     // Returns a new user
-    public static String getUser(String username) throws UserNotFoundException, OperationFailedException {
-        try (BufferedReader userBr = new BufferedReader(new FileReader(UserInfo))) { //initalize buffered reader.
-            String line = userBr.readLine(); //temporary variable to store current user being parsed through.
+    public static String getUser(String username) throws CustomException {
+        try (BufferedReader userBr = new BufferedReader(new FileReader(UserInfo))) {
+            String line = userBr.readLine();
             while (line != null) {
-                String[] userInfo = line.split("\\|"); //parses through the usernames in UserInfo.
+                String[] userInfo = line.split(" \\| ");
 
-                if (userInfo.length > 0 && userInfo[0].trim().equals(username.trim())) { //if match found
-                    return line; //return user
+                if (userInfo.length > 0 && userInfo[0].trim().equals(username.trim())) {
+                    return line; //changing this line
                 }
-                line = userBr.readLine(); //use buffered reader to read from UserInfo textfile.
+                line = userBr.readLine();
             }
-            throw new UserNotFoundException("User not found."); //for when specified user doesn't exist in database.
+            throw new CustomException("User Not Found");
         } catch (IOException e) {
-            throw new OperationFailedException(e.getMessage()); //for general input error.
+            throw new CustomException("IO Exception occurred");
         }
     }
 
+    // verifies user exists in database
+    public static boolean checkUser(String username) /* throws CustomException */ {
+        try {
+            getUser(username);
+            return true;
+        } catch (CustomException e) { //changed the exceptions here
+            return false;
+        }
+    }
 
+    // Creates a new user
+    private static void createUser(String username, String password, String profilePicture, String bio) throws CustomException {
+        try {
+            if (checkUser(username) == false) {
+                writeToFile(String.format("%s \\| %s \\| %s \\| %s", username, password, profilePicture, bio), UserInfo);
+            } else {
+                throw new CustomException("User already exists.");
+            }
+        } catch (IOException e) {
+            throw new CustomException(e.getMessage());
+        }
+    }
+
+    // Creates a new user
+    private static void createUser(String username, String password) throws CustomException {
+        try {
+            if (checkUser(username) == false) {
+                writeToFile(String.format("%s \\| %s \\| %s \\| %s", username, password, "Database/ProfilePicture/default.png", ""), UserInfo);
+            } else {
+                throw new CustomException("User already exists.");
+            }
+        } catch (IOException e) {
+            throw new CustomException("IO Exception occurred: " + e.getMessage());
+        }
+    }
+
+// Change UserInfo Method is for now redundant
+    /*
     // Change user information
-    public static void changeUserInfo(String username, String newUsername, String password, String profilePicture, String bio) throws OperationFailedException, UserNotFoundException {
-        ArrayList < String > userLines = new ArrayList < String > (); // Array to store lines to rewtire
+    public static void changeUserInfo(String username, String newUsername, String password, String profilePicture,
+                                      String bio) throws CustomException {
+        ArrayList <String> userLines = new ArrayList <>(); // Array to store lines to rewrite
 
-        try (BufferedReader userBr = new BufferedReader(new FileReader(UserInfo))) { //initalize buffered reader. 
+        try (BufferedReader userBr = new BufferedReader(new FileReader(UserInfo))) {
 
             // loops through each line and rewrites each line to array and changes line that needs to be changed
-            if (checkUser(username)) {
+            if (checkUser(username) == true) {
                 String line = userBr.readLine();
                 while (line != null) {
-                    String[] userInfo = line.split(" \\| "); //parses through users in UserInfo.
-                    if (!userInfo[0].equals(username)) { //if user found
-                        userLines.add(line); //adds user to an array.
+                    String[] userInfo = line.split("  \\|  ");
+                    /*if (!userInfo[0].equals(username)) {
+                        userLines.add(line);
                     } else {
-                        userLines.add(String.format("%s | %s | %s | %s", newUsername, password, profilePicture, bio));
+                        userLines.add(String.format("%s \\| %s \\| %s \\| %s", newUsername, password, profilePicture, bio));
                     }
-                    line = userBr.readLine(); //stores info to temporary variable.
+                    if (userInfo[0].equals(username)) {
+                        userLines.add(String.format("%s \\| %s \\| %s \\| %s", newUsername, password, profilePicture, bio));
+                    }
+                    line = userBr.readLine();
                 }
                 // TODO: throw an error if  nothing found
                 overwriteFile(userLines, UserInfo);
             } else {
-                throw new UserNotFoundException("User doesn't Exist"); //if specified user isn't found.
+                throw new UserNotFoundException("User doesn't Exist");
             }
         } catch (IOException e) {
-            throw new OperationFailedException(e.getMessage()); //for general input error.
+            throw new OperationFailedException(e.getMessage());
         }
     }
-
+*/
     // User Blocked route
 
-    public static String getBlocked(String username) throws UserNotFoundException, OperationFailedException {
-        try (BufferedReader userBr = new BufferedReader(new FileReader(BlockedList))) { //initalize buffered reader.
-            String line = userBr.readLine(); //temporary variable.
+    // verifies user exists in blocked file
+    public static boolean checkBlocked(String username) {
+        try (BufferedReader userBr = new BufferedReader(new FileReader(BlockedList))) {
+            String line = userBr.readLine();
             while (line != null) {
-                String[] userBlockedInfo = line.split(" \\| "); //parses through BlockList textfile.
+                String[] userBlockedInfo = line.split(" \\| ");
+                if (userBlockedInfo.length > 0 && userBlockedInfo[0].trim().equals(username.trim())) {
+                    return true;  // The user exists as a blocker
+                }
+                line = userBr.readLine();
+            }
+            return false;  // The user does not exist as a blocker
+        } catch (IOException e) {
+            System.out.println("IO Exception occurred: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public static ArrayList<String> getBlocked(String username) throws CustomException {
+        try (BufferedReader userBr = new BufferedReader(new FileReader(BlockedList))) {
+            String line = userBr.readLine();
+            while (line != null) {
+                String[] userBlockedInfo = line.split(" \\| ");
 
                 if (userBlockedInfo.length > 0 && userBlockedInfo[0].trim().equals(username.trim())) {
-                    return line.substring(line.indexOf(" | ") + 3); //returns blocked user.
+                    return new ArrayList<>(Arrays.asList(userBlockedInfo).subList(1, userBlockedInfo.length));
                 }
-                line = userBr.readLine(); //stores blockekd info to temporary variable.
+                line = userBr.readLine();
             }
-            throw new UserNotFoundException("User not Found!"); //if specified user isn't found.
+            throw new CustomException("User has not blocked anyone!");
         } catch (IOException e) {
-            throw new OperationFailedException(e.getMessage()); //for general input error.
+            throw new CustomException("IO Exception Occurred: " + e.getMessage());
         }
     }
 
-    public static void blockUser(String username, String blockedUser) throws OperationFailedException, UserNotFoundException, UserAlreadyBlockedException {
-        ArrayList < String > userLines = new ArrayList < String > (); // Array to store lines to rewtire
+    public static void blockUser(String username, String blockedUser) throws CustomException {
+        if (username.trim().equals(blockedUser.trim())) throw new CustomException("User can not block themself");
 
-        // checks to see if both users exist
-        if (checkUser(username) && checkUser(blockedUser)) {
-            try (BufferedReader userBr = new BufferedReader(new FileReader(BlockedList))) { //initialize buffered reader.
+        ArrayList<String> userLines = new ArrayList<>(); // Array to store lines to rewrite
 
-                // checks to see if user is already blocked
-                if (getBlocked(username).contains(blockedUser)) {
-                    throw new UserAlreadyBlockedException("User is already blocked."); 
-                }
-                // checks to see if User exists within blocked File
-                if (checkBlocked(username)) {
-                    // If user exists adds to the users list of blocked
-                    String line = userBr.readLine(); //temporary variable.
-                    while (line != null) {
-                        String[] userInfo = line.split(" \\| ");
-                        if (!userInfo[0].equals(username)) {
-                            userLines.add(line);
-                        } else {
-                            userLines.add(String.format("%s | %s", line, blockedUser));
-                        }
-                        line = userBr.readLine(); //stores info to temporary variable.
-                    }
-                    overwriteFile(userLines, BlockedList);
-                } else {
-                    // if user doesnt exists appends blocked information
-                    writeToFile(String.format("%s | %s", username, blockedUser), BlockedList);
-                }
+        // Check if both users exist in the general user database
+        boolean blockerExists = checkUser(username);
+        boolean blockedExists = checkUser(blockedUser);
 
-            } catch (IOException e) {
-                throw new OperationFailedException(e.getMessage()); //for general input error.
-            }
-        } else {
-            throw new UserNotFoundException("User does not exist"); //for when specified user doesn't exist.
+        if (!blockerExists) {
+            throw new CustomException("Blocker does not exist in userInfo file.");
         }
-    }
-    public static void unblock(String username, String unblockUser) throws UserNotBlockedException, UserNotFoundException, OperationFailedException {
-        ArrayList < String > blockedLines = new ArrayList < > ();
-        if (!getBlocked(username).contains(unblockUser)) { //checks to see if user isn't blocked.
-
-            throw new UserNotBlockedException("User is not blocked");
+        if (!blockedExists) {
+            throw new CustomException("Cannot block " + blockedUser + " as user does not exist in userInfo file.");
         }
-        if (!(checkUser(username) && checkUser(unblockUser))) { //checks to see if use can be blocked.
 
-            throw new UserNotBlockedException("User not found");
-        }
-        try (BufferedReader userBr = new BufferedReader(new FileReader(BlockedList))) { //initalize buffered reader.
+        // If both users exist, proceed with blocking logic
+        boolean userFound = false;  // To track if the blocker already has an entry in BlockedList
 
-            String line = userBr.readLine(); //temporary variable.
+        try (BufferedReader userBr = new BufferedReader(new FileReader(BlockedList))) {
+            String line = userBr.readLine();
+
+            // Read through the file and build the new list of lines
             while (line != null) {
+                String[] userInfo = line.split(" \\| ");
 
-                String[] userInfo = line.split(" \\| "); //parses through useInfo.
-                if (!userInfo[0].equals(username)) {
-                    blockedLines.add(line);
-                } else {
-                    ArrayList < String > blockedList = new ArrayList < > (Arrays.asList(line.substring(line.indexOf(" | ") + 3).split(" \\| ")));
-                    blockedList.remove(unblockUser);
-                    String newLine = username;
-                    for (String names: blockedList) {
-                        newLine += " | ";
-                        newLine += names;
+                if (userInfo[0].equals(username)) {
+                    userFound = true;  // User already has a blocking entry
+                    ArrayList<String> blockedUsers = new ArrayList<>(Arrays.asList(userInfo).subList(1, userInfo.length));
+
+                    // Check if the user is already blocked to avoid duplicates
+                    if (blockedUsers.contains(blockedUser)) {
+                        throw new CustomException("User " + blockedUser + " is already blocked by " + username + ".");
+                    } else {
+                        // Add the new blocked user
+                        blockedUsers.add(blockedUser);
+                        userLines.add(username + " | " + String.join(" | ", blockedUsers));
                     }
-                    blockedLines.add(newLine); //stores info to temporary variable.
+                } else {
+                    // Retain other lines as they are
+                    userLines.add(line);
                 }
-                line = userBr.readLine(); //stores info to temporary variable.
+                line = userBr.readLine();
             }
-            overwriteFile(blockedLines, BlockedList);
+
+            // If the blocker has no entry in BlockedList, create a new line for them
+            if (!userFound) {
+                userLines.add(String.format("%s | %s", username, blockedUser));
+            }
+
+            // Overwrite the BlockedList file with the updated content
+            overwriteFile(userLines, BlockedList);
+
         } catch (IOException e) {
-            throw new OperationFailedException(e.getMessage()); //for general input error.
+            throw new CustomException("IO Exception occurred: " + e.getMessage());
         }
     }
 
-    // friend routes
-    public static String getFriend(String username) throws UserNotFoundException, OperationFailedException {
-        try (BufferedReader userBr = new BufferedReader(new FileReader(FriendList))) { //initalize buffered reader.
-            String line = userBr.readLine(); //temporary variable.
+    public static void unblock(String username, String unblockUser) throws CustomException {
+        ArrayList<String> blockedLines = new ArrayList<>();
+
+        // Check if both users exist
+        if (!checkUser(username) || !checkUser(unblockUser)) {
+            throw new CustomException("User not found");
+        }
+
+        // Check if the user has the specified user blocked
+        if (!getBlocked(username).contains(unblockUser)) {
+            throw new CustomException("User is not blocked");
+        }
+
+        try (BufferedReader userBr = new BufferedReader(new FileReader(BlockedList))) {
+            String line = userBr.readLine();
+
+            while (line != null) {
+                String[] userInfo = line.split(" \\| ");
+
+                // If this line belongs to the blocker
+                if (userInfo[0].equals(username)) {
+                    // Get the current list of blocked users and remove the specified user
+                    ArrayList<String> blockedUsers = new ArrayList<>(Arrays.asList(userInfo).subList(1, userInfo.length));
+                    blockedUsers.remove(unblockUser);
+
+                    // If there are still blocked users, update the line
+                    if (!blockedUsers.isEmpty()) {
+                        blockedLines.add(username + " \\| " + String.join(" \\| ", blockedUsers));
+                    }
+                    // If no users remain blocked, skip adding this line (effectively removing it)
+                } else {
+                    // Keep other lines as they are
+                    blockedLines.add(line);
+                }
+
+                line = userBr.readLine();
+            }
+
+            // Overwrite the file with the updated content
+            overwriteFile(blockedLines, BlockedList);
+
+        } catch (IOException e) {
+            throw new CustomException("IO Exception occurred: " + e.getMessage());
+        }
+    }
+
+    // Checks if a user has friended another user
+    public static boolean checkFriend(String username) {
+        try (BufferedReader userBr = new BufferedReader(new FileReader(FriendList))) {
+            String line = userBr.readLine();
+            while (line != null) {
+                String[] userFriendInfo = line.split(" \\| ");
+                if (userFriendInfo.length > 0 && userFriendInfo[0].trim().equals(username.trim())) {
+                    return true;  // The user exists as a friender
+                }
+                line = userBr.readLine();
+            }
+            return false;  // The user does not exist as a friender
+        } catch (IOException e) {
+            System.out.println("IO Exception occurred: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // Retrieves a list of friends for a given user
+    public static ArrayList<String> getFriend(String username) throws CustomException {
+        try (BufferedReader userBr = new BufferedReader(new FileReader(FriendList))) {
+            String line = userBr.readLine();
             while (line != null) {
                 String[] userFriendInfo = line.split(" \\| ");
 
                 if (userFriendInfo.length > 0 && userFriendInfo[0].trim().equals(username.trim())) {
-                    return line.substring(line.indexOf(" | ") + 3);
+                    return new ArrayList<>(Arrays.asList(userFriendInfo).subList(1, userFriendInfo.length));
                 }
-                line = userBr.readLine(); //stores info to temporary variable.
+                line = userBr.readLine();
             }
-            throw new UserNotFoundException("User not Found!"); //if specified user isn't found.
+            throw new CustomException("User has not friended anyone!");
         } catch (IOException e) {
-            throw new OperationFailedException(e.getMessage()); //for general input error.
-        }
-    }
-    public static void friendUser(String username, String friendUser) throws OperationFailedException, UserNotFoundException, UserAlreadFriendException {
-        ArrayList < String > userLines = new ArrayList < String > (); // Array to store lines to rewtire
-
-        // checks to see if both users exist
-        if (checkUser(username) && checkUser(friendUser)) {
-            try (BufferedReader userBr = new BufferedReader(new FileReader(FriendList))) { //initalize buffered reader.
-
-  
-                // checks to see if User exists within friend File
-                if (checkFriend(username)) {
-                    // checks to see if user is already friend
-                    if (getFriend(username).contains(friendUser)) {
-                        throw new UserAlreadFriendException("User is already friend.");
-                    }
-                    // If user exists adds to the users list of blocked
-                    String line = userBr.readLine(); //temporary variable.
-                    while (line != null) {
-                        String[] userInfo = line.split(" \\| ");
-                        if (!userInfo[0].equals(username)) {
-                            userLines.add(line);
-                        } else {
-                            userLines.add(String.format("%s | %s", line, friendUser));
-                        }
-                        line = userBr.readLine(); //stores info to temporary variable.
-                    }
-                    overwriteFile(userLines, FriendList);
-                } else {
-                    // if user doesnt exists appends blocked information
-                    writeToFile(String.format("%s | %s", username, friendUser), FriendList);
-                }
-
-            } catch (IOException e) {
-                throw new OperationFailedException(e.getMessage()); //for general input error.
-            }
-        } else {
-            throw new UserNotFoundException("User does not exist"); //if user doesn't exist.
+            throw new CustomException("IO Exception Occurred: " + e.getMessage());
         }
     }
 
+    // Adds a user to another user's friend list
+    public static void friendUser(String username, String friendedUser) throws CustomException {
+        if (username.trim().equals(friendedUser.trim())) throw new CustomException("User cannot friend themself");
 
+        ArrayList<String> userLines = new ArrayList<>(); // Array to store lines to rewrite
 
-    public static void unfriend(String username, String unfriend) throws UserNotFriendException, UserNotFoundException, OperationFailedException {
-        ArrayList < String > blockedLines = new ArrayList < > ();
-        if (!getBlocked(username).contains(unfriend)) { //checks to see if user is a friend in the first place.
+        // Check if both users exist in the general user database
+        boolean frienderExists = checkUser(username);
+        boolean friendedExists = checkUser(friendedUser);
 
-            throw new UserNotFriendException("User is not a friend"); 
+        if (!frienderExists) {
+            throw new CustomException("Friender does not exist in userInfo file.");
         }
-        if (!(checkUser(username) && checkUser(unfriend))) { //checks to see if user can be friended.
-
-            throw new UserNotFriendException("User not found");
+        if (!friendedExists) {
+            throw new CustomException("Cannot friend " + friendedUser + " as user does not exist in userInfo file.");
         }
-        try (BufferedReader userBr = new BufferedReader(new FileReader(FriendList))) { //initalize buffered reader.
 
-            String line = userBr.readLine(); //temporary variable.
+        // If both users exist, proceed with friending logic
+        boolean userFound = false;  // To track if the friender already has an entry in FriendList
+
+        try (BufferedReader userBr = new BufferedReader(new FileReader(FriendList))) {
+            String line = userBr.readLine();
+
+            // Read through the file and build the new list of lines
             while (line != null) {
+                String[] userInfo = line.split(" \\| ");
 
-                String[] userInfo = line.split(" \\| "); //parses through textfile.
-                if (!userInfo[0].equals(username)) {
-                    blockedLines.add(line); 
-                } else {
-                    ArrayList < String > blockedList = new ArrayList < > (Arrays.asList(line.substring(line.indexOf(" | ") + 3).split(" \\| ")));
-                    blockedList.remove(unfriend);
-                    String newLine = username;
-                    for (String names: blockedList) {
-                        newLine += " | ";
-                        newLine += names;
+                if (userInfo[0].equals(username)) {
+                    userFound = true;  // User already has a friending entry
+                    ArrayList<String> friendedUsers = new ArrayList<>(Arrays.asList(userInfo).subList(1, userInfo.length));
+
+                    // Check if the user is already friended to avoid duplicates
+                    if (friendedUsers.contains(friendedUser)) {
+                        throw new CustomException("User " + friendedUser + " is already friended by " + username + ".");
+                    } else {
+                        // Add the new friended user
+                        friendedUsers.add(friendedUser);
+                        userLines.add(username + " | " + String.join(" | ", friendedUsers));
                     }
-                    blockedLines.add(newLine);
+                } else {
+                    // Retain other lines as they are
+                    userLines.add(line);
                 }
-                line = userBr.readLine(); //stores info in temporary variable.
+                line = userBr.readLine();
             }
-            overwriteFile(blockedLines, FriendList);
+
+            // If the friender has no entry in FriendList, create a new line for them
+            if (!userFound) {
+                userLines.add(String.format("%s | %s", username, friendedUser));
+            }
+
+            // Overwrite the FriendList file with the updated content
+            overwriteFile(userLines, FriendList);
+
         } catch (IOException e) {
-            throw new OperationFailedException(e.getMessage()); //for general input error.
+            throw new CustomException("IO Exception occurred: " + e.getMessage());
+        }
+    }
+
+    // Removes a friend from a user's friend list
+    public static void unfriend(String username, String unfriendUser) throws CustomException {
+        ArrayList<String> friendLines = new ArrayList<>();
+
+        // Check if both users exist
+        if (!checkUser(username) || !checkUser(unfriendUser)) {
+            throw new CustomException("User not found");
+        }
+
+        // Check if the user has the specified user friended
+        if (!getFriend(username).contains(unfriendUser)) {
+            throw new CustomException("User is not friended");
+        }
+
+        try (BufferedReader userBr = new BufferedReader(new FileReader(FriendList))) {
+            String line = userBr.readLine();
+
+            while (line != null) {
+                String[] userInfo = line.split(" \\| ");
+
+                // If this line belongs to the friender
+                if (userInfo[0].equals(username)) {
+                    // Get the current list of friended users and remove the specified user
+                    ArrayList<String> friendedUsers = new ArrayList<>(Arrays.asList(userInfo).subList(1, userInfo.length));
+                    friendedUsers.remove(unfriendUser);
+
+                    // If there are still friended users, update the line
+                    if (!friendedUsers.isEmpty()) {
+                        friendLines.add(username + " \\| " + String.join(" \\| ", friendedUsers));
+                    }
+                    // If no users remain friended, skip adding this line (effectively removing it)
+                } else {
+                    // Keep other lines as they are
+                    friendLines.add(line);
+                }
+
+                line = userBr.readLine();
+            }
+
+            // Overwrite the FriendList file with the updated content
+            overwriteFile(friendLines, FriendList);
+
+        } catch (IOException e) {
+            throw new CustomException("IO Exception occurred: " + e.getMessage());
         }
     }
 
     // Messages routes
 
     // gets messages between two users
-    public static String getMessage(String sender, String reciever) throws OperationFailedException, UserNotFoundException, MessagesNotFoundException{
+    /*
+    public static String getMessage(String sender, String reciever) throws OperationFailedException,
+            UserNotFoundException, MessagesNotFoundException{
         ArrayList<String> messages = new ArrayList<>();
 
         // checks to see if users exist
         if(!(checkUser(reciever) && checkUser(sender))){
-            throw new UserNotFoundException("User not found"); //if specified user isn't found.
+            throw new UserNotFoundException("User not found");
         }
-        
-        try(BufferedReader br = new BufferedReader(new FileReader(MessageList))) { //initalize buffered reader.
-            String line = br.readLine(); //temporary variable.
-            while(line !=null) {
-                if(line.contains(String.format("%s | %s",sender,reciever))){
+
+        try(BufferedReader br = new BufferedReader(new FileReader(MessageList))){
+            String line = br.readLine();
+            while(line !=null){
+                if(line.contains(String.format("%s \\| %s",sender,reciever))){
                     String newMessage= "s"+ line.substring(line.indexOf(" : ")+3);
                     messages.add(newMessage);
-                } else if(line.contains(String.format("%s | %s",reciever,sender))){
+                }else if(line.contains(String.format("%s \\| %s",reciever,sender))){
 
                     String newMessage= "r"+ line.substring(line.indexOf(" : ")+3);
                     messages.add(newMessage);
@@ -306,76 +418,45 @@ public class SocialServer implements Runnable {
                 line = br.readLine();
             }
             if(messages.isEmpty()){
-                throw new MessagesNotFoundException("No messages Found."); //if there is no message history.
+                throw new MessagesNotFoundException("No messages Found.");
             }
             String retMessage="";
             for(int i =0; i< messages.size();i++){
                 retMessage+= messages.get(i);
                 if(i!=messages.size()-1){
-                    retMessage+=" | ";
+                    retMessage+=" \\| ";
                 }
             }
             return retMessage;
         }catch(IOException e){
-            throw new OperationFailedException(e.getMessage()); //for general input error.
+            throw new OperationFailedException(e.getMessage());
         }
-    }
+    } */
 
     // messages between two users
+    /*
     public static void message(String sender, String reciever, String message) throws OperationFailedException, UserNotFoundException{
         // checks to see if users exist
         if(!(checkUser(reciever) && checkUser(sender))){
-            throw new UserNotFoundException("User not found"); //if specified user isn't found
+            throw new UserNotFoundException("User not found");
         }
         try {
-            writeToFile(String.format("%s | %s : %s",sender,reciever,message), MessageList);
+            writeToFile(String.format("%s \\| %s : %s",sender,reciever,message), MessageList);
         } catch (IOException e) {
-            throw new OperationFailedException(e.getMessage()); //for general input error.
+            throw new OperationFailedException(e.getMessage());
         }
     }
-    
-
-    // verifies user exists in database
-    public static boolean checkUser(String username) throws OperationFailedException {
-        try {
-            getUser(username);
-            return true; //function complete if user is found.
-        } catch (UserNotFoundException e) {
-            return false; //function incomplete if user isn't found.
-        }
-    }
-
-    // verifies user exists in friend Database
-    public static boolean checkFriend(String username) throws OperationFailedException {
-        try {
-            getFriend(username);
-            return true; //function complete if friend user is found.
-        } catch (UserNotFoundException e) {
-            return false; //function incomplete if friend user isn't found.
-        }
-    }
-
-    // verifies user exists in blocked file
-    public static boolean checkBlocked(String username) throws OperationFailedException {
-        try {
-            getBlocked(username);
-            return true; //function complete if blocked user is found.
-        } catch (UserNotFoundException e) {
-            return false; //function incomplete if blocked user isn't found.
-        }
-    }
-
-    // File routes
+    */
 
     // Writes to user File(appends Information)
     public static void writeToFile(String text, String filePath) throws IOException {
-        try (PrintWriter pw = new PrintWriter(new FileWriter(filePath, true), true)) { //initialize print writer.
-            pw.println(text); 
+        try (PrintWriter pw = new PrintWriter(new FileWriter(filePath, true), true)) {
+            pw.println(text);
         }
     }
 
     // Writes to user File(overwrite Information)
-    public static void overwriteFile(ArrayList < String > userLines, String filePath) throws IOException, OperationFailedException {
+    public static void overwriteFile(ArrayList < String > userLines, String filePath) throws IOException, CustomException {
         try (PrintWriter pwTemp = new PrintWriter(filePath)) { // creates temporary print writer to overwrite
             // rewrites all lines to file
             for (String newLine: userLines) {
@@ -383,108 +464,130 @@ public class SocialServer implements Runnable {
             }
         }
     }
+    // File routes
 
     // Handles Queries
-    public static String handleRequest(String action, String data) {
+
+    public static String handleRequest(String action, String caller, String data) {
         try {
-            System.out.println("action: "+ action);
-            System.out.println("Data: "+ data);
+            System.out.println("Action: " + action);
+            System.out.println("Caller: " + caller);
+            System.out.println("Data: " + data);
+
+            String[] userInformation = data.split(" \\| ");
+
             switch (action) {
                 case "createUser":
-                    String[] userInformation = data.split(" \\| "); //parses through data
                     if (userInformation.length == 2) {
                         createUser(userInformation[0], userInformation[1]);
-                        return "User created succesfully"; //function complete.
-                    } else {
+                        return "User created successfully";
+                    } else if (userInformation.length == 4) {
                         createUser(userInformation[0], userInformation[1], userInformation[2], userInformation[3]);
-                        return "User created succesfully"; //function complete.
+                        return "User created successfully";
+                    } else {
+                        throw new CustomException("Invalid user creation data format.");
                     }
-                case "getUser":
-                    return getUser(data);
-                case "changeUserInfo":
-                    userInformation = data.split(" \\| ");
-                    System.out.println("userInfo : " + userInformation[0]);
-                    changeUserInfo(userInformation[0], userInformation[1], userInformation[2], userInformation[3], userInformation[4]);
-                    return "User information changed succesfully";
-                case "blockUser":
-                    userInformation = data.split(" \\| ");
-                    blockUser(userInformation[0], userInformation[1]);
-                    return "User blocked Succesfully";
-                case "getBlocked":
-                    return getBlocked(data);
-                case "unblock":
-                    userInformation = data.split(" \\| ");
-                    unblock(userInformation[0], userInformation[1]);
-                case "friendUser":
-                    userInformation = data.split(" \\| ");
-                    friendUser(userInformation[0], userInformation[1]);
-                case "getFriend":
-                    return getFriend(data);
-                case "unfriend":
-                    userInformation = data.split(" \\| ");
-                    unfriend(userInformation[0], userInformation[1]);
-                case "message":
-                    userInformation = data.split(" \\| ");
-                    message(userInformation[0], userInformation[1], userInformation[2]);
-                case "getMessage":
-                    userInformation=data.split(" \\| ");
-                    return getMessage(userInformation[0], userInformation[1]);
 
+                case "getUser":
+                    return getUser(data);  // Retrieve user information
+
+                case "blockUser":
+                    if (userInformation.length == 1) {
+                        blockUser(caller, userInformation[0]);
+                        return "User " + userInformation[0] + " blocked successfully by " + caller;
+                    } else {
+                        throw new CustomException("Invalid block data format. Expected target user.");
+                    }
+
+                case "getBlocked":
+                    return "Blocked users by " + caller + ": " + getBlocked(caller);
+
+                case "unblock":
+                    if (userInformation.length == 1) {
+                        unblock(caller, userInformation[0]);
+                        return "User " + userInformation[0] + " unblocked successfully by " + caller;
+                    } else {
+                        throw new CustomException("Invalid unblock data format. Expected target user.");
+                    }
+
+                case "friendUser":
+                    if (userInformation.length == 1) {
+                        friendUser(caller, userInformation[0]);
+                        return "User " + userInformation[0] + " friended successfully by " + caller;
+                    } else {
+                        throw new CustomException("Invalid friend data format. Expected target user.");
+                    }
+
+                case "getFriend":
+                    return "Friends of " + caller + ": " + getFriend(caller);
+
+                case "unfriend":
+                    if (userInformation.length == 1) {
+                        unfriend(caller, userInformation[0]);
+                        return "User " + userInformation[0] + " unfriended successfully by " + caller;
+                    } else {
+                        throw new CustomException("Invalid unfriend data format. Expected target user.");
+                    }
+
+                /*case "message":
+                    if (userInformation.length == 2) {
+                        message(caller, userInformation[0], userInformation[1]);
+                        return "Message sent from " + caller + " to " + userInformation[0];
+                    } else {
+                        throw new CustomException("Invalid message data format. Expected recipient and message.");
+                    }
+
+                case "getMessage":
+                    if (userInformation.length == 1) {
+                        return "Messages between " + caller + " and " + userInformation[0] + ": " + getMessage(caller, userInformation[0]);
+                    } else {
+                        throw new CustomException("Invalid getMessage data format. Expected target user.");
+                    }*/
+
+                default:
+                    throw new CustomException("Invalid action: " + action);
             }
-            return "Invalid Query";
-            //error handling.
-        } catch (UserAlreadyExistsException e) {
-            return "User already exist.";
-        } catch (UserNotFoundException e) {
-            return "User does not exist.";
-        } catch (UserAlreadyBlockedException e) {
-            return "User already blocked.";
-        } catch (UserNotBlockedException e) {
-            return "User is not blocked";
-        } catch (UserAlreadFriendException e) {
-            return "User is already friend";
-        } catch (UserNotFriendException e) {
-            return "User is not friend.";
-        } catch(MessagesNotFoundException e){
-            return "Users have no messages.";
-        } catch (OperationFailedException e) {
-            return "500:Internal Server Error - Try again.";
+        } catch (CustomException e) {
+            return "Error: " + e.getMessage();
         }
     }
 
+
+    // Thread-safe implementation of run method
+    @Override
     public void run() {
-        try {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+             PrintWriter pw = new PrintWriter(clientSocket.getOutputStream(), true)) {
 
-            // br and pw for reading client messages
-            BufferedReader br = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            PrintWriter pw = new PrintWriter(clientSocket.getOutputStream(), true);
-
-            // reads what client seds and send it to handle Request
-            while (true) {
-                String line; //temporary variable.
+            String line;
+            while ((line = br.readLine()) != null) {
                 try {
-                    // retrievers response
-                    line = br.readLine();
-                    if (line == null) break;
-
-                    // formats response
                     String[] command = line.split(" ; ");
+                    if (command.length < 3) {
+                        pw.println("Invalid request format. Expected format: <action> ; <caller> ; <data>");
+                        continue;
+                    }
 
-                    // Queries response and sends back results
-                    String response = handleRequest(command[0], command[1]);
-                    pw.println(response);
+                    String action = command[0];
+                    String caller = command[1];
+                    String data = command[2];
+
+                    // Locking the access to shared data resources
+                    lock.lock();
+                    try {
+                        String response = handleRequest(action, caller, data);
+                        pw.println(response);
+                    } finally {
+                        lock.unlock();
+                    }
                 } catch (Exception e) {
-                    // catch error from .split
-                    // TODO: add better error handeling 
+                    pw.println("Error processing request: " + e.getMessage());
                     e.printStackTrace();
-                    pw.println("Error processing request.");
                 }
             }
-            // catches server staring errors
         } catch (IOException e) {
-            System.out.println("Server failed Error.");
+            System.out.println("Error with client connection: " + e.getMessage());
         } finally {
-            // closes server socket when finsihed
             try {
                 clientSocket.close();
             } catch (IOException e) {
@@ -493,22 +596,82 @@ public class SocialServer implements Runnable {
         }
     }
 
-    public static void main(String args[]) throws UserNotFoundException, OperationFailedException, UserNotBlockedException, UserAlreadFriendException, UserNotFriendException, MessagesNotFoundException {
-        try {
-            // creates a new server
-            ServerSocket serverSocket = new ServerSocket(4242);
+    // Main server method to listen for connections and spawn new threads
+    public static void main(String[] args) {
+        try (ServerSocket serverSocket = new ServerSocket(4242)) {
             System.out.println("Server running on port 4242...");
 
-            // intiializes new thread for each client
-            while(true){
-                Socket socket = serverSocket.accept();
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
                 System.out.println("Client Connected");
-                SocialServer server = new SocialServer(socket);
-                new Thread(server).start();
 
+                SocialServerNew server = new SocialServerNew(clientSocket);
+                Thread clientThread = new Thread(server);
+                clientThread.start();
             }
-        } catch(IOException e){
-            System.out.println("Server Crashed"); //if function doesn't go through.
+        } catch (IOException e) {
+            System.out.println("Server failed: " + e.getMessage());
         }
     }
 }
+
+    /*
+    public static void main(String[] args) {
+        try {
+            // Test creating a user
+            System.out.println("Creating User...");
+            createUser("testuser", "password123", "profile.png", "This is a test bio");
+
+            // Test checking if a user exists
+            System.out.println("Checking if user exists...");
+            System.out.println("User exists: " + checkUser("testuser"));
+
+            // Test getting user information
+            System.out.println("Getting User Information...");
+            System.out.println(getUser("testuser"));
+
+            // Test checking if user is blocked
+
+            System.out.println("Checking if user is blocked...");
+            System.out.println(checkBlocked("testuser"));
+
+            // Test blocking a user
+            System.out.println("Blocking user...");
+            blockUser("testuser", "alice");
+
+            // Test getting blocked users
+            System.out.println("Getting blocked users...");
+            System.out.println(getBlocked("lakshaym"));
+
+            // Test unblocking a user
+            System.out.println("Unblocking user...");
+            unblock("testuser", "alice");
+
+            // Test friending a user
+            System.out.println("Friending user...");
+            friendUser("testuser", "lakshaym");
+
+            // Test getting friend list
+            System.out.println("Getting friends...");
+            System.out.println(getFriend("testuser"));
+
+            // Test unfriending a user
+            System.out.println("Unfriending user...");
+            unfriend("testuser", "lakshaym");
+
+            // Test writing and overwriting files
+            System.out.println("Testing file write and overwrite...");
+            writeToFile("test data", "./testFile.txt");
+
+            // Test overwriting a file
+            ArrayList<String> lines = new ArrayList<>();
+            lines.add("new line");
+            overwriteFile(lines, "./testFile.txt");
+
+        } catch (CustomException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+     */ // Test for each method. DONT DELETE.
+
+
