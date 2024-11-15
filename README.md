@@ -42,7 +42,23 @@ Stores user info and user's list of messages, friends and blocked users in respe
 13. writeToFile - Uses print writer to write to file.
 14. overwriteFile - Used to edit information already existing in text files.
 15. handleRequests - Used to carry out all user functions.
-16. Main method - Connects to client. 
+16. Main method - Connects to client.
 
+Test Client: 
+Establishes connection with the server. 
+1. sendRequest - requests to connect with server.
+2. closeConnection - closes the connection with server.
+3. Main method - Provides options to: create user, get user info, change user info, block user, get blocked users, unblock user, friend user, get friend list, unfriend user, send message, get messages and exit. Sets up each choice with subsequent prompts for user input.
 
+Test Files:
+1. blockedExample.txt - List of example users and their example blocked lists. 
+2. friendsExample.txt - List of example users and their example friend lists.
+3. userInfoExample.txt - List of example users with their user info.
 
+   Groupmember Contributions - Phase 1:
+
+Aneesh: Authored readme file, custom exception classes, and test cases.
+Garv: Authored clientServer.java and Server
+Lakshay: Authored socialServer.java
+Tasha: Co-authored readme file
+Amelia: Oversaw operations
