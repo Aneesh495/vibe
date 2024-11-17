@@ -2,10 +2,11 @@ import java.io.*;
 import java.util.*;
 import java.net.*;
 import java.util.concurrent.locks.ReentrantLock;
-
+import java.util.concurrent.atomic.AtomicInteger;
 import ServerException.CustomException;
 import ServerException.InvalidInputException;
 import ServerException.UserNotFoundException;
+import java.util.ArrayList;
 
 //TODO: Add asynchronous for race theory 
 public class  SocialServer implements Runnable {
@@ -16,7 +17,53 @@ public class  SocialServer implements Runnable {
     private final static String MessageList = "./Database/Data/msgs.txt";
     private final String Reported = "fileName";
     private Socket clientSocket;
+    public static AtomicInteger messageID = new AtomicInteger(0);
+
     // User file Routes
+    public static ArrayList<String[]> getMessage(String sender, String receiver) {
+        ArrayList<String[]> messagesWithID = new ArrayList<>();
+        try (BufferedReader messageBr = new BufferedReader(new FileReader(MessageList))) {
+            String line = messageBr.readLine();
+            while (line != null) {
+                String[] data = line.split(" \\| ");
+                if (data[0].equals(sender) && data[1].equals(receiver)) {
+                    for (int i = 2; i < data.length; i++) {
+                        String[] messageAndID = data[i].split(",");
+                        messagesWithID.add(messageAndID);
+                    }
+                }
+                line = messageBr.readLine(); // Move to the next line
+            }
+        } catch (IOException io) {
+            System.out.println("Error reading file: " + io.getMessage());
+        }
+        return messagesWithID;
+    }
+
+    public static ArrayList<String[]> orderMessage (String user1, String user2) {
+
+        ArrayList<String[]> messageUser1ToUser2 = getMessage(user1, user2);
+        ArrayList<String[]> messageUser2ToUser1 = getMessage(user2, user1);
+
+        ArrayList<String[]> combinedMessages = new ArrayList<>();
+        combinedMessages.addAll(messagesUser1ToUser2);
+        combinedMessages.addAll(messagesUser2ToUser1);
+
+        for (int i = 0; i < combinedMessages.size() - 1; i++) {
+            for (int j = 0; j < combinedMessages.size() - 1 - i; j++) {
+                String[] message1 = combinedMessages.get(j);
+                String[] message2 = combinedMessages.get(j + 1);
+                int msgID1 = Integer.parseInt(message1[1]);
+                int msgID2 = Integer.parseInt(message2[1]);
+
+                if (msgID1 > msgID2) {
+                    combinedMessages.set(j, message2);
+                    combinedMessages.set(j + 1, message1);
+                }
+            }
+        }
+        return combinedMessages;
+    }
 
     private static final ReentrantLock lock = new ReentrantLock();
 
