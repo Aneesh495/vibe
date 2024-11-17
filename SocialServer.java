@@ -168,7 +168,7 @@ public class SocialServer implements Runnable {
                     ArrayList<String> blockedUsers = new ArrayList<>(Arrays.asList(userInfo).subList(1, userInfo.length));
                     blockedUsers.remove(unblockUser);
                     if (!blockedUsers.isEmpty()) {
-                        blockedLines.add(username + " \\| " + String.join(" \\| ", blockedUsers));
+                        blockedLines.add(username + " | " + String.join(" | ", blockedUsers));
                     }
                 } else {
                     blockedLines.add(line);
@@ -356,6 +356,11 @@ public class SocialServer implements Runnable {
                         return "User created successfully";
                     } else {
                         throw new ClientDataException("Invalid user creation data format.");
+                    }
+                case "loginWithPassword":
+                    if (userInformation.length == 1) {
+                        System.out.println(userInformation);
+                        loginWithPassword(caller, userInformation[0]);
                     }
                 case "getUser":
                     return getUser(data);

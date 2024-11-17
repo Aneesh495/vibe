@@ -85,7 +85,8 @@
              if (password != null) {
                  // Sends loginWithPassword request to verify credencials
                  String loginResponse = client.sendRequest("loginWithPassword", username, password);
-                 if ("Incorrect Password".equals(loginResponse)) {
+                 System.out.println(loginResponse);
+                 if ("Input Error: Incorrect Password!".equals(loginResponse)) {
                      JOptionPane.showMessageDialog(null, "Incorrect Password, try again.", "Error", JOptionPane.ERROR_MESSAGE);
                  } else {
                      JOptionPane.showMessageDialog(null, "Login Successful!", "Welcome", JOptionPane.INFORMATION_MESSAGE);
