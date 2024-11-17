@@ -1,7 +1,7 @@
 package ServerException;
 
-public class UserNotFoundException extends Exception {
-    public UserNotFoundException(String text){
-        super(text);
+public class UserNotFoundException extends Exception{
+    public UserNotFoundException(String message){
+        super(message);
     }
 }

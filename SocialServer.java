@@ -4,6 +4,8 @@ import java.net.*;
 import java.util.concurrent.locks.ReentrantLock;
 
 import ServerException.CustomException;
+import ServerException.InvalidInputException;
+import ServerException.UserNotFoundException;
 
 //TODO: Add asynchronous for race theory 
 public class  SocialServer implements Runnable {
@@ -23,7 +25,7 @@ public class  SocialServer implements Runnable {
     }
 
     // Returns a new user
-    public static String getUser(String username) throws CustomException {
+    public static String getUser(String username) throws UserNotFoundException, IOException {
         try (BufferedReader userBr = new BufferedReader(new FileReader(UserInfo))) {
             String line = userBr.readLine();
             while (line != null) {
@@ -34,26 +36,24 @@ public class  SocialServer implements Runnable {
                 }
                 line = userBr.readLine();
             }
-            throw new CustomException("User Not Found");
-        } catch (IOException e) {
-            throw new CustomException("IO Exception occurred");
+            throw new UserNotFoundException("User Not Found");
         }
     }
 
     // verifies user exists in database
-    public static boolean checkUser(String username) /* throws CustomException */ {
+    public static boolean checkUser(String username) {
         try {
             getUser(username);
             return true;
-        } catch (CustomException e) { //changed the exceptions here
+        } catch (Exception e) { //changed the exceptions here
             return false;
         }
     }
 
-    private static boolean loginWithPassword(String username, String password) throws CustomException{
+    private static boolean loginWithPassword(String username, String password) throws UserNotFoundException, InvalidInputException, IOException{
         
         if(checkUser(username)== false){
-            throw new CustomException("User does not exist!");
+            throw new UserNotFoundException("User does not exist!");
         }
 
         String[] userInfo = getUser(username).split(" | ");
@@ -61,32 +61,26 @@ public class  SocialServer implements Runnable {
         if(userInfo[1].equals(password)){
             return true;
         }
-        throw new CustomException("Incorrect Password!");
+        throw new InvalidInputException("Incorrect Password!");
     }
 
     // Creates a new user
-    private static void createUser(String username, String password, String profilePicture, String bio) throws CustomException {
-        try {
+    private static void createUser(String username, String password, String profilePicture, String bio) throws InvalidInputException, IOException {
             if (checkUser(username) == false) {
                 writeToFile(String.format("%s \\| %s \\| %s \\| %s", username, password, profilePicture, bio), UserInfo);
             } else {
-                throw new CustomException("User already exists.");
+                throw new InvalidInputException("User already exists.");
             }
-        } catch (IOException e) {
-            throw new CustomException(e.getMessage());
-        }
     }
 
     // Creates a new user
-    private static void createUser(String username, String password) throws CustomException {
+    private static void createUser(String username, String password) throws InvalidInputException, IOException {
         try {
             if (checkUser(username) == false) {
                 writeToFile(String.format("%s \\| %s \\| %s \\| %s", username, password, "Database/ProfilePicture/default.png", ""), UserInfo);
             } else {
-                throw new CustomException("User already exists.");
+                throw new InvalidInputException("User already exists.");
             }
-        } catch (IOException e) {
-            throw new CustomException("IO Exception occurred: " + e.getMessage());
         }
     }
 
@@ -139,12 +133,11 @@ public class  SocialServer implements Runnable {
             }
             return false;  // The user does not exist as a blocker
         } catch (IOException e) {
-            System.out.println("IO Exception occurred: " + e.getMessage());
             return false;
         }
     }
 
-    public static ArrayList<String> getBlocked(String username) throws CustomException {
+    public static ArrayList<String> getBlocked(String username) throws CustomException, IOException {
         try (BufferedReader userBr = new BufferedReader(new FileReader(BlockedList))) {
             String line = userBr.readLine();
             while (line != null) {
@@ -156,8 +149,6 @@ public class  SocialServer implements Runnable {
                 line = userBr.readLine();
             }
             throw new CustomException("User has not blocked anyone!");
-        } catch (IOException e) {
-            throw new CustomException("IO Exception Occurred: " + e.getMessage());
         }
     }
 
@@ -219,7 +210,7 @@ public class  SocialServer implements Runnable {
         }
     }
 
-    public static void unblock(String username, String unblockUser) throws CustomException {
+    public static void unblock(String username, String unblockUser) throws CustomException, IOException {
         ArrayList<String> blockedLines = new ArrayList<>();
 
         // Check if both users exist
