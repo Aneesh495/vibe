@@ -86,18 +86,13 @@ public class SocialServer implements Runnable {
     // BLOCK ROUTES
 
     // Check if a user is blocked
-    public static boolean checkBlocked(String username) {
-        try (BufferedReader userBr = new BufferedReader(new FileReader(BlockedList))) {
-            String line = userBr.readLine();
-            while (line != null) {
-                String[] userBlockedInfo = line.split(" \\| ");
-                if (userBlockedInfo.length > 0 && userBlockedInfo[0].trim().equals(username.trim())) {
-                    return true;
-                }
-                line = userBr.readLine();
+    public static boolean checkBlocked(String username, String blockedUser) {
+        try{
+            if(getBlocked(username).contains(blockedUser)){
+                return true;
             }
             return false;
-        } catch (IOException e) {
+        }catch(Exception e){
             return false;
         }
     }
@@ -129,6 +124,11 @@ public class SocialServer implements Runnable {
         if (!blockerExists || !blockedExists) {
             throw new UserNotFoundException("One or both users do not exist.");
         }
+
+        if (checkBlocked(username,blockedUser)) {
+            throw new InvalidInputException("User is already blocked");
+        }
+
         try (BufferedReader userBr = new BufferedReader(new FileReader(BlockedList))) {
             String line = userBr.readLine();
             while (line != null) {
@@ -156,8 +156,8 @@ public class SocialServer implements Runnable {
             throw new UserNotFoundException("User not found");
         }
         
-        if (!getBlocked(username).contains(unblockUser)) {
-            throw new InvalidInputException("User is not blocked");
+        if (!checkBlocked(username,unblockUser)) {
+            throw new InvalidInputException("User is already unblocked");
         }
         
         try (BufferedReader userBr = new BufferedReader(new FileReader(BlockedList))) {
@@ -182,18 +182,13 @@ public class SocialServer implements Runnable {
     //FRIEND USER ROUTES
 
     // Check if a user has friended another
-    public static boolean checkFriend(String username) {
-        try (BufferedReader userBr = new BufferedReader(new FileReader(FriendList))) {
-            String line = userBr.readLine();
-            while (line != null) {
-                String[] userFriendInfo = line.split(" \\| ");
-                if (userFriendInfo.length > 0 && userFriendInfo[0].trim().equals(username.trim())) {
-                    return true;
-                }
-                line = userBr.readLine();
+    public static boolean checkFriend(String username, String friendCheck) {
+        try{
+            if(getFriend(username).contains(friendCheck)){
+                return true;
             }
             return false;
-        } catch (IOException e) {
+        }catch(Exception e){
             return false;
         }
     }
@@ -215,14 +210,23 @@ public class SocialServer implements Runnable {
 
     // Friend a user
     public static void friendUser(String username, String friendedUser) throws InvalidInputException, IOException {
+        // checks to see if user friended themself
         if (username.trim().equals(friendedUser.trim())) {
             throw new InvalidInputException("User cannot friend themself");
         }
+
         ArrayList<String> userLines = new ArrayList<>();
+
+        // checks to see if users exist
         boolean frienderExists = checkUser(username);
         boolean friendedExists = checkUser(friendedUser);
         if (!frienderExists || !friendedExists) {
             throw new InvalidInputException("One or both users do not exist.");
+        }
+
+        // checks to see if users are already friends
+        if(checkFriend(username, friendedUser)){
+            throw new InvalidInputException("Users are already friends");
         }
         try (BufferedReader userBr = new BufferedReader(new FileReader(FriendList))) {
             String line = userBr.readLine();
@@ -244,10 +248,15 @@ public class SocialServer implements Runnable {
     }
 
     // Unfriend a user
-    public static void unfriend(String username, String unfriendUser) throws UserNotFoundException, IOException {
+    public static void unfriend(String username, String unfriendUser) throws UserNotFoundException, IOException, InvalidInputException {
         ArrayList<String> friendLines = new ArrayList<>();
         if (!checkUser(username) || !checkUser(unfriendUser)) {
             throw new UserNotFoundException("User not found");
+        }
+       
+        // checks to see if users are already friends
+        if(!checkFriend(username, unfriendUser)){
+            throw new InvalidInputException("Users are not friends");
         }
         try (BufferedReader userBr = new BufferedReader(new FileReader(FriendList))) {
             String line = userBr.readLine();

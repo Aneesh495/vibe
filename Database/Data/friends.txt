@@ -1,2 +1,2 @@
-lakshaym | johnnyNew | alice
+lakshaym | alice
 alice | johnnyNew
