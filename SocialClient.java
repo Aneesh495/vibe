@@ -24,7 +24,7 @@ public class SocialClient { //start of socialClient.
 
     // Sends a request to server with the specified parameters.
     public String sendRequest(String action, String caller, String data) { //start of sendRequest method.
-        try {
+        try { //start try
             // Format the request for server
             String requestString = action + " ; " + caller + " ; ";
             if (data != null) { //if data isn't empty
