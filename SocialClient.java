@@ -14,9 +14,9 @@
              socket = new Socket(address, port);
              out = new PrintWriter(socket.getOutputStream(), true);
              in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-             System.out.println("Connected to the servar.");
+             System.out.println("Succesfully connected to the server.");
          } catch (IOException e) {
-             System.out.println("Connection to server fail.");
+             System.out.println("Failed to connect to the server.");
          }
      }
  
