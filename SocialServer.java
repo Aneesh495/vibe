@@ -53,6 +53,7 @@ public class SocialServer implements Runnable {
                 }
                 line = userBr.readLine();
             }
+            System.out.println("auiwe");
             throw new UserNotFoundException("User Not Found");
         }
     }
@@ -71,10 +72,13 @@ public class SocialServer implements Runnable {
     // USER AUTH ROUTE
     private static boolean loginWithPassword(String username, String password) throws UserNotFoundException, InvalidInputException, IOException {
         if (checkUser(username) == false) {
+            System.out.println("aosz");
             throw new UserNotFoundException("User does not exist!");
         }
         String[] userInfo = getUser(username).split(" \\| ");
+        System.out.println(userInfo[1]);
         if (userInfo[1].equals(password)) {
+            System.out.println("logged in succesfully");
             return true;
         }
         throw new InvalidInputException("Incorrect Password!");
@@ -369,6 +373,7 @@ public class SocialServer implements Runnable {
             System.out.println("Caller: " + caller);
             System.out.println("Data: " + data);
             String[] userInformation = data.split(" \\| ");
+            System.out.println("loginfnefjn");
             switch (action) {
                 case "createUser":
                     if (userInformation.length == 2) {
@@ -381,10 +386,9 @@ public class SocialServer implements Runnable {
                         throw new ClientDataException("Invalid user creation data format.");
                     }
                 case "loginWithPassword":
-                    if (userInformation.length == 1) {
-                        System.out.println(userInformation);
-                        loginWithPassword(caller, userInformation[0]);
-                    }
+                    System.out.println("loginfnefjn");
+                    loginWithPassword(caller, userInformation[0]);
+                    return "Login successful";
                 case "getUser":
                     return getUser(data);
                 case "blockUser":
