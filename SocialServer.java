@@ -330,7 +330,7 @@ public class SocialServer implements Runnable {
         }
 
         if (!checkUserMessage(sender, receiver)) {
-            writeToFile(String.format("%s | %s ; %s-%d#S#", sender, receiver, message, 0), MessageList);
+            writeToFile(String.format("%s | %s | %s-%d#S#", sender, receiver, message, 0), MessageList);
         } else {
             System.out.println("run");
             try (BufferedReader messageBr = new BufferedReader(new FileReader(MessageList))) {
@@ -433,6 +433,11 @@ public class SocialServer implements Runnable {
                     } else {
                         throw new ClientDataException("Invalid unfriend data format. Expected target user.");
                     }
+                case "sendMessage":
+                    sendMessage(caller,userInformation[0],userInformation[1]);
+                    return "Message sent succesfully";
+                case "getMessage":
+                    return getMessage(caller, userInformation[0]);
                 default:
                     throw new ClientDataException("Invalid action: " + action);
             }
@@ -448,7 +453,7 @@ public class SocialServer implements Runnable {
     }
 
     // Main method
-    public static void main(String[] args) throws IOException, UserNotFoundException, InvalidInputException {
+    public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(4242)) {
             System.out.println("Server running on port 4242...");
             while (true) {

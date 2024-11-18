@@ -233,6 +233,51 @@ public class SocialClient { // Start of SocialClient class
         }
     }
 
+    // Message GUI
+    private static void sendMessage(SocialClient client, String username,JFrame frame){
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(0,2));
+
+        // initializes message input
+        JTextField recipient = new JTextField();
+        JTextField message = new JTextField();
+
+        // sets up button
+        JButton button = new JButton("Send Message");
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                
+                // gets text
+                String rec = recipient.getText().trim();
+                String mes = message.getText().trim();
+                
+                // checks to see if they are blank
+                if(rec.isBlank()|| mes.isBlank()){
+                    JOptionPane.showMessageDialog(null,"All fields must be filled out",
+                    "Field Error", JOptionPane.ERROR_MESSAGE);
+                }
+                String data = String.format("%s | %s", rec,mes);
+                String createResponse = client.sendRequest("sendMessage", username,data);
+                if(createResponse.toLowerCase().contains("error")){
+                    JOptionPane.showMessageDialog(null,createResponse,
+                    "Error", JOptionPane.ERROR_MESSAGE);
+                }else{
+                    JOptionPane.showMessageDialog(null,createResponse,
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        });
+        
+        // sets up panel
+        panel.add(new Label("Recipient:"));
+        panel.add(recipient);
+        panel.add(new Label("Message:"));
+        panel.add(message);
+        panel.add(button);
+        
+        JOptionPane.showConfirmDialog(frame, panel, "Send Message",
+        JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE);
+    }
     // Displays the main application panel after successful login
     private static void showMainPanel(SocialClient client, String username) { // showMainPanel method
         JFrame frame = new JFrame("Social Client");
@@ -250,6 +295,7 @@ public class SocialClient { // Start of SocialClient class
         JButton searchButton = new JButton("Search User");
         JButton messageButton = new JButton("Message User");
         JButton unblockButton = new JButton("Unblock User");
+        JButton getMessage = new JButton("Retrieve Message");
 
         // Add action listeners to the buttons
         blockButton.addActionListener(new ActionListener() {
@@ -283,11 +329,15 @@ public class SocialClient { // Start of SocialClient class
         messageButton.addActionListener(new ActionListener() { // Currently not implemented
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(frame, "This feature is not yet available",
-                        "Message", JOptionPane.INFORMATION_MESSAGE);
+                sendMessage(client,username, frame);
             }
         });
 
+        getMessage.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                performAction(client, "getMessage", username);
+            }
+        });
         unblockButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -302,7 +352,7 @@ public class SocialClient { // Start of SocialClient class
         panel.add(searchButton);
         panel.add(messageButton);
         panel.add(unblockButton);
-
+        panel.add(getMessage);
         frame.add(panel);
         frame.setVisible(true);
     } // End of showMainPanel method
