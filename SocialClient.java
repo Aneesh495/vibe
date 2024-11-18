@@ -170,7 +170,7 @@ public class SocialClient { //start of socialClient.
         panel.add(unfriendButton); //adds unfriend button to the panel.
         panel.add(searchButton); //adds search button to the panel.
         panel.add(messageButton); //adds message button to the panel.
-        panel.add(unblockButton); // Adds unblock button to the panel.
+        panel.add(unblockButton); //adds unblock button to the panel.
 
         frame.add(panel); //adds a frame to the panel.
         frame.setVisible(true); // Makes the window visible to user.
