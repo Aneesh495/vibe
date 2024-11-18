@@ -1,2 +1,2 @@
 username | blocked | blocked | blocked | blocked
-lakshaym \| alice \| johnnyNew
+lakshaym | alice | johnnyNew

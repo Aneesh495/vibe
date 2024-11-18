@@ -277,26 +277,36 @@ public class SocialServer implements Runnable {
 
     //MESSAGING ROUTES
 
+    public static boolean checkUserMessage(String user1, String user2){
+        try{
+            getMessage(user1, user2);
+            return true;
+        }catch(Exception e){
+            return false;
+        }
+    }
+
     // Retrieve a message
-    public static ArrayList<String[]> getMessage(String sender, String receiver) {
+    public static String getMessage(String sender, String receiver) throws IOException, InvalidInputException {
         ArrayList<String[]> messagesWithID = new ArrayList<>();
         try (BufferedReader messageBr = new BufferedReader(new FileReader(MessageList))) {
             String line = messageBr.readLine();
             while (line != null) {
-                String[] data = line.split(" \\| ");
-                if (data[0].equals(sender) && data[1].equals(receiver)) {
-                    for (int i = 2; i < data.length; i++) {
-                        String[] messageAndID = data[i].split(",");
-                        messagesWithID.add(messageAndID);
+                
+                if(line.contains(sender)&& line.contains(receiver)){
+                    String[] data = line.split(" \\| ");
+                    if(data[0].equals(sender)){
+                        return data[2];
+                    }else{
+                        return data[2].replaceAll("+R+","+S+").replaceAll("+S+", "+R+");
                     }
                 }
                 line = messageBr.readLine();
             }
-        } catch (IOException io) {
-            System.out.println("Error reading file: " + io.getMessage());
+            throw new InvalidInputException("No messages found!");
         }
-        return messagesWithID;
     }
+
 
     //organizes a message
     public static ArrayList<String[]> orderMessage(String user1, String user2) {
@@ -320,42 +330,20 @@ public class SocialServer implements Runnable {
         return combinedMessages;
     }
 
-    public static void sendMessage(String sender, String receiver, String message)
-            throws IOException, UserNotFoundException, InvalidInputException {
-        if (checkUser(sender) == false || checkUser(receiver) == false) {
+    public static void sendMessage(String sender, String receiver, String message)throws IOException, UserNotFoundException, InvalidInputException {
+        if (checkUser(sender) || checkUser(receiver)) {
             throw new UserNotFoundException("One of (or both) user(s) does not exist.");
         }
         if (sender.equals(receiver)) {
             throw new InvalidInputException("Users can not send a message to themselves.");
         }
-        ArrayList<String> updatedLines = new ArrayList<>();
-        boolean messageAdded = false;
-        String messageData = message + "," + messageID.get();
 
-        try (BufferedReader messageBr = new BufferedReader(new FileReader(MessageList))) {
-            String line = messageBr.readLine();
-            while (line != null) {
-                String[] userMessages = line.split(" \\| ");
-                if (userMessages[0].equals(sender) && userMessages[1].equals(receiver)) {
-                    String updatedLine = line + " | " + messageData;
-                    updatedLines.add(updatedLine);
-                    messageAdded = true;
-                } else {
-                    updatedLines.add(line);
-                }
-                line = messageBr.readLine();
-            }
-            // If there are no existing conversations between uesrs, create a new conservation.
-            if (!messageAdded) {
-                updatedLines.add(sender + " | " + receiver + " | " + messageData);
-            }
+        try{
 
-            // Increment the message ID for the next message(s).
-            messageID.incrementAndGet();
-            // Write updated data back to the file
-            overwriteFile(updatedLines, MessageList);
         }
     }
+
+
 
     //Deletes a message.
     public static void deleteMessage(String sender, String receiver, int messageId)
@@ -505,18 +493,19 @@ public class SocialServer implements Runnable {
 
     // Main method
     public static void main(String[] args) {
-        try (ServerSocket serverSocket = new ServerSocket(4242)) {
-            System.out.println("Server running on port 4242...");
-            while (true) {
-                Socket clientSocket = serverSocket.accept();
-                System.out.println("Client Connected");
-                SocialServer server = new SocialServer(clientSocket);
-                Thread clientThread = new Thread(server);
-                clientThread.start();
-            }
-        } catch (IOException e) {
-            System.out.println("Server failed: " + e.getMessage());
-        }
+        sendMessage();
+        // try (ServerSocket serverSocket = new ServerSocket(4242)) {
+        //     System.out.println("Server running on port 4242...");
+        //     while (true) {
+        //         Socket clientSocket = serverSocket.accept();
+        //         System.out.println("Client Connected");
+        //         SocialServer server = new SocialServer(clientSocket);
+        //         Thread clientThread = new Thread(server);
+        //         clientThread.start();
+        //     }
+        // } catch (IOException e) {
+        //     System.out.println("Server failed: " + e.getMessage());
+        // }
     }
 
     // THREAD MANAGMENT

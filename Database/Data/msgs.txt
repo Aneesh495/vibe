@@ -1,7 +1,1 @@
-lakshaym | alice : "hey wassup"
-alice | lakshaym : "Hey"
-lakshaym | johnnyNew : "Hey"
-lakshaym | johnnyNew : "Can you see this"
-lakshaym | alice : "how was your day?
-lakshaym | johnnyNew : i am good wbu
-lakshaym | alice : hi
+user1 | user2 | hi how are you-1+R+ ; I am good-2+S+ ; 
