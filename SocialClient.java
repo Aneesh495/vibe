@@ -52,9 +52,12 @@ public class SocialClient { // Start of SocialClient class
     // Closes the client connection gracefully
     public void closeConnection() { // closeConnection method
         try { // Attempt to close resources
-            if (reader != null) reader.close(); // Close BufferedReader
-            if (writer != null) writer.close(); // Close PrintWriter
-            if (socket != null) socket.close(); // Close Socket
+            if (reader != null)
+                reader.close(); // Close BufferedReader
+            if (writer != null)
+                writer.close(); // Close PrintWriter
+            if (socket != null)
+                socket.close(); // Close Socket
             System.out.println("Connection closed gracefully."); // Log closure
         } catch (IOException e) { // Handle IO exceptions during closure
             System.out.println("Encountered error while closing connection: " + e.getMessage());
@@ -207,7 +210,8 @@ public class SocialClient { // Start of SocialClient class
             }
 
             // Prepare data: username | password | default_pfp | default_bio
-            String data = String.format("%s | %s | %s | %s", username, password, "Database/ProfilePicture/default.png", "default bio");
+            String data = String.format("%s | %s | %s | %s", username, password, "Database/ProfilePicture/default.png",
+                    "default bio");
             String createResponse = client.sendRequest("createUser", "", data);
             System.out.println("createUser response: " + createResponse); // Debugging statement
 
