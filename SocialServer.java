@@ -1,8 +1,12 @@
 import java.io.*;
 import java.util.*;
 import java.net.*;
+/*
+    Researched ways to make the program synchronous:
+    https://stackoverflow.com/questions/18495438/can-anyone-explain-how-to-use-reentrant-lock-in-java-over-synchronized-with-some/18495895
+    Settled on ReentrantLock
+    */
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import ServerException.*;
 
@@ -11,10 +15,13 @@ public class SocialServer implements Runnable {
     private final static String FriendList = "./Database/Data/friends.txt";
     private final static String BlockedList = "./Database/Data/blocked.txt";
     private final static String MessageList = "./Database/Data/msgs.txt";
+    /*
+    Researched ways to make the program synchronous:
+    https://stackoverflow.com/questions/18495438/can-anyone-explain-how-to-use-reentrant-lock-in-java-over-synchronized-with-some/18495895
+    Settled on ReentrantLock
+    */
     private static final ReentrantLock lock = new ReentrantLock();
-    public static AtomicInteger messageID = new AtomicInteger(0);
-    private final String Users = "./Database/userPassword.txt";
-    private final String Reported = "fileName";
+
     private Socket clientSocket;
 
     public SocialServer(Socket socket) {
@@ -27,7 +34,7 @@ public class SocialServer implements Runnable {
     // Create a new user
     private static void createUser(String username, String password, String profilePicture, String bio) throws InvalidInputException, IOException {
         if (checkUser(username) == false) {
-            writeToFile(String.format("%s \\| %s \\| %s \\| %s", username, password, profilePicture, bio), UserInfo);
+            writeToFile(String.format("%s | %s | %s | %s", username, password, profilePicture, bio), UserInfo);
         } else {
             throw new InvalidInputException("User already exists.");
         }
@@ -36,7 +43,7 @@ public class SocialServer implements Runnable {
     // creates a new user with less parameters
     private static void createUser(String username, String password) throws InvalidInputException, IOException {
         if (checkUser(username) == false) {
-            writeToFile(String.format("%s \\| %s \\| %s \\| %s", username, password, "Database/ProfilePicture/default.png", ""), UserInfo);
+            writeToFile(String.format("%s | %s | %s | %s", username, password, "Database/ProfilePicture/default.png", ""), UserInfo);
         } else {
             throw new InvalidInputException("User already exists.");
         }
