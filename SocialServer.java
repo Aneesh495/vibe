@@ -1,12 +1,8 @@
 import java.io.*;
 import java.util.*;
 import java.net.*;
-/*
-    Researched ways to make the program synchronous:
-    https://stackoverflow.com/questions/18495438/can-anyone-explain-how-to-use-reentrant-lock-in-java-over-synchronized-with-some/18495895
-    Settled on ReentrantLock
-    */
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import ServerException.*;
 
@@ -15,13 +11,10 @@ public class SocialServer implements Runnable {
     private final static String FriendList = "./Database/Data/friends.txt";
     private final static String BlockedList = "./Database/Data/blocked.txt";
     private final static String MessageList = "./Database/Data/msgs.txt";
-    /*
-    Researched ways to make the program synchronous:
-    https://stackoverflow.com/questions/18495438/can-anyone-explain-how-to-use-reentrant-lock-in-java-over-synchronized-with-some/18495895
-    Settled on ReentrantLock
-    */
     private static final ReentrantLock lock = new ReentrantLock();
-
+    public static AtomicInteger messageID = new AtomicInteger(0);
+    private final String Users = "./Database/userPassword.txt";
+    private final String Reported = "fileName";
     private Socket clientSocket;
 
     public SocialServer(Socket socket) {
@@ -30,11 +23,11 @@ public class SocialServer implements Runnable {
 
     // USER ROUTES
 
-
     // Create a new user
-    private static void createUser(String username, String password, String profilePicture, String bio) throws InvalidInputException, IOException {
+    private static void createUser(String username, String password, String profilePicture, String bio)
+            throws InvalidInputException, IOException {
         if (checkUser(username) == false) {
-            writeToFile(String.format("%s | %s | %s | %s", username, password, profilePicture, bio), UserInfo);
+            writeToFile(String.format("%s \\| %s \\| %s \\| %s", username, password, profilePicture, bio), UserInfo);
         } else {
             throw new InvalidInputException("User already exists.");
         }
@@ -43,7 +36,8 @@ public class SocialServer implements Runnable {
     // creates a new user with less parameters
     private static void createUser(String username, String password) throws InvalidInputException, IOException {
         if (checkUser(username) == false) {
-            writeToFile(String.format("%s | %s | %s | %s", username, password, "Database/ProfilePicture/default.png", ""), UserInfo);
+            writeToFile(String.format("%s \\| %s \\| %s \\| %s", username, password,
+                    "Database/ProfilePicture/default.png", ""), UserInfo);
         } else {
             throw new InvalidInputException("User already exists.");
         }
@@ -75,9 +69,9 @@ public class SocialServer implements Runnable {
         }
     }
 
-
     // USER AUTH ROUTE
-    private static boolean loginWithPassword(String username, String password) throws UserNotFoundException, InvalidInputException, IOException {
+    private static boolean loginWithPassword(String username, String password)
+            throws UserNotFoundException, InvalidInputException, IOException {
         if (checkUser(username) == false) {
             System.out.println("aosz");
             throw new UserNotFoundException("User does not exist!");
@@ -90,7 +84,6 @@ public class SocialServer implements Runnable {
         }
         throw new InvalidInputException("Incorrect Password!");
     }
-
 
     // BLOCK ROUTES
 
@@ -122,7 +115,8 @@ public class SocialServer implements Runnable {
     }
 
     // Block a user
-    public static void blockUser(String username, String blockedUser) throws InvalidInputException, UserNotFoundException, IOException {
+    public static void blockUser(String username, String blockedUser)
+            throws InvalidInputException, UserNotFoundException, IOException {
         if (username.trim().equals(blockedUser.trim())) {
             throw new InvalidInputException("User can not block themself!");
         }
@@ -143,7 +137,8 @@ public class SocialServer implements Runnable {
             while (line != null) {
                 String[] userInfo = line.split(" \\| ");
                 if (userInfo[0].equals(username)) {
-                    ArrayList<String> blockedUsers = new ArrayList<>(Arrays.asList(userInfo).subList(1, userInfo.length));
+                    ArrayList<String> blockedUsers = new ArrayList<>(
+                            Arrays.asList(userInfo).subList(1, userInfo.length));
                     if (!blockedUsers.contains(blockedUser)) {
                         blockedUsers.add(blockedUser);
                     }
@@ -158,7 +153,8 @@ public class SocialServer implements Runnable {
     }
 
     // Unblock a user
-    public static void unblock(String username, String unblockUser) throws UserNotFoundException, IOException, InvalidInputException {
+    public static void unblock(String username, String unblockUser)
+            throws UserNotFoundException, IOException, InvalidInputException {
         ArrayList<String> blockedLines = new ArrayList<>();
 
         if (!checkUser(username) || !checkUser(unblockUser)) {
@@ -174,7 +170,8 @@ public class SocialServer implements Runnable {
             while (line != null) {
                 String[] userInfo = line.split(" \\| ");
                 if (userInfo[0].equals(username)) {
-                    ArrayList<String> blockedUsers = new ArrayList<>(Arrays.asList(userInfo).subList(1, userInfo.length));
+                    ArrayList<String> blockedUsers = new ArrayList<>(
+                            Arrays.asList(userInfo).subList(1, userInfo.length));
                     blockedUsers.remove(unblockUser);
                     if (!blockedUsers.isEmpty()) {
                         blockedLines.add(username + " | " + String.join(" | ", blockedUsers));
@@ -188,7 +185,7 @@ public class SocialServer implements Runnable {
         }
     }
 
-    //FRIEND USER ROUTES
+    // FRIEND USER ROUTES
 
     // Check if a user has friended another
     public static boolean checkFriend(String username, String friendCheck) {
@@ -242,7 +239,8 @@ public class SocialServer implements Runnable {
             while (line != null) {
                 String[] userInfo = line.split(" \\| ");
                 if (userInfo[0].equals(username)) {
-                    ArrayList<String> friendedUsers = new ArrayList<>(Arrays.asList(userInfo).subList(1, userInfo.length));
+                    ArrayList<String> friendedUsers = new ArrayList<>(
+                            Arrays.asList(userInfo).subList(1, userInfo.length));
                     if (!friendedUsers.contains(friendedUser)) {
                         friendedUsers.add(friendedUser);
                     }
@@ -257,7 +255,8 @@ public class SocialServer implements Runnable {
     }
 
     // Unfriend a user
-    public static void unfriend(String username, String unfriendUser) throws UserNotFoundException, IOException, InvalidInputException {
+    public static void unfriend(String username, String unfriendUser)
+            throws UserNotFoundException, IOException, InvalidInputException {
         ArrayList<String> friendLines = new ArrayList<>();
         if (!checkUser(username) || !checkUser(unfriendUser)) {
             throw new UserNotFoundException("User not found");
@@ -272,7 +271,8 @@ public class SocialServer implements Runnable {
             while (line != null) {
                 String[] userInfo = line.split(" \\| ");
                 if (userInfo[0].equals(username)) {
-                    ArrayList<String> friendedUsers = new ArrayList<>(Arrays.asList(userInfo).subList(1, userInfo.length));
+                    ArrayList<String> friendedUsers = new ArrayList<>(
+                            Arrays.asList(userInfo).subList(1, userInfo.length));
                     friendedUsers.remove(unfriendUser);
                     if (!friendedUsers.isEmpty()) {
                         friendLines.add(username + " | " + String.join(" | ", friendedUsers));
@@ -286,13 +286,13 @@ public class SocialServer implements Runnable {
         }
     }
 
-    //MESSAGING ROUTES
+    // MESSAGING ROUTES
 
-    public static boolean checkUserMessage(String user1, String user2){
-        try{
+    public static boolean checkUserMessage(String user1, String user2) {
+        try {
             getMessage(user1, user2);
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
@@ -302,15 +302,15 @@ public class SocialServer implements Runnable {
         try (BufferedReader messageBr = new BufferedReader(new FileReader(MessageList))) {
             String line = messageBr.readLine();
             while (line != null) {
-                
-                if(line.contains(sender)&& line.contains(receiver)){
+
+                if (line.contains(sender) && line.contains(receiver)) {
                     String[] data = line.split(" \\| ");
-                    if(data[0].equals(sender)){
+                    if (data[0].equals(sender)) {
                         return data[2];
-                    }else{
+                    } else {
                         return data[2].replaceAll("#R#", "TEMP_PLACEHOLDER")
-                        .replaceAll("#S#", "#R#")
-                        .replaceAll("TEMP_PLACEHOLDER", "#S#");
+                                .replaceAll("#S#", "#R#")
+                                .replaceAll("TEMP_PLACEHOLDER", "#S#");
                     }
                 }
                 line = messageBr.readLine();
@@ -319,7 +319,8 @@ public class SocialServer implements Runnable {
         }
     }
 
-    public static void sendMessage(String sender, String receiver, String message)throws IOException, UserNotFoundException, InvalidInputException {
+    public static void sendMessage(String sender, String receiver, String message)
+            throws IOException, UserNotFoundException, InvalidInputException {
         ArrayList<String> messageLine = new ArrayList<>();
         if (!checkUser(sender) || !checkUser(receiver)) {
             throw new UserNotFoundException("One of (or both) user(s) does not exist.");
@@ -328,25 +329,27 @@ public class SocialServer implements Runnable {
             throw new InvalidInputException("Users can not send a message to themselves.");
         }
 
-        if(!checkUserMessage(sender,receiver)){
-            writeToFile(String.format("%s | %s ; %s-%d#S#", sender,receiver, message, 0), MessageList);
-        }else{
+        if (!checkUserMessage(sender, receiver)) {
+            writeToFile(String.format("%s | %s ; %s-%d#S#", sender, receiver, message, 0), MessageList);
+        } else {
             System.out.println("run");
             try (BufferedReader messageBr = new BufferedReader(new FileReader(MessageList))) {
                 String line = messageBr.readLine();
                 while (line != null) {
-                    if(line.contains(sender)&& line.contains(receiver)){
+                    if (line.contains(sender) && line.contains(receiver)) {
                         String[] data = line.split(" | ");
                         String type;
-                        if(data[0].equals(sender)){
+                        if (data[0].equals(sender)) {
                             type = "S";
-                        }else{
+                        } else {
                             type = "R";
                         }
-                        int num = Integer.parseInt(data[data.length-1].substring(data[data.length-1].indexOf('-') + 1, data[data.length-1].indexOf('#', data[data.length-1].indexOf('-'))));
-                        num+=1;
-                        messageLine.add(String.format("%s ; %s-%d#%s#", line, message,num,type));
-                    }else{
+                        int num = Integer
+                                .parseInt(data[data.length - 1].substring(data[data.length - 1].indexOf('-') + 1,
+                                        data[data.length - 1].indexOf('#', data[data.length - 1].indexOf('-'))));
+                        num += 1;
+                        messageLine.add(String.format("%s ; %s-%d#%s#", line, message, num, type));
+                    } else {
                         messageLine.add(line);
                     }
                     line = messageBr.readLine();
@@ -463,7 +466,7 @@ public class SocialServer implements Runnable {
     // THREAD MANAGMENT
     public void run() {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-             PrintWriter pw = new PrintWriter(clientSocket.getOutputStream(), true)) {
+                PrintWriter pw = new PrintWriter(clientSocket.getOutputStream(), true)) {
             String line;
             while ((line = br.readLine()) != null) {
                 try {
