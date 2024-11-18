@@ -6,18 +6,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import ServerException.*;
 
-
-
 public class SocialServer implements Runnable {
-    private final String Users = "./Database/userPassword.txt";
     private final static String UserInfo = "./Database/Data/userInfo.txt";
     private final static String FriendList = "./Database/Data/friends.txt";
     private final static String BlockedList = "./Database/Data/blocked.txt";
     private final static String MessageList = "./Database/Data/msgs.txt";
+    private static final ReentrantLock lock = new ReentrantLock();
+    public static AtomicInteger messageID = new AtomicInteger(0);
+    private final String Users = "./Database/userPassword.txt";
     private final String Reported = "fileName";
     private Socket clientSocket;
-    public static AtomicInteger messageID = new AtomicInteger(0);
-    private static final ReentrantLock lock = new ReentrantLock();
 
     public SocialServer(Socket socket) {
         this.clientSocket = socket;
@@ -87,12 +85,12 @@ public class SocialServer implements Runnable {
 
     // Check if a user is blocked
     public static boolean checkBlocked(String username, String blockedUser) {
-        try{
-            if(getBlocked(username).contains(blockedUser)){
+        try {
+            if (getBlocked(username).contains(blockedUser)) {
                 return true;
             }
             return false;
-        }catch(Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
@@ -125,7 +123,7 @@ public class SocialServer implements Runnable {
             throw new UserNotFoundException("One or both users do not exist.");
         }
 
-        if (checkBlocked(username,blockedUser)) {
+        if (checkBlocked(username, blockedUser)) {
             throw new InvalidInputException("User is already blocked");
         }
 
@@ -151,15 +149,15 @@ public class SocialServer implements Runnable {
     // Unblock a user
     public static void unblock(String username, String unblockUser) throws UserNotFoundException, IOException, InvalidInputException {
         ArrayList<String> blockedLines = new ArrayList<>();
-        
+
         if (!checkUser(username) || !checkUser(unblockUser)) {
             throw new UserNotFoundException("User not found");
         }
-        
-        if (!checkBlocked(username,unblockUser)) {
+
+        if (!checkBlocked(username, unblockUser)) {
             throw new InvalidInputException("User is already unblocked");
         }
-        
+
         try (BufferedReader userBr = new BufferedReader(new FileReader(BlockedList))) {
             String line = userBr.readLine();
             while (line != null) {
@@ -183,12 +181,12 @@ public class SocialServer implements Runnable {
 
     // Check if a user has friended another
     public static boolean checkFriend(String username, String friendCheck) {
-        try{
-            if(getFriend(username).contains(friendCheck)){
+        try {
+            if (getFriend(username).contains(friendCheck)) {
                 return true;
             }
             return false;
-        }catch(Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
@@ -225,7 +223,7 @@ public class SocialServer implements Runnable {
         }
 
         // checks to see if users are already friends
-        if(checkFriend(username, friendedUser)){
+        if (checkFriend(username, friendedUser)) {
             throw new InvalidInputException("Users are already friends");
         }
         try (BufferedReader userBr = new BufferedReader(new FileReader(FriendList))) {
@@ -253,9 +251,9 @@ public class SocialServer implements Runnable {
         if (!checkUser(username) || !checkUser(unfriendUser)) {
             throw new UserNotFoundException("User not found");
         }
-       
+
         // checks to see if users are already friends
-        if(!checkFriend(username, unfriendUser)){
+        if (!checkFriend(username, unfriendUser)) {
             throw new InvalidInputException("Users are not friends");
         }
         try (BufferedReader userBr = new BufferedReader(new FileReader(FriendList))) {
@@ -278,7 +276,7 @@ public class SocialServer implements Runnable {
     }
 
     //MESSAGING ROUTES
-    
+
     // Retrieve a message
     public static ArrayList<String[]> getMessage(String sender, String receiver) {
         ArrayList<String[]> messagesWithID = new ArrayList<>();
@@ -299,7 +297,7 @@ public class SocialServer implements Runnable {
         }
         return messagesWithID;
     }
-    
+
     //organizes a message
     public static ArrayList<String[]> orderMessage(String user1, String user2) {
         ArrayList<String[]> messageUser1ToUser2 = getMessage(user1, user2);
@@ -321,7 +319,102 @@ public class SocialServer implements Runnable {
         }
         return combinedMessages;
     }
-    
+
+    public static void sendMessage(String sender, String receiver, String message)
+            throws IOException, UserNotFoundException, InvalidInputException {
+        if (checkUser(sender) == false || checkUser(receiver) == false) {
+            throw new UserNotFoundException("One of (or both) user(s) does not exist.");
+        }
+        if (sender.equals(receiver)) {
+            throw new InvalidInputException("Users can not send a message to themselves.");
+        }
+        ArrayList<String> updatedLines = new ArrayList<>();
+        boolean messageAdded = false;
+        String messageData = message + "," + messageID.get();
+
+        try (BufferedReader messageBr = new BufferedReader(new FileReader(MessageList))) {
+            String line = messageBr.readLine();
+            while (line != null) {
+                String[] userMessages = line.split(" \\| ");
+                if (userMessages[0].equals(sender) && userMessages[1].equals(receiver)) {
+                    String updatedLine = line + " | " + messageData;
+                    updatedLines.add(updatedLine);
+                    messageAdded = true;
+                } else {
+                    updatedLines.add(line);
+                }
+                line = messageBr.readLine();
+            }
+            // If there are no existing conversations between uesrs, create a new conservation.
+            if (!messageAdded) {
+                updatedLines.add(sender + " | " + receiver + " | " + messageData);
+            }
+
+            // Increment the message ID for the next message(s).
+            messageID.incrementAndGet();
+            // Write updated data back to the file
+            overwriteFile(updatedLines, MessageList);
+        }
+    }
+
+    //Deletes a message.
+    public static void deleteMessage(String sender, String receiver, int messageId)
+            throws IOException, UserNotFoundException, InvalidInputException {
+        // Checks to see if both users exist
+        if (!checkUser(sender) || !checkUser(receiver)) {
+            throw new UserNotFoundException("One or both users do not exist.");
+        }
+
+        // Prevent invalid message ID
+        if (messageId < 0) {
+            throw new InvalidInputException("Message ID must be a non-negative integer.");
+        }
+
+        // Prepare to store updated message data
+        ArrayList<String> updatedLines = new ArrayList<>();
+        boolean messageFound = false;
+
+        try (BufferedReader messageBr = new BufferedReader(new FileReader(MessageList))) {
+            String line = messageBr.readLine();
+            while (line != null) {
+                String[] userMessages = line.split(" \\| ");
+                if (userMessages[0].equals(sender) && userMessages[1].equals(receiver)) {
+                    // Process the line to remove the specific message
+                    StringBuilder updatedLine = new StringBuilder(sender + " | " + receiver);
+                    boolean hasMessagesLeft = false;
+
+                    for (int i = 2; i < userMessages.length; i++) {
+                        String[] messageParts = userMessages[i].split(",");
+                        int currentMessageId = Integer.parseInt(messageParts[1].trim());
+
+                        if (currentMessageId != messageId) {
+                            // Keep this message
+                            updatedLine.append(" | ").append(userMessages[i]);
+                            hasMessagesLeft = true;
+                        } else {
+                            messageFound = true; // Marks the message as found and removed
+                        }
+                    }
+
+                    if (hasMessagesLeft) {
+                        updatedLines.add(updatedLine.toString());
+                    }
+                    // If no messages are left, skip adding the line
+                } else {
+                    updatedLines.add(line); // Add lines unrelated to the sender/receiver
+                }
+                line = messageBr.readLine();
+            }
+        }
+        if (messageFound == false) {
+            throw new InvalidInputException("Message with the specified Message ID was not found.");
+        }
+
+        // Write the updated data back to the file
+        overwriteFile(updatedLines, MessageList);
+    }
+
+
     // FILE OPERATIONS
 
     public static void writeToFile(String text, String filePath) throws IOException {
@@ -329,7 +422,7 @@ public class SocialServer implements Runnable {
             pw.println(text);
         }
     }
-    
+
     public static void overwriteFile(ArrayList<String> userLines, String filePath) throws IOException {
         try (PrintWriter pwTemp = new PrintWriter(filePath)) {
             for (String newLine : userLines) {
@@ -399,21 +492,37 @@ public class SocialServer implements Runnable {
                 default:
                     throw new ClientDataException("Invalid action: " + action);
             }
-        } catch (UserNotFoundException e){
-            return "User Error: "+ e.getMessage();
-        } catch(InvalidInputException e){
-            return "Input Error: "+ e.getMessage();
-        }catch(ClientDataException e){
+        } catch (UserNotFoundException e) {
+            return "User Error: " + e.getMessage();
+        } catch (InvalidInputException e) {
+            return "Input Error: " + e.getMessage();
+        } catch (ClientDataException e) {
             return "Client Data Format Error" + e.getMessage();
-        }catch (IOException e) {
+        } catch (IOException e) {
             return "Server Error: " + e.getMessage();
+        }
+    }
+
+    // Main method
+    public static void main(String[] args) {
+        try (ServerSocket serverSocket = new ServerSocket(4242)) {
+            System.out.println("Server running on port 4242...");
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("Client Connected");
+                SocialServer server = new SocialServer(clientSocket);
+                Thread clientThread = new Thread(server);
+                clientThread.start();
+            }
+        } catch (IOException e) {
+            System.out.println("Server failed: " + e.getMessage());
         }
     }
 
     // THREAD MANAGMENT
     public void run() {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            PrintWriter pw = new PrintWriter(clientSocket.getOutputStream(), true)) {
+             PrintWriter pw = new PrintWriter(clientSocket.getOutputStream(), true)) {
             String line;
             while ((line = br.readLine()) != null) {
                 try {
@@ -447,23 +556,4 @@ public class SocialServer implements Runnable {
             }
         }
     }
-
-    // Main method
-    public static void main(String[] args) {
-        try (ServerSocket serverSocket = new ServerSocket(4242)) {
-            System.out.println("Server running on port 4242...");
-            while (true) {
-                Socket clientSocket = serverSocket.accept();
-                System.out.println("Client Connected");
-                SocialServer server = new SocialServer(clientSocket);
-                Thread clientThread = new Thread(server);
-                clientThread.start();
-            }
-        } catch (IOException e) {
-            System.out.println("Server failed: " + e.getMessage());
-        }
-    }
-    
-
-
 }
