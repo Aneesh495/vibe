@@ -5,7 +5,7 @@ import java.net.*;
 import javax.swing.*;
 import java.awt.*;
 
-public class SocialClient { // Start of SocialClient class
+public class SocialClient implements Client{ // Start of SocialClient class
     private Socket socket; // Socket for client-server communication
     private PrintWriter writer; // Writer to send data to the server
     private BufferedReader reader; // Reader to receive data from the server

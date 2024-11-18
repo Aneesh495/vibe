@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import ServerException.*;
 
-public class SocialServer implements Runnable {
+public class SocialServer implements Runnable, Server {
     private final static String UserInfo = "./Database/Data/userInfo.txt";
     private final static String FriendList = "./Database/Data/friends.txt";
     private final static String BlockedList = "./Database/Data/blocked.txt";
@@ -24,7 +24,7 @@ public class SocialServer implements Runnable {
     // USER ROUTES
 
     // Create a new user
-    private static void createUser(String username, String password, String profilePicture, String bio)
+    private void createUser(String username, String password, String profilePicture, String bio)
             throws InvalidInputException, IOException {
         if (checkUser(username) == false) {
             writeToFile(String.format("%s \\| %s \\| %s \\| %s", username, password, profilePicture, bio), UserInfo);
@@ -34,7 +34,7 @@ public class SocialServer implements Runnable {
     }
 
     // creates a new user with less parameters
-    private static void createUser(String username, String password) throws InvalidInputException, IOException {
+    public void createUser(String username, String password) throws InvalidInputException, IOException {
         if (checkUser(username) == false) {
             writeToFile(String.format("%s \\| %s \\| %s \\| %s", username, password,
                     "Database/ProfilePicture/default.png", ""), UserInfo);
@@ -70,7 +70,7 @@ public class SocialServer implements Runnable {
     }
 
     // USER AUTH ROUTE
-    private static boolean loginWithPassword(String username, String password)
+    public boolean loginWithPassword(String username, String password)
             throws UserNotFoundException, InvalidInputException, IOException {
         if (checkUser(username) == false) {
             System.out.println("aosz");
@@ -115,7 +115,7 @@ public class SocialServer implements Runnable {
     }
 
     // Block a user
-    public static void blockUser(String username, String blockedUser)
+    public void blockUser(String username, String blockedUser)
             throws InvalidInputException, UserNotFoundException, IOException {
         if (username.trim().equals(blockedUser.trim())) {
             throw new InvalidInputException("User can not block themself!");
@@ -153,7 +153,7 @@ public class SocialServer implements Runnable {
     }
 
     // Unblock a user
-    public static void unblock(String username, String unblockUser)
+    public void unblock(String username, String unblockUser)
             throws UserNotFoundException, IOException, InvalidInputException {
         ArrayList<String> blockedLines = new ArrayList<>();
 
@@ -288,9 +288,9 @@ public class SocialServer implements Runnable {
 
     // MESSAGING ROUTES
 
-    public static boolean checkUserMessage(String user1, String user2) {
+    public boolean checkUserMessage(String user1, String user2) {
         try {
-            getMessage(user1, user2);
+            this.getMessage(user1, user2);
             return true;
         } catch (Exception e) {
             return false;
@@ -298,7 +298,7 @@ public class SocialServer implements Runnable {
     }
 
     // Retrieve a message
-    public static String getMessage(String sender, String receiver) throws IOException, InvalidInputException {
+    public String getMessage(String sender, String receiver) throws IOException, InvalidInputException {
         try (BufferedReader messageBr = new BufferedReader(new FileReader(MessageList))) {
             String line = messageBr.readLine();
             while (line != null) {
@@ -319,7 +319,7 @@ public class SocialServer implements Runnable {
         }
     }
 
-    public static void sendMessage(String sender, String receiver, String message)
+    public void sendMessage(String sender, String receiver, String message)
             throws IOException, UserNotFoundException, InvalidInputException {
         ArrayList<String> messageLine = new ArrayList<>();
         if (!checkUser(sender) || !checkUser(receiver)) {
@@ -377,7 +377,7 @@ public class SocialServer implements Runnable {
 
     // REQUEST HANDLING
 
-    public static String handleRequest(String action, String caller, String data) {
+    public String handleRequest(String action, String caller, String data) {
         try {
             System.out.println("Action: " + action);
             System.out.println("Caller: " + caller);
