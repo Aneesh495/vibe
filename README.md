@@ -94,3 +94,9 @@ Groupmember Contributions - Phase 1:
 3. Lakshay: Authored user.java, messages.java, SocialServer.java
 4. Tasha: Co-authored readme file and exceptions
 5. Amelia: Oversaw operations 
+
+
+Citations:
+1. Stack overflow - https://docs.oracle.com/javase/6/docs/api/java/lang/StackOverflowError.html
+2. JPass - 
+3. 
