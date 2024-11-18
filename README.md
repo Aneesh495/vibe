@@ -62,3 +62,8 @@ Groupmember Contributions - Phase 1:
 3. Lakshay: Authored socialServer.java
 4. Tasha: Co-authored readme file
 5. Amelia: Oversaw operations
+
+Citations:
+
+Stack overflow - https://docs.oracle.com/javase/6/docs/api/java/lang/StackOverflowError.html
+JPass - https://docs.oracle.com/javase/tutorial/uiswing/components/passwordfield.html
