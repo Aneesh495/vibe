@@ -288,7 +288,6 @@ public class SocialServer implements Runnable {
 
     // Retrieve a message
     public static String getMessage(String sender, String receiver) throws IOException, InvalidInputException {
-        ArrayList<String[]> messagesWithID = new ArrayList<>();
         try (BufferedReader messageBr = new BufferedReader(new FileReader(MessageList))) {
             String line = messageBr.readLine();
             while (line != null) {
@@ -298,7 +297,9 @@ public class SocialServer implements Runnable {
                     if(data[0].equals(sender)){
                         return data[2];
                     }else{
-                        return data[2].replaceAll("+R+","+S+").replaceAll("+S+", "+R+");
+                        return data[2].replaceAll("#R#", "TEMP_PLACEHOLDER")
+                        .replaceAll("#S#", "#R#")
+                        .replaceAll("TEMP_PLACEHOLDER", "#S#");
                     }
                 }
                 line = messageBr.readLine();
@@ -307,101 +308,42 @@ public class SocialServer implements Runnable {
         }
     }
 
-
-    //organizes a message
-    public static ArrayList<String[]> orderMessage(String user1, String user2) {
-        ArrayList<String[]> messageUser1ToUser2 = getMessage(user1, user2);
-        ArrayList<String[]> messageUser2ToUser1 = getMessage(user2, user1);
-        ArrayList<String[]> combinedMessages = new ArrayList<>();
-        combinedMessages.addAll(messageUser1ToUser2);
-        combinedMessages.addAll(messageUser2ToUser1);
-        for (int i = 0; i < combinedMessages.size() - 1; i++) {
-            for (int j = 0; j < combinedMessages.size() - 1 - i; j++) {
-                String[] message1 = combinedMessages.get(j);
-                String[] message2 = combinedMessages.get(j + 1);
-                int msgID1 = Integer.parseInt(message1[1]);
-                int msgID2 = Integer.parseInt(message2[1]);
-                if (msgID1 > msgID2) {
-                    combinedMessages.set(j, message2);
-                    combinedMessages.set(j + 1, message1);
-                }
-            }
-        }
-        return combinedMessages;
-    }
-
     public static void sendMessage(String sender, String receiver, String message)throws IOException, UserNotFoundException, InvalidInputException {
-        if (checkUser(sender) || checkUser(receiver)) {
+        ArrayList<String> messageLine = new ArrayList<>();
+        if (!checkUser(sender) || !checkUser(receiver)) {
             throw new UserNotFoundException("One of (or both) user(s) does not exist.");
         }
         if (sender.equals(receiver)) {
             throw new InvalidInputException("Users can not send a message to themselves.");
         }
 
-        try{
-
-        }
-    }
-
-
-
-    //Deletes a message.
-    public static void deleteMessage(String sender, String receiver, int messageId)
-            throws IOException, UserNotFoundException, InvalidInputException {
-        // Checks to see if both users exist
-        if (!checkUser(sender) || !checkUser(receiver)) {
-            throw new UserNotFoundException("One or both users do not exist.");
-        }
-
-        // Prevent invalid message ID
-        if (messageId < 0) {
-            throw new InvalidInputException("Message ID must be a non-negative integer.");
-        }
-
-        // Prepare to store updated message data
-        ArrayList<String> updatedLines = new ArrayList<>();
-        boolean messageFound = false;
-
-        try (BufferedReader messageBr = new BufferedReader(new FileReader(MessageList))) {
-            String line = messageBr.readLine();
-            while (line != null) {
-                String[] userMessages = line.split(" \\| ");
-                if (userMessages[0].equals(sender) && userMessages[1].equals(receiver)) {
-                    // Process the line to remove the specific message
-                    StringBuilder updatedLine = new StringBuilder(sender + " | " + receiver);
-                    boolean hasMessagesLeft = false;
-
-                    for (int i = 2; i < userMessages.length; i++) {
-                        String[] messageParts = userMessages[i].split(",");
-                        int currentMessageId = Integer.parseInt(messageParts[1].trim());
-
-                        if (currentMessageId != messageId) {
-                            // Keep this message
-                            updatedLine.append(" | ").append(userMessages[i]);
-                            hasMessagesLeft = true;
-                        } else {
-                            messageFound = true; // Marks the message as found and removed
+        if(!checkUserMessage(sender,receiver)){
+            writeToFile(String.format("%s | %s ; %s-%d#S#", sender,receiver, message, 0), MessageList);
+        }else{
+            System.out.println("run");
+            try (BufferedReader messageBr = new BufferedReader(new FileReader(MessageList))) {
+                String line = messageBr.readLine();
+                while (line != null) {
+                    if(line.contains(sender)&& line.contains(receiver)){
+                        String[] data = line.split(" | ");
+                        String type;
+                        if(data[0].equals(sender)){
+                            type = "S";
+                        }else{
+                            type = "R";
                         }
+                        int num = Integer.parseInt(data[data.length-1].substring(data[data.length-1].indexOf('-') + 1, data[data.length-1].indexOf('#', data[data.length-1].indexOf('-'))));
+                        num+=1;
+                        messageLine.add(String.format("%s ; %s-%d#%s#", line, message,num,type));
+                    }else{
+                        messageLine.add(line);
                     }
-
-                    if (hasMessagesLeft) {
-                        updatedLines.add(updatedLine.toString());
-                    }
-                    // If no messages are left, skip adding the line
-                } else {
-                    updatedLines.add(line); // Add lines unrelated to the sender/receiver
+                    line = messageBr.readLine();
                 }
-                line = messageBr.readLine();
             }
+            overwriteFile(messageLine, MessageList);
         }
-        if (messageFound == false) {
-            throw new InvalidInputException("Message with the specified Message ID was not found.");
-        }
-
-        // Write the updated data back to the file
-        overwriteFile(updatedLines, MessageList);
     }
-
 
     // FILE OPERATIONS
 
@@ -492,20 +434,19 @@ public class SocialServer implements Runnable {
     }
 
     // Main method
-    public static void main(String[] args) {
-        sendMessage();
-        // try (ServerSocket serverSocket = new ServerSocket(4242)) {
-        //     System.out.println("Server running on port 4242...");
-        //     while (true) {
-        //         Socket clientSocket = serverSocket.accept();
-        //         System.out.println("Client Connected");
-        //         SocialServer server = new SocialServer(clientSocket);
-        //         Thread clientThread = new Thread(server);
-        //         clientThread.start();
-        //     }
-        // } catch (IOException e) {
-        //     System.out.println("Server failed: " + e.getMessage());
-        // }
+    public static void main(String[] args) throws IOException, UserNotFoundException, InvalidInputException {
+        try (ServerSocket serverSocket = new ServerSocket(4242)) {
+            System.out.println("Server running on port 4242...");
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("Client Connected");
+                SocialServer server = new SocialServer(clientSocket);
+                Thread clientThread = new Thread(server);
+                clientThread.start();
+            }
+        } catch (IOException e) {
+            System.out.println("Server failed: " + e.getMessage());
+        }
     }
 
     // THREAD MANAGMENT
