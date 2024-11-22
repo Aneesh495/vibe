@@ -245,23 +245,23 @@ public class SocialClient implements Client{ // Start of SocialClient class
         // sets up button
         JButton button = new JButton("Send Message");
         button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e){
+            public void actionPerformed(ActionEvent e) {
                 
                 // gets text
                 String rec = recipient.getText().trim();
                 String mes = message.getText().trim();
                 
                 // checks to see if they are blank
-                if(rec.isBlank()|| mes.isBlank()){
+                if (rec.isBlank()|| mes.isBlank()) {
                     JOptionPane.showMessageDialog(null,"All fields must be filled out",
                     "Field Error", JOptionPane.ERROR_MESSAGE);
                 }
                 String data = String.format("%s | %s", rec,mes);
                 String createResponse = client.sendRequest("sendMessage", username,data);
-                if(createResponse.toLowerCase().contains("error")){
+                if (createResponse.toLowerCase().contains("error")) {
                     JOptionPane.showMessageDialog(null,createResponse,
                     "Error", JOptionPane.ERROR_MESSAGE);
-                }else{
+                } else {
                     JOptionPane.showMessageDialog(null,createResponse,
                     "Success", JOptionPane.INFORMATION_MESSAGE);
                 }
@@ -288,7 +288,7 @@ public class SocialClient implements Client{ // Start of SocialClient class
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(6, 1, 5, 5));
 
-        // Create buttons for various actions
+        // Create buttons for various actions    // CHANGE LAYOUT, ADD USER BIO AND PFP
         JButton blockButton = new JButton("Block User");
         JButton friendButton = new JButton("Friend User");
         JButton unfriendButton = new JButton("Unfriend User");
