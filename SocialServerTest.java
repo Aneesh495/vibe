@@ -26,16 +26,16 @@ class SocialServerTest {
                 users.add(username + " | " + password);
             }
 
-            @Override
-            public String getUser(String username) throws UserNotFoundException {
-                for (String user : users) {
-                    String[] userInfo = user.split(" \\| ");
-                    if (userInfo[0].equals(username)) {
-                        return user;
-                    }
-                }
-                throw new UserNotFoundException("User Not Found");
-            }
+//            @Override
+//            public String getUser(String username) throws UserNotFoundException {
+//                for (String user : users) {
+//                    String[] userInfo = user.split(" \\| ");
+//                    if (userInfo[0].equals(username)) {
+//                        return user;
+//                    }
+//                }
+//                throw new UserNotFoundException("User Not Found");
+//            }
 
             @Override
             public boolean loginWithPassword(String username, String password) throws UserNotFoundException, InvalidInputException {

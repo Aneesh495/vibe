@@ -33,7 +33,7 @@ public class SocialServer implements Runnable, Server {
         }
     }
 
-    // creates a new user with less parameters
+    // creates a new user with fewer parameters
     public void createUser(String username, String password) throws InvalidInputException, IOException {
         if (checkUser(username) == false) {
             writeToFile(String.format("%s \\| %s \\| %s \\| %s", username, password,
