@@ -35,7 +35,7 @@ public class SocialServer implements Runnable { //start runnable
         }
     } //end createUser method.
 
-    // creates a new user with less parameters
+    // creates a new user with fewer parameters
     private static void createUser(String username, String password) throws InvalidInputException, IOException {
         //creates a user without profile picture and bio parameters.
         if (checkUser(username) == false) { //if user doesn't exist
