@@ -1,18 +1,14 @@
-import ServerException.UserNotFoundException;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.*;
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 
 public class SocialClient implements Client{ // Start of SocialClient class
     private Socket socket; // Socket for client-server communication
     private PrintWriter writer; // Writer to send data to the server
     private BufferedReader reader; // Reader to receive data from the server
-    private static String officialUsername = ""; // Collects username for display purposes
 
     // Constructor initializes the client and attempts to connect to the server.
     public SocialClient(String address, int port) { // Constructor
@@ -108,13 +104,7 @@ public class SocialClient implements Client{ // Start of SocialClient class
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose(); // Close the initial window
-                try {
-                    performLogin(client);
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                } catch (UserNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+                performLogin(client);
             }
         });
 
@@ -123,17 +113,13 @@ public class SocialClient implements Client{ // Start of SocialClient class
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose(); // Close the initial window
-                try {
-                    performCreateAccount(client);
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
+                performCreateAccount(client);
             }
         });
     }
 
     // Performs the login process
-    private static void performLogin(SocialClient client) throws IOException, UserNotFoundException {
+    private static void performLogin(SocialClient client) {
         JPanel panel = new JPanel(new GridLayout(2, 2, 5, 5));
 
         JLabel userLabel = new JLabel("Username:");
@@ -167,7 +153,6 @@ public class SocialClient implements Client{ // Start of SocialClient class
             if ("Login successful".equalsIgnoreCase(loginResponse.trim())) {
                 JOptionPane.showMessageDialog(null, "Login Successful!", "Welcome",
                         JOptionPane.INFORMATION_MESSAGE);
-                officialUsername = username;
                 showMainPanel(client, username);
             } else if ("Input Error: Incorrect Password!".equalsIgnoreCase(loginResponse.trim()) ||
                     loginResponse.contains("Error")) {
@@ -190,7 +175,7 @@ public class SocialClient implements Client{ // Start of SocialClient class
     }
 
     // Performs the account creation process
-    private static void performCreateAccount(SocialClient client) throws IOException {
+    private static void performCreateAccount(SocialClient client) {
         JPanel panel = new JPanel(new GridLayout(2, 2, 5, 5));
 
         JLabel userLabel = new JLabel("Username:");
@@ -233,9 +218,6 @@ public class SocialClient implements Client{ // Start of SocialClient class
             if ("User created successfully".equalsIgnoreCase(createResponse.trim())) {
                 JOptionPane.showMessageDialog(null, "Account created successfully! You can now log in.", "Success",
                         JOptionPane.INFORMATION_MESSAGE);
-                PrintWriter pw = new PrintWriter(new FileWriter("./Database/Data/userInfo.txt", true));
-                pw.append(data);
-                pw.close();
                 createInitialGUI(client); // Return to initial GUI
             } else if (createResponse.contains("Error") || createResponse.contains("Input Error")) {
                 JOptionPane.showMessageDialog(null, createResponse, "Creation Failed",
@@ -263,23 +245,23 @@ public class SocialClient implements Client{ // Start of SocialClient class
         // sets up button
         JButton button = new JButton("Send Message");
         button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e){
                 
                 // gets text
                 String rec = recipient.getText().trim();
                 String mes = message.getText().trim();
                 
                 // checks to see if they are blank
-                if (rec.isBlank()|| mes.isBlank()) {
+                if(rec.isBlank()|| mes.isBlank()){
                     JOptionPane.showMessageDialog(null,"All fields must be filled out",
                     "Field Error", JOptionPane.ERROR_MESSAGE);
                 }
                 String data = String.format("%s | %s", rec,mes);
                 String createResponse = client.sendRequest("sendMessage", username,data);
-                if (createResponse.toLowerCase().contains("error")) {
+                if(createResponse.toLowerCase().contains("error")){
                     JOptionPane.showMessageDialog(null,createResponse,
                     "Error", JOptionPane.ERROR_MESSAGE);
-                } else {
+                }else{
                     JOptionPane.showMessageDialog(null,createResponse,
                     "Success", JOptionPane.INFORMATION_MESSAGE);
                 }
@@ -297,23 +279,16 @@ public class SocialClient implements Client{ // Start of SocialClient class
         JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE);
     }
     // Displays the main application panel after successful login
-    private static void showMainPanel(SocialClient client, String username) throws IOException, UserNotFoundException { // showMainPanel method
+    private static void showMainPanel(SocialClient client, String username) { // showMainPanel method
         JFrame frame = new JFrame("Social Client");
-        frame.setSize(900, 600);
+        frame.setSize(300, 300);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null); // Center the window
 
-        JPanel userButtons = new JPanel();
-        userButtons.setLayout(new GridLayout(1, 7, 5, 5));
-        String fillerTextString = "filler text. The bio will go here";
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(6, 1, 5, 5));
 
-        String userBio = "";
-        String[] userInfo = SocialServer.getUser(officialUsername).split(" \\| ");
-        userBio = userInfo[3];
-        JLabel userInfoLabel = new JLabel(userBio);
-
-        // TODO: add logout option, message panel, view other user pages
-        // Create buttons for various actions    // CHANGE LAYOUT, ADD USER BIO AND PFP
+        // Create buttons for various actions
         JButton blockButton = new JButton("Block User");
         JButton friendButton = new JButton("Friend User");
         JButton unfriendButton = new JButton("Unfriend User");
@@ -321,9 +296,6 @@ public class SocialClient implements Client{ // Start of SocialClient class
         JButton messageButton = new JButton("Message User");
         JButton unblockButton = new JButton("Unblock User");
         JButton getMessage = new JButton("Retrieve Message");
-
-        String[] selections = {officialUsername + " - Main Page", "Settings", "Logout"};
-        JComboBox<String> userSelection = new JComboBox<String>(selections);
 
         // Add action listeners to the buttons
         blockButton.addActionListener(new ActionListener() {
@@ -357,7 +329,7 @@ public class SocialClient implements Client{ // Start of SocialClient class
         messageButton.addActionListener(new ActionListener() { // Currently not implemented
             @Override
             public void actionPerformed(ActionEvent e) {
-                sendMessage(client, username, frame);
+                sendMessage(client,username, frame);
             }
         });
 
@@ -374,16 +346,14 @@ public class SocialClient implements Client{ // Start of SocialClient class
         });
 
         // Add buttons to the panel
-        userButtons.add(blockButton);
-        userButtons.add(friendButton);
-        userButtons.add(unfriendButton);
-        userButtons.add(searchButton);
-        userButtons.add(messageButton);
-        userButtons.add(unblockButton);
-        userButtons.add(getMessage);
-        frame.add(userSelection, BorderLayout.NORTH);
-        frame.add(userInfoLabel);
-        frame.add(userButtons, BorderLayout.SOUTH);
+        panel.add(blockButton);
+        panel.add(friendButton);
+        panel.add(unfriendButton);
+        panel.add(searchButton);
+        panel.add(messageButton);
+        panel.add(unblockButton);
+        panel.add(getMessage);
+        frame.add(panel);
         frame.setVisible(true);
     } // End of showMainPanel method
 
