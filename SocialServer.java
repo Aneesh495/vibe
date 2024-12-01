@@ -358,6 +358,86 @@ public class SocialServer implements Runnable, Server {
         }
     }
 
+    public void editMessage(String sender, String reciever, int messageId, String newMessage) throws IOException, UserNotFoundException{
+        ArrayList<String> messageLine = new ArrayList<>();
+
+        System.out.println("works");
+        // check if users exist
+        if (!checkUser(sender) || !checkUser(reciever)) {
+            throw new UserNotFoundException("User not found");
+        }
+
+        try (BufferedReader userBr = new BufferedReader(new FileReader(MessageList))) {
+            // loop through file
+            String line = userBr.readLine();
+            while (line != null) {
+                // check user info
+                String[] userInfo = line.split(" \\| ");
+                if ((userInfo[0].equals(sender) || userInfo[0].equals(reciever)) &&
+                (userInfo[1].equals(reciever) || userInfo[1].equals(sender))) {
+                    System.out.println("userFound");
+                    String[] messages = userInfo[2].split("\\s*;\\s*");
+                    String newLine= "";
+                    for(int i=0;i<messages.length;i++){
+                        if(messages[i].contains("-"+messageId+"#S#")){
+                            messages[i]= String.format("%s-%d#S#",newMessage,messageId);
+                        }else if(messages[i].contains("-"+messageId+"#R#")){
+                            messages[i]= String.format("%s-%d#R#",newMessage,messageId);
+                        }
+                        newLine += messages[i];
+                        if(i!=messages.length-1){
+                            newLine+=" ; ";
+                        }
+                    }
+                    messageLine.add(String.format("%s | %s | %s", userInfo[0], userInfo[1],newLine));
+                } else {
+                    messageLine.add(line);
+                }
+                line = userBr.readLine();
+            }
+            overwriteFile(messageLine, MessageList);
+        }
+    }
+
+    public void deleteMessage(String sender, String reciever, int messageId) throws IOException, UserNotFoundException{
+        ArrayList<String> messageLine = new ArrayList<>();
+
+        System.out.println("works");
+        // check if users exist
+        if (!checkUser(sender) || !checkUser(reciever)) {
+            throw new UserNotFoundException("User not found");
+        }
+
+        try (BufferedReader userBr = new BufferedReader(new FileReader(MessageList))) {
+            // loop through file
+            String line = userBr.readLine();
+            while (line != null) {
+                // check user info
+                String[] userInfo = line.split(" \\| ");
+                if ((userInfo[0].equals(sender) || userInfo[0].equals(reciever)) &&
+                (userInfo[1].equals(reciever) || userInfo[1].equals(sender))) {
+                    String[] messages = userInfo[2].split("\\s*;\\s*");
+                    String newLine= "";
+                    for(int i=0;i<messages.length;i++){
+                        if(messages[i].contains("-"+messageId+"#S#")){
+                            messages[i]= "";
+                        }else if(messages[i].contains("-"+messageId+"#R#")){
+                            messages[i]= "";
+                        }
+                        newLine += messages[i];
+                        if(i!=messages.length-1 && !messages[i].isEmpty()){
+                            newLine+=" ; ";
+                        }
+                    }
+                    messageLine.add(String.format("%s | %s | %s", userInfo[0], userInfo[1],newLine));
+                } else {
+                    messageLine.add(line);
+                }
+                line = userBr.readLine();
+            }
+            overwriteFile(messageLine, MessageList);
+        }
+    }
     // FILE OPERATIONS
 
     public static void writeToFile(String text, String filePath) throws IOException {
@@ -437,6 +517,11 @@ public class SocialServer implements Runnable, Server {
                     return "Message sent succesfully";
                 case "getMessage":
                     return getMessage(caller, userInformation[0]);
+                case "deleteMessage":
+                    deleteMessage(caller, userInformation[0],Integer.parseInt(userInformation[1]));
+                    return "Message deleted succesfully";
+                case "editMessage":
+                    editMessage(caller, userInformation[0], Integer.parseInt(userInformation[1]), userInformation[2]);
                 default:
                     throw new ClientDataException("Invalid action: " + action);
             }
@@ -452,19 +537,20 @@ public class SocialServer implements Runnable, Server {
     }
 
     // Main method
-    public static void main(String[] args) {
-        try (ServerSocket serverSocket = new ServerSocket(4242)) {
-            System.out.println("Server running on port 4242...");
-            while (true) {
-                Socket clientSocket = serverSocket.accept();
-                System.out.println("Client Connected");
-                SocialServer server = new SocialServer(clientSocket);
-                Thread clientThread = new Thread(server);
-                clientThread.start();
-            }
-        } catch (IOException e) {
-            System.out.println("Server failed: " + e.getMessage());
-        }
+    public static void main(String[] args) throws IOException, UserNotFoundException {
+        deleteMessage("lakshaym", "alice", 1);
+        // try (ServerSocket serverSocket = new ServerSocket(4242)) {
+        //     System.out.println("Server running on port 4242...");
+        //     while (true) {
+        //         Socket clientSocket = serverSocket.accept();
+        //         System.out.println("Client Connected");
+        //         SocialServer server = new SocialServer(clientSocket);
+        //         Thread clientThread = new Thread(server);
+        //         clientThread.start();
+        //     }
+        // } catch (IOException e) {
+        //     System.out.println("Server failed: " + e.getMessage());
+        // }
     }
 
     // THREAD MANAGMENT

@@ -1,4 +1,4 @@
 user1 | user2 | hi how are you-1#R# | I am good-2#S#
 lakshaym | johnnyNew | fnjfnjfnjfn-0#S#  ;  fnjfnjfnjfn-0#R# ; fnjfnjfnjfn-1#R# ; wow new message-2#S# ; wow new message-3#R#
-lakshaym | alice | jnjnjn-0#S# ; heyyyy-1#S# ; hey123-2#S# ; wiw wassup-3#R#
+lakshaym | alice | jnjnjn-0#S# ; i jsut edit message-1#S# ; hey123-2#S# ; wiw wassup-3#R#
 dragon | alice | Hello Alice!-0#S# ; I'm seeing how messages work-1#S#
