@@ -538,19 +538,18 @@ public class SocialServer implements Runnable, Server {
 
     // Main method
     public static void main(String[] args) throws IOException, UserNotFoundException {
-        deleteMessage("lakshaym", "alice", 1);
-        // try (ServerSocket serverSocket = new ServerSocket(4242)) {
-        //     System.out.println("Server running on port 4242...");
-        //     while (true) {
-        //         Socket clientSocket = serverSocket.accept();
-        //         System.out.println("Client Connected");
-        //         SocialServer server = new SocialServer(clientSocket);
-        //         Thread clientThread = new Thread(server);
-        //         clientThread.start();
-        //     }
-        // } catch (IOException e) {
-        //     System.out.println("Server failed: " + e.getMessage());
-        // }
+        try (ServerSocket serverSocket = new ServerSocket(4242)) {
+            System.out.println("Server running on port 4242...");
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("Client Connected");
+                SocialServer server = new SocialServer(clientSocket);
+                Thread clientThread = new Thread(server);
+                clientThread.start();
+            }
+        } catch (IOException e) {
+            System.out.println("Server failed: " + e.getMessage());
+        }
     }
 
     // THREAD MANAGMENT
