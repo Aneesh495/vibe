@@ -1,5 +1,5 @@
-testUser333 | testpassword333 | Database/ProfilePicture/default.png33 | 
-lakshaym | password123 | Database/ProfilePicture/default.png | 
+testUser333 | testpassword333 | Database/ProfilePicture/default.png33 | Sample Bio
+lakshaym | password123 | Database/Files/lakshaymScreenshot 2024-09-24 at 9.08.06 AM.png | heyyy wassup guys im     
 johnnyNew | newpass123 | /path/to/newpic | Updated bio for Johnny
 johnnyNew | newpass123 | /path/to/newpic | Updated bio for Johnny
 alice | alicepass | /path/to/pic | Hello, I am Alice!
