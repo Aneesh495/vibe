@@ -67,5 +67,5 @@ Groupmember Contributions - Phase 1:
 
 Citations:
 
-Stack overflow - https://docs.oracle.com/javase/6/docs/api/java/lang/StackOverflowError.html
-JPass - https://docs.oracle.com/javase/tutorial/uiswing/components/passwordfield.html
+1. Stack overflow - https://docs.oracle.com/javase/6/docs/api/java/lang/StackOverflowError.html
+2. JPass - https://docs.oracle.com/javase/tutorial/uiswing/components/passwordfield.html
