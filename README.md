@@ -8,7 +8,7 @@ GUI:
 In phase 3, we focused on implementing complex GUI for our social media app.
 1. For messaging, we took inspiration from WhatsApp to implement dark-grey and light-green bubbles to differentiate messages sent between user 1 and 2.
 2. For edit and delete messages, we took inspiration from Discord to impleent a 'pencil' icon to model the edit message function and a 'trash' icon to model the delete message function.
-3. We decided to design the home screen on our own to keep it original and give our social media an app a flavor of our own. 
+3. We decided to design the home screen on our own to keep it original and give our social media an app a flavor of our own. We did this using Apache Netbeans
 
 Files:
 1. blocked.txt - Consists of a list of every user and who they have blocked.
