@@ -59,6 +59,10 @@ public class SocialServer implements Runnable {
             throw new UserNotFoundException("User Not Found");
         }
     }
+    public static void editUser(String username, String info) throws UserNotFoundException, IOException {
+        String[] data = info.split(",");
+        editUser(username, data[0], data[1], data[2], data[3]);
+    }
 
     public static void editUser(String username,String newUsername, String newPassword, String newProfilePicture, String newBio) throws UserNotFoundException, IOException {
         ArrayList<String> userInfo = new ArrayList<>();
