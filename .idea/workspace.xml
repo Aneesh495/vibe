@@ -8,27 +8,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Database/Data/msgs.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Database/Data/msgs.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Database/Data/userInfo.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Database/Data/userInfo.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SocialClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/SocialClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SocialServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/SocialServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/Data/msgs.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/Data/msgs.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/Data/userInfo.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/Data/userInfo.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/Server.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/Server.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$10.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$2.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$3.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$4.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$4.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$5.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$5.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$6.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$6.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$7.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$8.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$9.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialServer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialServerTest$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialServerTest$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialServerTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialServerTest.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,7 +57,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "last-min-bug-fixes",
+    "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true"
   }
 }]]></component>
