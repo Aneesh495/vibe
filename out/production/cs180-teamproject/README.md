@@ -1,8 +1,14 @@
-README.file Phase 2 Team Project - by: Aneesh, Lakshay, Garv, Tasha, and Amelia
+README.file Phase 3 Team Project - by: Aneesh, Lakshay, Garv, Tasha, and Amelia
 
-ALERT: We have changed many of the code from Phase 1, since we redesigned the way we want to move forward with the project. 
+ALERT: We extensively worked on the GUI of the Social Meida App on this phase, and a lot of GUI has been completely reworked. 
 
 Database: We opt to store the data for our social media app using files. We decided it would be feasible to implement this as we could make use of buffered reader & writer to access user information conviniently.
+
+GUI: 
+In phase 3, we focused on implementing complex GUI for our social media app.
+1. For messaging, we took inspiration from WhatsApp to implement dark-grey and light-green bubbles to differentiate messages sent between user 1 and 2.
+2. For edit and delete messages, we took inspiration from Discord to impleent a 'pencil' icon to model the edit message function and a 'trash' icon to model the delete message function.
+3. We decided to design the home screen on our own to keep it original and give our social media an app a flavor of our own. We did this using Apache Netbeans
 
 Files:
 1. blocked.txt - Consists of a list of every user and who they have blocked.
@@ -13,14 +19,10 @@ Files:
 6. deafult.png - Consists of the default PFP if user doesn't provide a PFP image. 
 
 Exceptions:
-1. MessagesNotFoundException.java - Throws an exception when user calls getMessage method and has no message history.
-2. OperationFailedException.java - Throws an exception when a user calls an unexecutable method.
-3. UserAlreadFriendException.java - Throws an exception when user tries friending a user who they are already friends with.
-4. UserAlreadyBlockedException.java - Throws an exception when user tries blocking a user who they've already blocked.
-5. UserAlreadyExistsException.java - Throws an exception when a new user is attempted to be created based on an username which already exists in the database. 
-6. UserNotBlockedException.java - Throws an exception when user tries unblocking a user who isn't blocked in the first place. 
-7. UserNotFoundException.java - Throws an exception when user tries searching for a user or passes a user has a parameter who doesn't exist. 
-8. UserNotFriendException.java - Throws an exception when user tries doing a frined-only-interaction with a user they aren't friends with.
+1. ClientDataException.java - Throws an exception when a user tries accessing invalid data.
+2. CustomException.java - Used for throwing custom exceptions for rare cases not covered by other exceptions.
+3. InvalidInputException.java - Throws an exception when a user inputs contains errors.
+4. UserNotFound.java - Throws an exception when a function is called with an invalid username as paramater.
 
 Social Client:
 Initializes a "localhost" on socket 8080. Shows GUI to Login. If entered username isn't found, prompts user to create new account. If a correct username is entered, prompts user to confirm login with password.
@@ -57,13 +59,13 @@ Test Files:
 
 Groupmember Contributions - Phase 1:
 
-1. Aneesh: Authored readme file, custom exception classes, and test cases.
-2. Garv: Authored clientServer.java and Server
-3. Lakshay: Authored socialServer.java
-4. Tasha: Co-authored readme file
+1. Aneesh: Authored ReadMe file, Group Report, and editMessage/deleteMessage functions.
+2. Garv: Authored clientServer.java, server and home page GUI.
+3. Lakshay: Authored socialServer.java, and messaging GUI.
+4. Tasha: Co-authored group presentation
 5. Amelia: Oversaw operations
 
 Citations:
 
-Stack overflow - https://docs.oracle.com/javase/6/docs/api/java/lang/StackOverflowError.html
-JPass - https://docs.oracle.com/javase/tutorial/uiswing/components/passwordfield.html
+1. Stack overflow - https://docs.oracle.com/javase/6/docs/api/java/lang/StackOverflowError.html
+2. JPass - https://docs.oracle.com/javase/tutorial/uiswing/components/passwordfield.html
