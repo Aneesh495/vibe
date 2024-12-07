@@ -376,9 +376,12 @@ public class SocialClientGUI {
             clearSearchPanel();
         });
 
-        editProfileButton.addActionListener(e -> {
-            ((CardLayout) cardPanel.getLayout()).show(cardPanel, "EDITPROFILE");
-            refreshEditProfilePanel();
+        editProfileButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String resp = sendRequest("getUser", loggedInUser, loggedInUser);
+                String[] userInfo = resp.split(" \\| ");
+                showEditProfile(mainPanel, loggedInUser,userInfo[1],userInfo[2],userInfo[3]);
+            }
         });
 
         mainPanel.add(chatScrollPane, BorderLayout.CENTER);
@@ -545,6 +548,115 @@ public class SocialClientGUI {
         });
 
         blockedList.addListSelectionListener(e -> unblockButton.setEnabled(blockedList.getSelectedIndex()!= -1));
+    }
+
+    private void showEditProfile(JPanel sidePanel, String username, String password, String profilePicturePath, String bio) {
+        // Create a new frame for editing profile
+        JFrame editFrame = new JFrame("Edit Profile");
+        editFrame.setSize(400, 500);
+        editFrame.setLayout(new BorderLayout());
+
+        // Main panel for editing
+        JPanel editPanel = new JPanel();
+        editPanel.setLayout(new GridLayout(5, 2, 10, 10));
+        editPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+                // Components for editing
+        JLabel usernameLabel = new JLabel("Username:");
+        JTextField usernameField = new JTextField(username);
+        JTextField profilePictureField = new JTextField();
+        JLabel passwordLabel = new JLabel("Password:");
+        JPasswordField passwordField = new JPasswordField(password);
+
+        JLabel profilePictureLabel = new JLabel("Profile Picture:");
+        JPanel profilePicturePanel = new JPanel(new BorderLayout());
+        JLabel profilePictureDisplay = new JLabel(); // Label to display the profile picture
+        profilePictureDisplay.setHorizontalAlignment(JLabel.CENTER);
+        profilePictureDisplay.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+        // Load and scale the profile picture
+        ImageIcon profileImage = new ImageIcon(profilePicturePath);
+        Image scaledImage = profileImage.getImage().getScaledInstance(200, 300, Image.SCALE_SMOOTH);
+        profilePictureDisplay.setIcon(new ImageIcon(scaledImage));
+
+        JButton uploadButton = new JButton("Upload Picture");
+        uploadButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            int result = fileChooser.showOpenDialog(editFrame);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+
+                // Update the profile picture path field
+                profilePictureField.setText("Database/Files/" + username + selectedFile.getName());
+
+                File destination = new File("Database/Files/" + username + selectedFile.getName());
+                if (!destination.getParentFile().exists()) {
+                    destination.getParentFile().mkdirs();
+                }
+                try {
+                    Files.copy(selectedFile.toPath(), destination.toPath());
+                } catch (IOException e1) {
+                    
+                }
+                
+            }
+        });
+
+        profilePicturePanel.add(profilePictureDisplay, BorderLayout.CENTER);
+        profilePicturePanel.add(uploadButton, BorderLayout.SOUTH);
+
+        JLabel bioLabel = new JLabel("Bio:");
+        JTextArea bioArea = new JTextArea(bio);
+        bioArea.setLineWrap(true);
+        bioArea.setWrapStyleWord(true);
+
+        // Add components to panel
+        editPanel.add(usernameLabel);
+        editPanel.add(usernameField);
+        editPanel.add(passwordLabel);
+        editPanel.add(passwordField);
+        editPanel.add(profilePictureLabel);
+        editPanel.add(profilePicturePanel); // Add profile picture panel
+        editPanel.add(bioLabel);
+        JScrollPane bioScrollPane = new JScrollPane(bioArea);
+        editPanel.add(bioScrollPane);
+        // Buttons
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton saveButton = new JButton("Save");
+        JButton cancelButton = new JButton("Cancel");
+
+        // Add save and cancel buttons to panel
+        buttonPanel.add(saveButton);
+        buttonPanel.add(cancelButton);
+
+        // Save button action listener
+        saveButton.addActionListener((ActionEvent event) -> {
+            String updatedUsername = usernameField.getText();
+            String updatedPassword = new String(passwordField.getPassword());
+            String updatedProfilePicturePath = profilePictureField.getText();
+            String updatedBio = bioArea.getText();
+
+            String data = String.format("%s | %s | %s | %s | %s ",username, updatedUsername,updatedPassword,updatedProfilePicturePath,updatedBio);
+            System.out.println(data);
+            String response = sendRequest("editUser", username, data);
+
+            System.out.println(response);
+            if (response.toLowerCase().contains("error")) {
+                JOptionPane.showMessageDialog(sidePanel, response, "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                editFrame.dispose();
+            }
+        });
+
+        // Cancel button action listener
+        cancelButton.addActionListener((ActionEvent event) -> editFrame.dispose());
+
+        // Add components to frame
+        editFrame.add(editPanel, BorderLayout.CENTER);
+        editFrame.add(buttonPanel, BorderLayout.SOUTH);
+
+        // Show the frame
+        editFrame.setVisible(true);
     }
 
     private void refreshBlockedPanel() {
@@ -821,18 +933,20 @@ public class SocialClientGUI {
 
     private void openChatWindow(String username, String targetUser) {
         JFrame chatFrame = new JFrame("Chat with " + targetUser);
-        chatFrame.setSize(400, 500);
-        chatFrame.setLocationRelativeTo(null);
+        chatFrame.setSize(500, 600);
+        chatFrame.setLocationRelativeTo(null); // Center the window
         String filename = "";
         JPanel panel = new JPanel(new BorderLayout());
 
-        JTextArea chatArea = new JTextArea();
-        chatArea.setEditable(false);
-        chatArea.setLineWrap(true);
-        chatArea.setWrapStyleWord(true);
-        chatArea.setFont(new Font("Arial", Font.PLAIN, 14));
+        // JTextArea chatArea = new JTextArea();
 
-        JScrollPane scrollPane = new JScrollPane(chatArea);
+        JPanel chatPanel = new JPanel();
+        chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
+
+
+
+
+        JScrollPane scrollPane = new JScrollPane(chatPanel);
 
         JTextField messageField = new JTextField();
         messageField.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -841,46 +955,56 @@ public class SocialClientGUI {
         sendButton.setFont(new Font("Arial", Font.PLAIN, 14));
         sendButton.addActionListener(e -> {
             String message = messageField.getText().trim();
-            if(!filename.isEmpty()){
-                String data = String.format("%s | %s",targetUser,filename);
-                String response = sendRequest("sendMessage", username, data);
-                if (response.toLowerCase().contains("error")) {
-                    JOptionPane.showMessageDialog(chatFrame, response, "Error", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    chatArea.append("Me: " + message + "\n");
-                    messageField.setText("");
-                }
-            }
             if (!message.isEmpty()) {
+                // Send the message to the server or handle it
                 String data = String.format("%s | %s", targetUser, message);
                 String response = sendRequest("sendMessage", username, data);
+        
                 if (response.toLowerCase().contains("error")) {
                     JOptionPane.showMessageDialog(chatFrame, response, "Error", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    chatArea.append("Me: " + message + "\n");
+                    // Add the message bubble to the chat panel
+                    chatPanel.add(createMessageBubble("Me", message, chatPanel));
+                    
+                    // Update the panel
+                    chatPanel.revalidate();
+                    chatPanel.repaint();
+                    chatFrame.revalidate();
+                    chatFrame.repaint();
+        
+                    // Scroll to the bottom
+                    JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar();
+                    SwingUtilities.invokeLater(() -> {
+                        verticalScrollBar.setValue(verticalScrollBar.getMaximum());
+                    });
+        
+                    // Clear the input field
                     messageField.setText("");
                 }
             }
         });
 
-        JButton uploadImg = new JButton("{}");
+        JButton uploadImg = new JButton("IMG");
         JFileChooser fileChooser = new JFileChooser();
-        JLabel imagePreviewLabel = new JLabel("No Image selected");
-        imagePreviewLabel.setPreferredSize(new Dimension(200, 150));
-        imagePreviewLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+     
         fileChooser.setFileFilter(new FileFilter() {
             public boolean accept(File file){
-                if (file.isDirectory()) return true;
-                String name = file.getName().toLowerCase();
-                return name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png") || name.endsWith(".gif");
+                if (file.isDirectory()) {
+                        return true; // Allow directories
+                    }
+                    String name = file.getName().toLowerCase();
+                    return name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png");
             }
+
             public String getDescription() {
                 return "Image Files (*.jpg, *.jpeg, *.png, *.gif)";
             }
         });
 
+
         uploadImg.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
+
                 int file = fileChooser.showOpenDialog(fileChooser);
                 if(file == fileChooser.APPROVE_OPTION){
                     File selectedFile = fileChooser.getSelectedFile();
@@ -890,47 +1014,68 @@ public class SocialClientGUI {
                             destination.getParentFile().mkdirs();
                         }
                         Files.copy(selectedFile.toPath(), destination.toPath());
-
+                        
                         String data = String.format("%s | #FILE#:%s", targetUser, "Database/Files/" + username+ targetUser + selectedFile.getName());
                         String response = sendRequest("sendMessage", username, data);
                         if (response.toLowerCase().contains("error")) {
                             JOptionPane.showMessageDialog(chatFrame, response, "Error", JOptionPane.ERROR_MESSAGE);
+                        } else {
+                            ImageIcon tempImage= new ImageIcon("Database/Files/" + username+ targetUser + selectedFile.getName());
+                            Image scaledImage = tempImage.getImage().getScaledInstance(tempImage.getIconWidth()/6, tempImage.getIconHeight()/6, Image.SCALE_SMOOTH);
+                            ImageIcon scaledIcon = new ImageIcon(scaledImage);
+                            JLabel imageLabel = new JLabel("Me:", JLabel.LEFT);
+                            imageLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+                            JPanel imgBubbleContent = new JPanel(new BorderLayout());
+                            imgBubbleContent.add(imageLabel,BorderLayout.WEST);
+                            imgBubbleContent.add(new JLabel(scaledIcon),BorderLayout.CENTER);
+                            imgBubbleContent.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+                            chatPanel.add(imgBubbleContent); 
+
+                            chatPanel.revalidate();
+                            chatPanel.repaint();
+                            chatFrame.revalidate();
+                            chatFrame.repaint();
                         }
+                    
                     } catch (IOException ioException) {
-                        JOptionPane.showMessageDialog(fileChooser,
-                                "Error saving file: " + ioException.getMessage(),
-                                "Error",
-                                JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(fileChooser, 
+                            "Error saving file: " + ioException.getMessage(), 
+                            "Error", 
+                            JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
         });
 
+        chatPanel.setBackground(Color.decode("#F8F8FF"));
         JPanel inputPanel = new JPanel(new BorderLayout());
         JPanel uploadSend = new JPanel(new GridLayout(0,2));
         JPanel imageMessagePrev = new JPanel(new BorderLayout());
         uploadSend.add(sendButton);
         uploadSend.add(uploadImg);
         imageMessagePrev.add(inputPanel, BorderLayout.SOUTH);
-        imageMessagePrev.add(imagePreviewLabel, BorderLayout.NORTH);
         inputPanel.add(messageField, BorderLayout.CENTER);
         inputPanel.add(uploadSend, BorderLayout.EAST);
         panel.add(scrollPane, BorderLayout.CENTER);
         panel.add(imageMessagePrev, BorderLayout.SOUTH);
-
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // Horizontal scrolling can be avoided for cha
         chatFrame.add(panel);
         chatFrame.setVisible(true);
 
-        loadChatHistory(username, targetUser, chatArea);
+        // Load existing messages
+        loadChatHistory(username, targetUser, chatPanel);
 
+        // Start a timer to poll for new messages every 3 seconds
         Timer timer = new Timer(3000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                loadChatHistory(username, targetUser, chatArea);
+                loadChatHistory(username, targetUser, chatPanel);
             }
         });
         timer.start();
 
+        // Stop the timer when the window is closed
         chatFrame.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
@@ -939,13 +1084,70 @@ public class SocialClientGUI {
         });
     }
 
-    private void loadChatHistory(String username, String targetUser, JTextArea chatArea) {
+    private static JPanel createMessageBubble(String sender, String messageText, JPanel chatPanel) {
+        // Create a panel for the message bubble
+        JPanel messageBubble = new JPanel();
+        messageBubble.setLayout(new BorderLayout());
+        messageBubble.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10)); // Padding: Top, Left, Bottom, Right
+        messageBubble.setOpaque(false); // Make the panel transparent
+    
+        // Create the editable text area
+        JTextArea messageArea = new JTextArea(sender + ": " + messageText);
+        messageArea.setFont(new Font("Arial", Font.PLAIN, 12)); // Smaller font for compact area
+        messageArea.setEditable(true);
+        messageArea.setWrapStyleWord(true);
+        messageArea.setLineWrap(true);
+        messageArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Padding inside the bubble
+        if(sender.equals("Me")){
+            messageArea.setBackground(new Color(220, 248, 198)); // Background color confined to content
+        }else{
+            messageArea.setBackground(new Color(220,220,220));
+        }
+      
+        messageArea.setForeground(Color.BLACK);
+        messageArea.setCaretColor(Color.BLACK);
+    
+        // Dynamically set the preferred size based on the text length
+        int textLength = messageText.length();
+        int bubbleWidth = Math.min(220, Math.max(50, textLength * 7)); // Adjust bubble width based on text length
+        messageArea.setPreferredSize(new Dimension(bubbleWidth, messageArea.getPreferredSize().height));
+    
+        // Add a rounded border to the message area itself
+        // messageArea.setBorder(BorderFactory.createCompoundBorder(
+        //         BorderFactory.createLineBorder(Color.GRAY, 1, true) // Rounded border
+        //         //BorderFactory.createEmptyBorder(5, 5, 5, 5) // Padding inside the border
+        // ));
+    
+  
+        // JButton deleteButton = new JButton("X"); // Compact delete button
+        // deleteButton.setFont(new Font("Arial", Font.BOLD, 10)); // Smaller font for delete button
+        // deleteButton.setMargin(new Insets(2, 2, 2, 2)); // Compact padding for the button
+        // deleteButton.addActionListener(e -> {
+        //     chatPanel.remove(messageBubble); // Remove the bubble from the panel
+        //     chatPanel.revalidate();
+        //     chatPanel.repaint();
+        // });
+    
+        // Add the text area and delete button to the bubble
+        JPanel bubbleContent = new JPanel();
+        bubbleContent.setLayout(new BorderLayout());
+        bubbleContent.add(messageArea, BorderLayout.CENTER);
+        // bubbleContent.add(deleteButton, BorderLayout.EAST);
+        bubbleContent.setOpaque(false); // Transparent background for the content
+    
+        messageBubble.add(bubbleContent);
+    
+        return messageBubble;
+    }
+
+    private void loadChatHistory( String username, String targetUser, JPanel chatPanel) {
         String data = targetUser;
         String response = sendRequest("getMessage", username, data);
         if (response.toLowerCase().contains("error")) {
-            // do nothing
+            // Do nothing or display an error message if needed
         } else {
-            chatArea.setText("");
+            // Clear the chat area and display messages
+            chatPanel.removeAll();
             String[] messages = response.split(" ; ");
             for (String msg : messages) {
                 String[] parts = msg.split("-\\d+#");
@@ -953,9 +1155,43 @@ public class SocialClientGUI {
                     String messageText = parts[0];
                     String messageType = parts[1].replace("#", "");
                     if (messageType.equals("S")) {
-                        chatArea.append("Me: " + messageText + "\n");
+                        if(msg.contains("#FILE#:")){
+
+                            String imgPath = msg.replace("#FILE#:", "").trim();
+                            if (imgPath.matches(".*-\\d+#S#")) {
+                                int index = imgPath.lastIndexOf('-');
+                                if (index != -1) {
+                                    imgPath = imgPath.substring(0, index);
+                                }
+                            }
+                            System.out.println("Img Path: "+ imgPath);
+                            
+                            ImageIcon tempImage= new ImageIcon(imgPath);
+                            Image scaledImage = tempImage.getImage().getScaledInstance(tempImage.getIconWidth()/6, tempImage.getIconHeight()/6, Image.SCALE_SMOOTH);
+                            ImageIcon scaledIcon = new ImageIcon(scaledImage);
+                            JLabel imageLabel = new JLabel("Me:", JLabel.LEFT);
+                            imageLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+                            JPanel imgBubbleContent = new JPanel(new BorderLayout());
+                            imgBubbleContent.add(imageLabel,BorderLayout.WEST);
+                            imgBubbleContent.add(new JLabel(scaledIcon),BorderLayout.CENTER);
+                            imgBubbleContent.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+                            chatPanel.add(imgBubbleContent);   
+                        }else{
+                            chatPanel.add(createMessageBubble("Me", messageText, chatPanel));
+                        }
                     } else if (messageType.equals("R")) {
-                        chatArea.append(targetUser + ": " + messageText + "\n");
+                        if(msg.contains("#FILE#:")){
+
+                            String imgPath = msg.replace("#FILE#:", "").trim();
+                            ImageIcon tempImage= new ImageIcon(imgPath);
+                            JLabel imageLabel = new JLabel(targetUser+":", JLabel.LEFT);
+                            imageLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+                            
+                            chatPanel.add(imageLabel);
+                            chatPanel.add(new JLabel(tempImage));   
+                        }else{
+                            chatPanel.add(createMessageBubble(targetUser, messageText, chatPanel));
+                        }
                     }
                 }
             }

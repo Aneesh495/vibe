@@ -596,6 +596,16 @@ public class SocialClient {
                             //CHANGE
                             // chatArea.append("Me: " + message + "\n");
                             // messageField.setText("");
+                            ImageIcon tempImage= new ImageIcon("Database/Files/" + username+ targetUser + selectedFile.getName());
+                            Image scaledImage = tempImage.getImage().getScaledInstance(tempImage.getIconWidth()/6, tempImage.getIconHeight()/6, Image.SCALE_SMOOTH);
+                            ImageIcon scaledIcon = new ImageIcon(scaledImage);
+                            JLabel imageLabel = new JLabel("Me:", JLabel.LEFT);
+                            imageLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+                            JPanel imgBubbleContent = new JPanel(new BorderLayout());
+                            imgBubbleContent.add(imageLabel,BorderLayout.WEST);
+                            imgBubbleContent.add(new JLabel(scaledIcon),BorderLayout.CENTER);
+                            imgBubbleContent.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+                            chatPanel.add(imgBubbleContent);   
                         }
                     
                     } catch (IOException ioException) {
