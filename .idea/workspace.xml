@@ -10,7 +10,25 @@
       <change beforePath="$PROJECT_DIR$/Database/Data/userInfo.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Database/Data/userInfo.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SocialClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/SocialClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SocialServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/SocialServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SocialServerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/SocialServerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/Data/msgs.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/Data/msgs.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/Data/userInfo.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/Data/userInfo.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/Server.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/Server.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$10.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$3.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$4.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$4.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$5.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$5.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$6.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$6.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$7.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$8.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$9.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialServer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialServerTest$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialServerTest$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialServerTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialServerTest.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,15 +36,32 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;dragonOfDefenestration&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/GT27-eth/cs180-teamprjct.git&quot;,
+    &quot;accountId&quot;: &quot;1e4dd974-bcc7-49ff-a92c-c9ec4a942c3e&quot;
+  }
+}</component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 7
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 7
+}</component>
   <component name="ProjectId" id="2pGuwAnMQiGoYDYqq7bJ6alJGEF" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -34,13 +69,17 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Application.SocialClient.executor": "Run",
+    "Application.SocialServer.executor": "Run",
     "Downloaded.Files.Path.Enabled": "true",
     "Repository.Attach.Annotations": "false",
     "Repository.Attach.JavaDocs": "false",
     "Repository.Attach.Sources": "false",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main"
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "last-min-bug-fixes",
+    "kotlin-language-version-configured": "true"
   }
 }]]></component>
   <component name="RunManager">
@@ -50,6 +89,17 @@
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="cs180-teamprjct-unsure" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="cs180-teamprjct-unsure" />
+      <option name="filePath" />
+      <method v="2" />
     </configuration>
     <recent_temporary>
       <list>
@@ -67,5 +117,16 @@
       <updated>1732404970932</updated>
     </task>
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

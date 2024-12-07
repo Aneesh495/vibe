@@ -14,7 +14,8 @@ public class SocialServer implements Runnable {
     private final static String BlockedList = "./Database/Data/blocked.txt";
     private final static String MessageList = "./Database/Data/msgs.txt";
     private static final ReentrantLock lock = new ReentrantLock();
-    public static AtomicInteger messageID = new AtomicInteger(0);
+    //public static AtomicInteger messageID = new AtomicInteger(0);
+    public static String messageID = "";
     private final String Users = "./Database/userPassword.txt";
     private final String Reported = "fileName";
     private Socket clientSocket;
@@ -389,6 +390,7 @@ public class SocialServer implements Runnable {
         overwriteFile(messageLines, MessageList);
     }
 
+
     // FILE OPERATIONS
 
     public static void writeToFile(String text, String filePath) throws IOException {
@@ -431,7 +433,6 @@ public class SocialServer implements Runnable {
 
     public String handleRequest(String action, String caller, String data) {
         try {
-            System.out.println(action);
             String[] userInformation = data.split(" \\| ");
             switch (action) {
                 case "createUser":
