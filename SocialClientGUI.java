@@ -957,6 +957,7 @@ public class SocialClientGUI {
             String message = messageField.getText().trim();
             if (!message.isEmpty()) {
                 // Send the message to the server or handle it
+                
                 String data = String.format("%s | %s", targetUser, message);
                 String response = sendRequest("sendMessage", username, data);
         
@@ -964,8 +965,7 @@ public class SocialClientGUI {
                     JOptionPane.showMessageDialog(chatFrame, response, "Error", JOptionPane.ERROR_MESSAGE);
                 } else {
                     // Add the message bubble to the chat panel
-                    chatPanel.add(createMessageBubble("Me", message, chatPanel));
-                    
+                    chatPanel.add(createMessageBubble("Me", message, chatPanel,Integer.parseInt(response),targetUser,username));
                     // Update the panel
                     chatPanel.revalidate();
                     chatPanel.repaint();
@@ -1084,7 +1084,7 @@ public class SocialClientGUI {
         });
     }
 
-    private static JPanel createMessageBubble(String sender, String messageText, JPanel chatPanel) {
+    private JPanel createMessageBubble(String sender, String messageText, JPanel chatPanel, int msgId, String reciever, String sendDel) {
         // Create a panel for the message bubble
         JPanel messageBubble = new JPanel();
         messageBubble.setLayout(new BorderLayout());
@@ -1119,22 +1119,64 @@ public class SocialClientGUI {
         // ));
     
   
-        // JButton deleteButton = new JButton("X"); // Compact delete button
-        // deleteButton.setFont(new Font("Arial", Font.BOLD, 10)); // Smaller font for delete button
-        // deleteButton.setMargin(new Insets(2, 2, 2, 2)); // Compact padding for the button
-        // deleteButton.addActionListener(e -> {
-        //     chatPanel.remove(messageBubble); // Remove the bubble from the panel
-        //     chatPanel.revalidate();
-        //     chatPanel.repaint();
-        // });
-    
-        // Add the text area and delete button to the bubble
+        JButton deleteButton = new JButton("X"); // Compact delete button
+        deleteButton.setFont(new Font("Arial", Font.BOLD, 10)); // Smaller font for delete button
+        deleteButton.setMargin(new Insets(1, 1, 1, 1)); // Compact padding for the button
+        deleteButton.addActionListener(e -> {
+            String data = String.format("%s | %s", reciever, msgId);
+            String delResponse = sendRequest("deleteMessage", sendDel, data);
+            if(delResponse.equals("Message deleted succesfully")){
+                chatPanel.remove(messageBubble); // Remove the bubble from the panel
+            }
+            else{
+                JOptionPane.showMessageDialog(chatPanel, "Error, try again", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+            chatPanel.revalidate();
+            chatPanel.repaint();
+        });
+        
+        JButton editButton = new JButton("Edit");
+        editButton.setFont(new Font("Arial", Font.BOLD, 10)); // Same font style
+        editButton.setMargin(new Insets(1, 1, 1, 1)); // Compact padding
+        editButton.addActionListener(e -> {
+            // Handle edit action here
+            String newMessage = JOptionPane.showInputDialog("Edit your message:", messageText);
+            if (newMessage != null && !newMessage.trim().isEmpty()) {
+                // Update the message text and send update to the server
+                String data = String.format("%s | %s | %s", reciever, msgId,newMessage.trim());
+                System.out.println(data);
+                String reqString = sendRequest("editMessage", sendDel, data);
+                messageBubble.revalidate();
+                messageBubble.repaint();
+                chatPanel.revalidate();
+                chatPanel.repaint();
+                if(reqString.equals("Message Edited")){
+                    messageArea.setText("Me" + ": " + newMessage.trim());
+                }else{
+                    JOptionPane.showMessageDialog(chatPanel, "Error, try again", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+
+            }
+        });
+        
+        // Create a panel to stack the buttons vertically
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+        buttonPanel.setOpaque(false); // Transparent background for the button panel
+        buttonPanel.add(editButton);
+        buttonPanel.add(deleteButton);
+        
+        // Add the text area and button panel to the bubble
         JPanel bubbleContent = new JPanel();
         bubbleContent.setLayout(new BorderLayout());
         bubbleContent.add(messageArea, BorderLayout.CENTER);
-        // bubbleContent.add(deleteButton, BorderLayout.EAST);
+        
+        if (sender.toLowerCase().equals("me")) {
+            bubbleContent.add(buttonPanel, BorderLayout.EAST); // Add stacked buttons to the right
+        }
         bubbleContent.setOpaque(false); // Transparent background for the content
-    
+        
         messageBubble.add(bubbleContent);
     
         return messageBubble;
@@ -1151,6 +1193,7 @@ public class SocialClientGUI {
             String[] messages = response.split(" ; ");
             for (String msg : messages) {
                 String[] parts = msg.split("-\\d+#");
+                String number = msg.substring(msg.length() - 4, msg.length() - 3);
                 if (parts.length >= 2) {
                     String messageText = parts[0];
                     String messageType = parts[1].replace("#", "");
@@ -1164,7 +1207,7 @@ public class SocialClientGUI {
                                     imgPath = imgPath.substring(0, index);
                                 }
                             }
-                            System.out.println("Img Path: "+ imgPath);
+                            System.out.println(number);
                             
                             ImageIcon tempImage= new ImageIcon(imgPath);
                             Image scaledImage = tempImage.getImage().getScaledInstance(tempImage.getIconWidth()/6, tempImage.getIconHeight()/6, Image.SCALE_SMOOTH);
@@ -1177,7 +1220,7 @@ public class SocialClientGUI {
                             imgBubbleContent.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
                             chatPanel.add(imgBubbleContent);   
                         }else{
-                            chatPanel.add(createMessageBubble("Me", messageText, chatPanel));
+                            chatPanel.add(createMessageBubble("Me", messageText, chatPanel,Integer.parseInt(number),targetUser,username));
                         }
                     } else if (messageType.equals("R")) {
                         if(msg.contains("#FILE#:")){
@@ -1190,7 +1233,7 @@ public class SocialClientGUI {
                             chatPanel.add(imageLabel);
                             chatPanel.add(new JLabel(tempImage));   
                         }else{
-                            chatPanel.add(createMessageBubble(targetUser, messageText, chatPanel));
+                            chatPanel.add(createMessageBubble("Me", messageText, chatPanel,Integer.parseInt(number),targetUser,username));
                         }
                     }
                 }
