@@ -1,1 +1,8 @@
-
+testUser333 | testpassword333 | Database/ProfilePicture/default.png33 | Sample Bio
+lakshaym | password123 | Database/Files/lakshaymScreenshot 2024-09-18 at 9.52.28 AM.png | heyyy wassup guys im happy 
+johnnyNew | newpass123 | /path/to/newpic | Updated bio for Johnny
+johnnyNew | newpass123 | /path/to/newpic | Updated bio for Johnny
+alice | alicepass | /path/to/pic | Hello, I am Alice!
+dragon | goldDragon | Database/Files/dragonbrain scrampled egg.jpg | this me  
+garvt27 | garvt27 | Database/Files/garvt27Screenshot 2024-04-30 at 1.39.13 AM.png | default bio     
+wolf | whiteWolf | Database/ProfilePicture/default.png | default bio

@@ -1,15 +1,18 @@
-import Exceptions.ServerException.*;
+import java.io.IOException;
+import ServerException.*;
 
-import java.io.*;
 public interface Server {
-       
-       public void createUser(User user) throws InvalidCredentialsException, IOException;
-       
-       public void createUser(String username, String password) throws InvalidCredentialsException, IOException;
-       
-       // public void editUserInfo(User user) throws UserNotFoundException, UserInputException, IOException;
-   
-       // public void blockUser(String userId) throws UserNotFoundException, BlockedActionException;
-   
-       // public void getMessage(String userId1) throws UserNotFoundException, BlockedActionException;
-   }
+    void createUser(String username, String password) throws IOException, InvalidInputException;
+    boolean loginWithPassword(String username, String password) 
+            throws IOException, UserNotFoundException, InvalidInputException;
+    String handleRequest(String action, String caller, String data)
+            throws IOException, UserNotFoundException, InvalidInputException, ClientDataException;
+    void sendMessage(String sender, String receiver, String message)
+            throws IOException, UserNotFoundException, InvalidInputException;
+    String getMessage(String sender, String receiver)
+            throws IOException, UserNotFoundException, InvalidInputException;
+    void blockUser(String username, String blockedUser)
+            throws IOException, UserNotFoundException, InvalidInputException;
+    void unblock(String username, String unblockUser)
+            throws IOException, UserNotFoundException, InvalidInputException;
+}
