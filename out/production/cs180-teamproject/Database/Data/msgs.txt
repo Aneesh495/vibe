@@ -1,8 +1,1 @@
-user1 | user2 | hi how are you-1#R# | I am good-2#S#
-lakshaym | johnnyNew | fnjfnjfnjfn-0#S#  ;  fnjfnjfnjfn-0#R# ; fnjfnjfnjfn-1#R# ; wow new message-2#S# ; wow new message-3#R# ; amazing-5#S# ; #FILE#:Database/Files/lakshaymjohnnyNewScreenshot 2024-09-24 at 9.08.06 AM.png-6#S#
-lakshaym | alice | jnjnjn-0#S# ; i jsut edit message-1#S# ; hey123-2#S# ; wiw wassup-3#R# ; nah-4#S# ; wtf-5#S# ; #FILE#:Database/Files/lakshaymaliceScreenshot 2024-09-23 at 5.57.41 PM.png-6#S# ; #FILE#:Database/Files/lakshaymaliceScreenshot 2024-09-16 at 1.08.20 PM.png-7#S#
-dragon | alice | Hello Alice!-0#S# ; I'm seeing how messages work-1#S# ; #FILE#:Database/Files/dragonalicebrain scrampled egg.jpg-2#S# ; hellooooo-3#S# ; test-4#S# ; hallo-5#S# ; test-6#S#
-garvt27 | lakshaym | yo wasg-0#S#
-garvt27 | alice | hi alice garv here-0#S# ; #FILE#:Database/Files/garvt27aliceScreenshot 2024-05-08 at 12.27.40 PM.png-1#S# ; #FILE#:Database/Files/garvt27aliceScreenshot 2024-06-29 at 11.24.55 AM.png-2#S# ; #FILE#:Database/Files/garvt27aliceScreenshot 2024-05-02 at 2.37.15 PM.png-3#S#
-dragon | garvt27 | test-0#S# ; another test-1#S#
-dragon | wolf | hello, me-0#S# ; I'm trying to get it to show up but now it's glitching-1#S# ; Still glitching...but at least it works?-2#S# ; testing deletion-3#S# ; testing message panel glitching?-4#S# ; :OOOOO IT WORKED!!!-5#S# ; testing deletion again?-6#S# ; darn it-7#S# ; yeah, I know, it's annoying-8#R# ; #FILE#:Database/Files/wolfdragonbrain scrampled egg.jpg-9#R# ; the pictures don't send-10#S#
+user1 | user2 | Hello!-0#S# ; Hello!-1#S#

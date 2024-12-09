@@ -5,14 +5,63 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f2579074-c270-4527-a636-fcda1282ee5a" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Database/Data/blocked.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Database/Data/blocked.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Database/Data/friends.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Database/Data/friends.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Database/Data/msgs.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Database/Data/msgs.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Database/Data/userInfo.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Database/Data/userInfo.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SocialClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/SocialClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SocialClientTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/SocialClientTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SocialServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/SocialServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SocialServerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/SocialServerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/Client.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/ClientDataException.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/ClientDataException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/Data/blocked.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/Data/blocked.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/Data/friends.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/Data/friends.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/Data/msgs.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/Data/msgs.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/Data/userInfo.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/Data/userInfo.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/logo.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/logo.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/InvalidInputException.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/InvalidInputException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/Server.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/Server.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/ServerException/ClientDataException.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/ServerException/ClientDataException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/ServerException/CustomException.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/ServerException/CustomException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/ServerException/InvalidInputException.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/ServerException/InvalidInputException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/ServerException/UserNotFoundException.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/ServerException/UserNotFoundException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$3.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$4.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$4.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$5.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$5.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$6.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClientGUI$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClientGUI$2.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClientGUI$3.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClientGUI$4.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClientGUI$5.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClientGUI$6.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClientGUI.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClientTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClientTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialServer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialServerTest$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialServerTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialServerTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/UserNotFoundException.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/UserNotFoundException.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+        <option value="Exception" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -28,12 +77,15 @@
     &quot;assignee&quot;: &quot;dragonOfDefenestration&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/GT27-eth/cs180-teamprjct.git&quot;,
-    &quot;accountId&quot;: &quot;1e4dd974-bcc7-49ff-a92c-c9ec4a942c3e&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/GT27-eth/cs180-teamprjct.git",
+    "accountId": "620bf50c-ca0c-4827-8739-0f0286397857"
   }
-}</component>
+}]]></component>
+  <component name="GoLibraries">
+    <option name="indexEntireGoPath" value="true" />
+  </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
@@ -51,20 +103,85 @@
     "Application.SocialClient.executor": "Run",
     "Application.SocialServer.executor": "Run",
     "Downloaded.Files.Path.Enabled": "true",
+    "JUnit.SocialClientTest.executor": "Run",
+    "JUnit.SocialClientTest.testAccountCreation.executor": "Run",
+    "JUnit.SocialClientTest.testLoginValidCredentials.executor": "Run",
+    "JUnit.SocialClientTest.testRemoveFriend.executor": "Run",
+    "JUnit.SocialClientTest.testSendValidRequest.executor": "Run",
+    "JUnit.SocialServerTest.executor": "Run",
+    "JUnit.SocialServerTest.testBlockUser.executor": "Run",
+    "JUnit.SocialServerTest.testCreateUser.executor": "Run",
+    "JUnit.SocialServerTest.testDeleteMessage.executor": "Run",
+    "JUnit.SocialServerTest.testFriendUser.executor": "Run",
+    "JUnit.SocialServerTest.testSendAndRetrieveMessage.executor": "Run",
+    "JUnit.SocialServerTest.testUnfriendUser.executor": "Run",
     "Repository.Attach.Annotations": "false",
     "Repository.Attach.JavaDocs": "false",
     "Repository.Attach.Sources": "false",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.go.formatter.settings.were.checked": "true",
+    "RunOnceActivity.go.migrated.go.modules.settings": "true",
     "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true"
+    "go.import.settings.migrated": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/lakshaymahajan/Desktop/idd/cs180-teamprjct",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RunManager">
-    <configuration name="SocialServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="SocialServer" />
+    <configuration name="SocialClientTest.testAccountCreation" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="cs180-teamproject" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="SocialClientTest" />
+      <option name="METHOD_NAME" value="testAccountCreation" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SocialClientTest.testLoginValidCredentials" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="cs180-teamproject" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="SocialClientTest" />
+      <option name="METHOD_NAME" value="testLoginValidCredentials" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SocialClientTest.testRemoveFriend" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="cs180-teamproject" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="SocialClientTest" />
+      <option name="METHOD_NAME" value="testRemoveFriend" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SocialClientTest.testSendValidRequest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="cs180-teamproject" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="SocialClientTest" />
+      <option name="METHOD_NAME" value="testSendValidRequest" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SocialServerTest.testBlockUser" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="cs180-teamproject" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="SocialServerTest" />
+      <option name="METHOD_NAME" value="testBlockUser" />
+      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -82,9 +199,21 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.SocialServer" />
+        <item itemvalue="JUnit.SocialClientTest.testLoginValidCredentials" />
+        <item itemvalue="JUnit.SocialClientTest.testRemoveFriend" />
+        <item itemvalue="JUnit.SocialClientTest.testAccountCreation" />
+        <item itemvalue="JUnit.SocialClientTest.testSendValidRequest" />
+        <item itemvalue="JUnit.SocialServerTest.testBlockUser" />
       </list>
     </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-28b599e66164-intellij.indexing.shared.core-IU-242.22855.74" />
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-IU-242.22855.74" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -94,8 +223,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732404970932</updated>
+      <workItem from="1733709697239" duration="6568000" />
     </task>
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -107,5 +240,29 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VgoProject">
+    <integration-enabled>false</integration-enabled>
+    <settings-migrated>true</settings-migrated>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/SocialServerTest.java</url>
+          <line>105</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/SocialClientTest.java</url>
+          <line>64</line>
+          <properties class="SocialClientTest" method="testLoginValidCredentials">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

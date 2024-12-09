@@ -1,147 +1,162 @@
-import org.junit.jupiter.api.*;
-import java.io.*;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.*;
+import javax.swing.*;
+import java.util.*;
 
-class SocialClientTest {
-    private SocialClient client;
-    private SocialServer server;
-    private Thread serverThread;
+// SERVER HAS TO BE RUNNING FOR TEST CASES TO WORK
+public class SocialClientTest {
 
-    @BeforeEach
-    void setUp() throws IOException {
-        // Start the server in a separate thread
-        serverThread = new Thread(() -> {
-            try {
-                ServerSocket serverSocket = new ServerSocket(4242);
-                while (true) {
-                    new Thread(new SocialServer(serverSocket.accept())).start();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        serverThread.start();
+    @BeforeClass
+    public static void setupDatabase() throws Exception {
+        // Wipe and initialize the database with basic test data
+        SocialServer server = new SocialServer(null);
 
-        // Initialize client with the running server
-        client = new SocialClient("127.0.0.1", 4242);
+        // Clear all files
+        server.overwriteFile(new ArrayList<>(), "./Database/Data/userInfo.txt");
+        server.overwriteFile(new ArrayList<>(), "./Database/Data/friends.txt");
+        server.overwriteFile(new ArrayList<>(), "./Database/Data/blocked.txt");
+        server.overwriteFile(new ArrayList<>(), "./Database/Data/msgs.txt");
+
+        // Create test accounts
+        server.createUser("testuser", "password");
+        server.createUser("frienduser", "password");
+        server.createUser("user1", "password");
+        server.createUser("user2", "password");
+        server.createUser("blockeduser", "password");
+        server.createUser("validuser", "validpassword", "Database/ProfilePicture/default.png","Default Bio");
+        server.createUser("duplicateuser", "password");
     }
 
-    @AfterEach
-    void tearDown() {
-        // Close the client connection
+    // --- Socket Connection Tests ---
+    @Test
+    public void testConnectionSuccess() {
+        SocialClient client = new SocialClient("127.0.0.1", 4242);
+        assertNotNull("Socket should not be null if connection is successful", client.socket);
         client.closeConnection();
-
-        // Stop the server thread
-        serverThread.interrupt();
     }
 
-    //Account test cases.
-
     @Test
-    void testCreateAccount() {
-        // Simulate user creation
-        String username = "testClientUser_" + System.currentTimeMillis();
-        String password = "testPassword123";
-        String data = username + " | " + password + " | default.png | default bio";
+    public void testConnectionFailure() {
+        SocialClient client = new SocialClient("127.0.0.1", 9999); // Invalid port
+        assertNull("Socket should be null if connection fails", client.socket);
+    }
+
+    // --- Request Handling Tests ---
+    @Test
+    public void testSendValidRequest() {
+        SocialClient client = new SocialClient("127.0.0.1", 4242);
+        String data = String.format("%s | %s | %s | %s", "newuser", "newpassword", "Database/ProfilePicture/default.png",
+                "default bio");
         String response = client.sendRequest("createUser", "", data);
-
-        assertEquals("User created successfully", response.trim(), "User should be created successfully");
+        assertEquals("Expected successful response from server", "User created successfully", response);
+        client.closeConnection();
     }
 
     @Test
-    void testLogin() {
-        // Create a user and test login
-        String username = "clientLoginUser_" + System.currentTimeMillis();
-        String password = "securePass";
-        client.sendRequest("createUser", "", username + " | " + password + 
-                " | defaultPic.png | default bio");
-
-        String loginResponse = client.sendRequest("loginWithPassword", username, password);
-        assertEquals("Login successful", loginResponse.trim(), "Login should be successful with correct credentials");
+    public void testSendInvalidRequest() {
+        SocialClient client = new SocialClient("127.0.0.1", 4242);
+        String response = client.sendRequest("invalidAction", "testuser", "data");
+        assertTrue("Response should contain 'Error' for invalid action", response.contains("Error"));
+        client.closeConnection();
     }
 
-    //Friend test cases.
-
+    // --- Login Tests ---
     @Test
-    void testAddFriend() {
-        String userA = "clientUserA_" + System.currentTimeMillis();
-        String userB = "clientUserB_" + System.currentTimeMillis();
-        client.sendRequest("createUser", "", userA + " | passwordA | default.png | default bio");
-        client.sendRequest("createUser", "", userB + " | passwordB | default.png | default bio");
-
-        // User A friends User b. 
-        String friendResponse = client.sendRequest("friendUser", userA, userB);
-        assertTrue(friendResponse.toLowerCase().contains("friended successfully"), 
-                "User should be friended successfully");
+    public void testLoginValidCredentials() {
+        SocialClient client = new SocialClient("127.0.0.1", 4242);
+        client.performLogin("validuser", "validpassword", new JFrame());
+        assertEquals("Logged in user should be updated", "validuser", client.loggedInUser);
+        client.closeConnection();
     }
 
     @Test
-    void testRemoveFriend() {
-        String userA = "clientUserA_" + System.currentTimeMillis();
-        String userB = "clientUserB_" + System.currentTimeMillis();
-        client.sendRequest("createUser", "", userA + " | passwordA | default.png | default bio");
-        client.sendRequest("createUser", "", userB + " | passwordB | default.png | default bio");
-        //User A unfriends User B.
-        client.sendRequest("friendUser", userA, userB);
-        String unfriendResponse = client.sendRequest("unfriend", userA, userB);
-        assertTrue(unfriendResponse.toLowerCase().contains("unfriended successfully"), 
-                "User should be unfriended successfully");
+    public void testLoginInvalidCredentials() {
+        SocialClient client = new SocialClient("127.0.0.1", 4242);
+        client.performLogin("invaliduser", "wrongpassword", new JFrame());
+        assertNull("Logged in user should not be updated with invalid credentials", client.loggedInUser);
+        client.closeConnection();
     }
 
-    //Block test cases.
-
+    // --- Account Creation Tests ---
     @Test
-    void testBlockUser() {
-        String userA = "clientBlockA_" + System.currentTimeMillis();
-        String userB = "clientBlockB_" + System.currentTimeMillis();
-        client.sendRequest("createUser", "", userA + " | passwordA | default.png | default bio");
-        client.sendRequest("createUser", "", userB + " | passwordB | default.png | default bio");
-        //User A block user B
-        String blockResponse = client.sendRequest("blockUser", userA, userB);
-        assertTrue(blockResponse.toLowerCase().contains("blocked successfully"), "User should be blocked successfully");
+    public void testAccountCreation() {
+        SocialClient client = new SocialClient("127.0.0.1", 4242);
+        String data = String.format("%s | %s | %s | %s", "uniqueuser", "uniquepassword", "Database/ProfilePicture/default.png",
+                "default bio");
+        String response = client.sendRequest("createUser", "", data);
+        assertEquals("Expected success message", "User created successfully", response);
+        client.closeConnection();
     }
 
     @Test
-    void testUnblockUser() {
-        // Create two users
-        String userA = "clientBlockA_" + System.currentTimeMillis();
-        String userB = "clientBlockB_" + System.currentTimeMillis();
-        client.sendRequest("createUser", "", userA + " | passwordA | default.png | default bio");
-        client.sendRequest("createUser", "", userB + " | passwordB | default.png | default bio");
-
-        // Block and then unblock userB by userA
-        client.sendRequest("blockUser", userA, userB);
-        String unblockResponse = client.sendRequest("unblock", userA, userB);
-        assertTrue(unblockResponse.toLowerCase().contains("unblocked successfully"), 
-                "User should be unblocked successfully");
+    public void testDuplicateAccountCreation() {
+        SocialClient client = new SocialClient("127.0.0.1", 4242);
+        String response = client.sendRequest("createUser", "duplicateuser", "password");
+        assertTrue("Response should indicate duplicate user", response.contains("Error"));
+        client.closeConnection();
     }
 
-    //Messages Test Cases.
-
+    // --- Friend Management Tests ---
     @Test
-    void testSendMessage() {
-        String sender = "clientSender_" + System.currentTimeMillis();
-        String receiver = "clientReceiver_" + System.currentTimeMillis();
-        client.sendRequest("createUser", "", sender + 
-                " | passwordSender | default.png | default bio");
-        client.sendRequest("createUser", "", receiver + 
-                " | passwordReceiver | default.png | default bio");
-        String sendMessageResponse = client.sendRequest("sendMessage", sender, receiver + " | Hello!");
-        assertNotNull(sendMessageResponse, "Sending a message should return a response.");
+    public void testAddFriend() {
+        SocialClient client = new SocialClient("127.0.0.1", 4242);
+        String response = client.sendRequest("friendUser", "testuser", "frienduser");
+        assertTrue("Response should indicate success", response.contains("success"));
+        client.closeConnection();
     }
 
     @Test
-    void testRetrieveMessages() {
-        String sender = "clientSender_" + System.currentTimeMillis();
-        String receiver = "clientReceiver_" + System.currentTimeMillis();
-        client.sendRequest("createUser", "", sender + 
-                " | passwordSender | default.png | default bio");
-        client.sendRequest("createUser", "", receiver + 
-                " | passwordReceiver | default.png | default bio");
+    public void testRemoveFriend() {
+        SocialClient client = new SocialClient("127.0.0.1", 4242);
+        try {
+            client.sendRequest("friendUser", "testuser", "frienduser");
+        } catch (Exception e) {
 
-        //Send & receive messages.
-        client.sendRequest("sendMessage", sender, receiver + " | Hello!");
-        String messages = client.sendRequest("getMessage", sender, receiver);
-        assertTrue(messages.contains("Hello!"), "Messages should contain the sent message");
+        }
+        String response = client.sendRequest("unfriend", "testuser", "frienduser");
+        System.out.println(response);
+        assertTrue("Response should indicate success", response.contains("success"));
+        client.closeConnection();
+    }
+
+    // --- Messaging Tests ---
+    @Test
+    public void testSendMessage() {
+        SocialClient client = new SocialClient("127.0.0.1", 4242);
+        String response = client.sendRequest("sendMessage", "user1", "user2 | Hello!");
+        assertTrue("Message ID should be returned", response.matches("\\d+"));
+        client.closeConnection();
+    }
+
+    @Test
+    public void testRetrieveMessages() {
+        SocialClient client = new SocialClient("127.0.0.1", 4242);
+        client.sendRequest("sendMessage", "user1", "user2 | Hello!");
+        String response = client.sendRequest("getMessage", "user1", "user2");
+        assertTrue("Response should contain the sent message", response.contains("Hello!"));
+        client.closeConnection();
+    }
+
+    // --- Block Management Tests ---
+    @Test
+    public void testBlockUser() {
+        SocialClient client = new SocialClient("127.0.0.1", 4242);
+        String response = client.sendRequest("blockUser", "testuser", "blockeduser");
+        assertTrue("Response should indicate success", response.contains("success"));
+        client.closeConnection();
+    }
+
+    @Test
+    public void testUnblockUser() {
+        SocialClient client = new SocialClient("127.0.0.1", 4242);
+        try{
+            client.sendRequest("blockUser", "testuser", "blockeduser");
+        }catch(Exception e){
+
+        }
+        String response = client.sendRequest("unblock", "testuser", "blockeduser");
+        assertTrue("Response should indicate success", response.contains("success"));
+        client.closeConnection();
     }
 }

@@ -1,2 +1,1 @@
-lakshaym | alice
-alice | johnnyNew
+testuser | frienduser

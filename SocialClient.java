@@ -10,12 +10,12 @@ import java.util.ArrayList;
 public class SocialClient implements Client{
 
     // --- Socket and Communication Components ---
-    private Socket socket;
+    protected Socket socket;
     private PrintWriter writer;
     private BufferedReader reader;
 
     // --- User and UI Components ---
-    private String loggedInUser;
+    protected String loggedInUser;
     private JFrame mainFrame;
     private JPanel chatListPanel;
     private JPanel cardPanel;
@@ -213,7 +213,7 @@ public class SocialClient implements Client{
     }
     
     // Handles user login logic and server response.
-    private void performLogin(String username, String password, JFrame frame) {
+    protected void performLogin(String username, String password, JFrame frame) {
         // Check if fields are empty and show error if they are
         if (username.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(frame, "Username and password cannot be empty.", "Input Error",

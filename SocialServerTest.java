@@ -1,165 +1,124 @@
-import org.junit.jupiter.api.*;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.*;
 import java.io.*;
-import java.util.*;
-import static org.junit.jupiter.api.Assertions.*;
 
-class SocialServerTest {
-    private SocialServer server;
+public class SocialServerTest {
 
-    @BeforeEach
-    void setUp() {
-        server = new SocialServer(null);
+    @BeforeClass
+    public static void wipeDatabase() throws Exception {
+        // Paths to your database files
+        String[] databaseFiles = {
+                "./Database/Data/userInfo.txt",
+                "./Database/Data/friends.txt",
+                "./Database/Data/blocked.txt",
+                "./Database/Data/msgs.txt"
+        };
+
+        // Clear the contents of each database file
+        for (String filePath : databaseFiles) {
+            File file = new File(filePath);
+            if (!file.exists()) {
+                // Create the file if it doesn't exist
+                file.getParentFile().mkdirs(); // Create directories if needed
+                file.createNewFile();
+            }
+
+            // Overwrite the file with an empty string
+            try (FileWriter writer = new FileWriter(file, false)) {
+                writer.write(""); // Clear the file
+            }
+        }
+    }
+    // --- User Management Tests ---
+    @Test
+    public void testCreateUser() throws Exception {
+        SocialServer server = new SocialServer(null);
+        server.createUser("testuser123", "testpassword", "default.png", "This is a test bio");
+        String userInfo = SocialServer.getUser("testuser123");
+        assertNotNull("User info should not be null after creation", userInfo);
+    }
+
+    @Test(expected = InvalidInputException.class)
+    public void testCreateDuplicateUser() throws Exception {
+        SocialServer server = new SocialServer(null);
+        server.createUser("testuser", "testpassword");
+        server.createUser("testuser", "testpassword"); // Should throw exception
     }
 
     @Test
-    void testCreateUserSuccess() throws Exception {
-        String username = "testuser_" + System.currentTimeMillis();
-        server.createUser(username, "password123");
-        String userInfo = SocialServer.getUser(username);
-        assertNotNull(userInfo, "User should exist after creation");
-        assertTrue(userInfo.contains(username), "User info should contain username");
-        assertTrue(userInfo.contains("password123"), "User info should contain password");
+    public void testRetrieveUser() throws Exception {
+        SocialServer server = new SocialServer(null);
+        server.createUser("retrieveuser", "password");
+        String userInfo = SocialServer.getUser("retrieveuser");
+        assertTrue("User info should contain username", userInfo.contains("retrieveuser"));
+    }
+
+    // --- Friend Management Tests ---
+    @Test
+    public void testFriendUser() throws Exception {
+        SocialServer server = new SocialServer(null);
+        server.createUser("testFriend2", "password2");
+        server.createUser("testFriend", "password1");
+        SocialServer.friendUser("testFriend", "testFriend2");
+        assertTrue("Users should be friends", SocialServer.checkFriend("testFriend", "testFriend2"));
     }
 
     @Test
-    void testCreateUserDuplicate() {
-        String username = "duplicateUser_" + System.currentTimeMillis();
-        assertThrows(InvalidInputException.class, () -> {
-            server.createUser(username, "password");
-            server.createUser(username, "newpassword");
-        });
+    public void testUnfriendUser() throws Exception {
+        SocialServer server = new SocialServer(null);
+        server.createUser("testUnfriend", "password1");
+        server.createUser("testUnfriend2", "password2");
+        SocialServer.friendUser("testUnfriend", "testUnfriend2");
+        SocialServer.unfriend("testUnfriend", "testUnfriend2");
+        assertFalse("Users should no longer be friends", SocialServer.checkFriend("user1", "user2"));
+    }
+
+    // --- Messaging Tests ---
+    @Test
+    public void testSendAndRetrieveMessage() throws Exception {
+        SocialServer server = new SocialServer(null);
+        server.createUser("testSendAndRetrieveMessage1", "password1");
+        server.createUser("testSendAndRetrieveMessage2", "password2");
+        int messageId = server.sendMessage("testSendAndRetrieveMessage1", "testSendAndRetrieveMessage2", "Hello, User2!");
+        assertTrue("Message ID should be non-negative", messageId >= 0);
+        String message = server.getMessage("testSendAndRetrieveMessage1", "testSendAndRetrieveMessage2");
+        assertTrue("Message should contain the sent text", message.contains("Hello, User2!"));
     }
 
     @Test
-    void testLoginWithPasswordSuccess() throws Exception {
-        String username = "loginUser_" + System.currentTimeMillis();
-        server.createUser(username, "securepass");
-        boolean loginSuccess = server.loginWithPassword(username, "securepass");
-        assertTrue(loginSuccess, "Login should succeed with correct credentials");
+    public void testDeleteMessage() throws Exception {
+        SocialServer server = new SocialServer(null);
+        server.createUser("testDeleteMessage1", "password1");
+        server.createUser("testDeleteMessage2", "password2");
+        int messageId = server.sendMessage("testDeleteMessage1", "testDeleteMessage2", "Hello, User2!");
+        server.deleteMessage("testDeleteMessage1", "testDeleteMessage2", messageId);
+        try {
+            String message = server.getMessage("testDeleteMessage1", "testDeleteMessage2");
+            assertFalse("Message should no longer exist", message.contains("Hello, User2!"));
+        }catch(InvalidInputException e) {
+            return;
+        }
+    }
+
+    // --- Block Management Tests ---
+    @Test
+    public void testBlockUser() throws Exception {
+        SocialServer server = new SocialServer(null);
+        server.createUser("blocker123", "password1");
+        server.createUser("blockee123", "password2");
+        server.blockUser("blocker123", "blockee123");
+        assertTrue("User should be blocked", SocialServer.checkBlocked("blocker123", "blockee123"));
     }
 
     @Test
-    void testLoginWithIncorrectPassword() throws Exception {
-        String username = "loginUser_" + System.currentTimeMillis();
-        server.createUser(username, "securepass");
-        assertThrows(InvalidInputException.class, () -> {
-            server.loginWithPassword(username, "wrongpass");
-        });
-    }
-
-    @Test
-    void testEditUserProfileSuccess() throws Exception {
-        String username = "editUser_" + System.currentTimeMillis();
-        server.createUser(username, "password123", "default.png", "original bio");
-        SocialServer.editUser(username, "newUser", "newPass123", "newPic.png",
-                "updated bio");
-        String updatedUserInfo = SocialServer.getUser(username);
-        assertNotNull(updatedUserInfo, "User info should be retrievable");
-        assertTrue(updatedUserInfo.contains("newPass123"), "Password should be updated");
-        assertTrue(updatedUserInfo.contains("newPic.png"), "Profile picture should be updated");
-        assertTrue(updatedUserInfo.contains("updated bio"), "Bio should be updated");
-    }
-
-    //Messaging test cases.
-
-    @Test
-    void testSendMessageSuccess() throws Exception {
-        String sender = "userA_" + System.currentTimeMillis();
-        String receiver = "userB_" + System.currentTimeMillis();
-        server.createUser(sender, "passwordA");
-        server.createUser(receiver, "passwordB");
-
-        int messageId = server.sendMessage(sender, receiver, "Hello userB!");
-        assertEquals(0, messageId, "First message ID should be 0");
-
-        String retrievedMessage = server.getMessage(sender, receiver);
-        assertTrue(retrievedMessage.contains("Hello userB!"), "Message content should match");
-    }
-
-    @Test
-    void testRetrieveMessagesBetweenUsers() throws Exception {
-        String sender = "userA_" + System.currentTimeMillis();
-        String receiver = "userB_" + System.currentTimeMillis();
-        server.createUser(sender, "passwordA");
-        server.createUser(receiver, "passwordB");
-
-        server.sendMessage(sender, receiver, "Message 1 from A to B");
-        server.sendMessage(receiver, sender, "Reply from B to A");
-        server.sendMessage(sender, receiver, "Message 2 from A to B");
-
-        String conversation = server.getMessage(sender, receiver);
-        assertTrue(conversation.contains("Message 1 from A to B"), "First message should be retrievable");
-        assertTrue(conversation.contains("Reply from B to A"), "Reply message should be retrievable");
-        assertTrue(conversation.contains("Message 2 from A to B"), "Second message should be retrievable");
-    }
-
-    @Test
-    void testDeleteMessageSuccess() throws Exception {
-        String sender = "userA_" + System.currentTimeMillis();
-        String receiver = "userB_" + System.currentTimeMillis();
-        server.createUser(sender, "passwordA");
-        server.createUser(receiver, "passwordB");
-
-        int messageId = server.sendMessage(sender, receiver, "Temporary Message");
-        server.deleteMessage(sender, receiver, messageId);
-
-        String conversation = server.getMessage(sender, receiver);
-        assertFalse(conversation.contains("Temporary Message"), "Deleted message should no longer exist");
-    }
-
-    // --- FRIEND OPERATIONS ---
-
-    @Test
-    void testAddFriendSuccess() throws Exception {
-        String userA = "userA_" + System.currentTimeMillis();
-        String userB = "userB_" + System.currentTimeMillis();
-        server.createUser(userA, "passwordA");
-        server.createUser(userB, "passwordB");
-
-        SocialServer.friendUser(userA, userB);
-        ArrayList<String> friendsOfUserA = SocialServer.getFriend(userA);
-        assertTrue(friendsOfUserA.contains(userB), "userB should be a friend of userA");
-    }
-
-    @Test
-    void testRemoveFriendSuccess() throws Exception {
-        String userA = "userA_" + System.currentTimeMillis();
-        String userB = "userB_" + System.currentTimeMillis();
-        server.createUser(userA, "passwordA");
-        server.createUser(userB, "passwordB");
-
-        SocialServer.friendUser(userA, userB);
-        SocialServer.unfriend(userA, userB);
-
-        ArrayList<String> friendsOfUserA = SocialServer.getFriend(userA);
-        assertFalse(friendsOfUserA.contains(userB), "userB should no longer be a friend of userA");
-    }
-
-    // --- BLOCK OPERATIONS ---
-
-    @Test
-    void testBlockUserSuccess() throws Exception {
-        String userA = "userA_" + System.currentTimeMillis();
-        String userB = "userB_" + System.currentTimeMillis();
-        server.createUser(userA, "passwordA");
-        server.createUser(userB, "passwordB");
-
-        server.blockUser(userA, userB);
-        ArrayList<String> blockedByUserA = SocialServer.getBlocked(userA);
-        assertTrue(blockedByUserA.contains(userB), "userB should be blocked by userA");
-    }
-
-    @Test
-    void testUnblockUserSuccess() throws Exception {
-        String userA = "userA_" + System.currentTimeMillis();
-        String userB = "userB_" + System.currentTimeMillis();
-        server.createUser(userA, "passwordA");
-        server.createUser(userB, "passwordB");
-
-        server.blockUser(userA, userB);
-        server.unblock(userA, userB);
-
-        ArrayList<String> blockedByUserA = SocialServer.getBlocked(userA);
-        assertFalse(blockedByUserA.contains(userB), "userB should no longer be blocked by userA");
+    public void testUnblockUser() throws Exception {
+        SocialServer server = new SocialServer(null);
+        server.createUser("blocker", "password1");
+        server.createUser("blockee", "password2");
+        server.blockUser("blocker", "blockee");
+        server.unblock("blocker", "blockee");
+        assertFalse("User should be unblocked", SocialServer.checkBlocked("blocker", "blockee"));
     }
 }

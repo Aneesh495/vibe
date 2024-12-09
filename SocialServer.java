@@ -1,12 +1,7 @@
 import java.io.*;
 import java.util.*;
 import java.net.*;
-import java.nio.Buffer;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.atomic.AtomicInteger;
-
-// Assuming you have custom exception classes in ServerException package
-// import ServerException.*;
 
 public class SocialServer implements Runnable {
     private final static String UserInfo = "./Database/Data/userInfo.txt";
@@ -27,7 +22,7 @@ public class SocialServer implements Runnable {
     // USER ROUTES
 
     // Create a new user
-    private void createUser(String username, String password, String profilePicture, String bio)
+    public void createUser(String username, String password, String profilePicture, String bio)
             throws InvalidInputException, IOException {
         if (checkUser(username) == false) {
             writeToFile(String.format("%s | %s | %s | %s", username, password, profilePicture, bio), UserInfo);
@@ -388,6 +383,7 @@ public class SocialServer implements Runnable {
         if (!conversationExists) {
             String initialMessage = message + "-0#S#";
             messageLines.add(sender + " | " + receiver + " | " + initialMessage);
+            msgId = 0;
         }
         overwriteFile(messageLines, MessageList);
         return msgId;
@@ -477,13 +473,13 @@ public class SocialServer implements Runnable {
 
     public static void editMessage(String sender, String reciever, int messageId, String newMessage) throws IOException, UserNotFoundException{
             ArrayList<String> messageLine = new ArrayList<>();
-    
+
             System.out.println("works");
             // check if users exist
             if (!checkUser(sender) || !checkUser(reciever)) {
                 throw new UserNotFoundException("User not found");
             }
-    
+
             try (BufferedReader userBr = new BufferedReader(new FileReader(MessageList))) {
                 // loop through file
                 String line = userBr.readLine();
@@ -516,9 +512,9 @@ public class SocialServer implements Runnable {
                 overwriteFile(messageLine, MessageList);
             }
         }
-    
+
         // REQUEST HANDLING
-    
+
         public String handleRequest(String action, String caller, String data) {
             try {
                 String[] userInformation = data.split(" \\| ");
@@ -607,7 +603,7 @@ public class SocialServer implements Runnable {
                 return "Server Error: " + e.getMessage();
             }
         }
-    
+
         // Main method
         public static void main(String[] args) throws UserNotFoundException, IOException {
             try (ServerSocket serverSocket = new ServerSocket(4242)) {
@@ -661,24 +657,5 @@ public class SocialServer implements Runnable {
                 System.out.println("Failed to close client socket.");
             }
         }
-    }
-}
-
-// Exception classes (place these in separate files if needed)
-class InvalidInputException extends Exception {
-    public InvalidInputException(String message) {
-        super(message);
-    }
-}
-
-class ClientDataException extends Exception {
-    public ClientDataException(String message) {
-        super(message);
-    }
-}
-
-class UserNotFoundException extends Exception {
-    public UserNotFoundException(String message) {
-        super(message);
     }
 }
