@@ -1,163 +1,165 @@
 import org.junit.jupiter.api.*;
+import java.io.*;
+import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import ServerException.*;
-
 class SocialServerTest {
-    private List<String> users; // Simulated list of users
-    private List<String> blockedUsers; // Simulated list of blocked relationships
-    private SocialServer socialServer;
+    private SocialServer server;
 
     @BeforeEach
     void setUp() {
-        users = new ArrayList<>();
-        blockedUsers = new ArrayList<>();
-        socialServer = new SocialServer(null) {
-            @Override
-            public void createUser(String username, String password) throws InvalidInputException {
-                for (String user : users) {
-                    String[] userInfo = user.split(" \\| ");
-                    if (userInfo[0].equals(username)) {
-                        throw new InvalidInputException("User already exists.");
-                    }
-                }
-                users.add(username + " | " + password);
-            }
-
-//            @Override
-//            public String getUser(String username) throws UserNotFoundException {
-//                for (String user : users) {
-//                    String[] userInfo = user.split(" \\| ");
-//                    if (userInfo[0].equals(username)) {
-//                        return user;
-//                    }
-//                }
-//                throw new UserNotFoundException("User Not Found");
-//            }
-
-            @Override
-            public boolean loginWithPassword(String username, String password) throws UserNotFoundException, InvalidInputException {
-                for (String user : users) {
-                    String[] userInfo = user.split(" \\| ");
-                    if (userInfo[0].equals(username)) {
-                        if (userInfo[1].equals(password)) {
-                            return true;
-                        } else {
-                            throw new InvalidInputException("Incorrect Password!");
-                        }
-                    }
-                }
-                throw new UserNotFoundException("User does not exist!");
-            }
-
-            @Override
-            public void blockUser(String username, String blockedUser) throws InvalidInputException {
-                if (username.equals(blockedUser)) {
-                    throw new InvalidInputException("User cannot block themselves.");
-                }
-                String blockEntry = username + " -> " + blockedUser;
-                if (blockedUsers.contains(blockEntry)) {
-                    throw new InvalidInputException("User is already blocked.");
-                }
-                blockedUsers.add(blockEntry);
-            }
-
-            @Override
-            public void unblock(String username, String unblockUser) throws InvalidInputException {
-                String blockEntry = username + " -> " + unblockUser;
-                if (!blockedUsers.contains(blockEntry)) {
-                    throw new InvalidInputException("User is not blocked.");
-                }
-                blockedUsers.remove(blockEntry);
-            }
-        };
+        server = new SocialServer(null);
     }
 
     @Test
     void testCreateUserSuccess() throws Exception {
-        socialServer.createUser("testUser", "password123");
-        assertTrue(users.contains("testUser | password123"));
+        String username = "testuser_" + System.currentTimeMillis();
+        server.createUser(username, "password123");
+        String userInfo = SocialServer.getUser(username);
+        assertNotNull(userInfo, "User should exist after creation");
+        assertTrue(userInfo.contains(username), "User info should contain username");
+        assertTrue(userInfo.contains("password123"), "User info should contain password");
     }
 
     @Test
-    void testCreateUserDuplicate() throws Exception {
-        socialServer.createUser("testUser", "password123");
-        Exception exception = assertThrows(InvalidInputException.class, () -> {
-            socialServer.createUser("testUser", "password123");
+    void testCreateUserDuplicate() {
+        String username = "duplicateUser_" + System.currentTimeMillis();
+        assertThrows(InvalidInputException.class, () -> {
+            server.createUser(username, "password");
+            server.createUser(username, "newpassword");
         });
-        assertEquals("User already exists.", exception.getMessage());
-    }
-
-    @Test
-    void testGetUserSuccess() throws Exception {
-        socialServer.createUser("testUser", "password123");
-        String user = socialServer.getUser("testUser");
-        assertEquals("testUser | password123", user);
-    }
-
-    @Test
-    void testGetUserNotFound() {
-        Exception exception = assertThrows(UserNotFoundException.class, () -> {
-            socialServer.getUser("nonexistentUser");
-        });
-        assertEquals("User Not Found", exception.getMessage());
     }
 
     @Test
     void testLoginWithPasswordSuccess() throws Exception {
-        socialServer.createUser("testUser", "password123");
-        assertTrue(socialServer.loginWithPassword("testUser", "password123"));
+        String username = "loginUser_" + System.currentTimeMillis();
+        server.createUser(username, "securepass");
+        boolean loginSuccess = server.loginWithPassword(username, "securepass");
+        assertTrue(loginSuccess, "Login should succeed with correct credentials");
     }
 
     @Test
-    void testLoginWithPasswordIncorrectPassword() throws Exception {
-        socialServer.createUser("testUser", "password123");
-        Exception exception = assertThrows(InvalidInputException.class, () -> {
-            socialServer.loginWithPassword("testUser", "wrongPassword");
+    void testLoginWithIncorrectPassword() throws Exception {
+        String username = "loginUser_" + System.currentTimeMillis();
+        server.createUser(username, "securepass");
+        assertThrows(InvalidInputException.class, () -> {
+            server.loginWithPassword(username, "wrongpass");
         });
-        assertEquals("Incorrect Password!", exception.getMessage());
     }
 
     @Test
-    void testLoginWithPasswordUserNotFound() {
-        Exception exception = assertThrows(UserNotFoundException.class, () -> {
-            socialServer.loginWithPassword("nonexistentUser", "password123");
-        });
-        assertEquals("User does not exist!", exception.getMessage());
+    void testEditUserProfileSuccess() throws Exception {
+        String username = "editUser_" + System.currentTimeMillis();
+        server.createUser(username, "password123", "defaultPic.png", "original bio");
+        SocialServer.editUser(username, "newUser", "newPass123", "newPic.png",
+                "updated bio");
+        String updatedUserInfo = SocialServer.getUser(username);
+        assertNotNull(updatedUserInfo, "User info should be retrievable");
+        assertTrue(updatedUserInfo.contains("newPass123"), "Password should be updated");
+        assertTrue(updatedUserInfo.contains("newPic.png"), "Profile picture should be updated");
+        assertTrue(updatedUserInfo.contains("updated bio"), "Bio should be updated");
     }
+
+    //Messaging test cases.
+
+    @Test
+    void testSendMessageSuccess() throws Exception {
+        String sender = "userA_" + System.currentTimeMillis();
+        String receiver = "userB_" + System.currentTimeMillis();
+        server.createUser(sender, "passwordA");
+        server.createUser(receiver, "passwordB");
+
+        int messageId = server.sendMessage(sender, receiver, "Hello userB!");
+        assertEquals(0, messageId, "First message ID should be 0");
+
+        String retrievedMessage = server.getMessage(sender, receiver);
+        assertTrue(retrievedMessage.contains("Hello userB!"), "Message content should match");
+    }
+
+    @Test
+    void testRetrieveMessagesBetweenUsers() throws Exception {
+        String sender = "userA_" + System.currentTimeMillis();
+        String receiver = "userB_" + System.currentTimeMillis();
+        server.createUser(sender, "passwordA");
+        server.createUser(receiver, "passwordB");
+
+        server.sendMessage(sender, receiver, "Message 1 from A to B");
+        server.sendMessage(receiver, sender, "Reply from B to A");
+        server.sendMessage(sender, receiver, "Message 2 from A to B");
+
+        String conversation = server.getMessage(sender, receiver);
+        assertTrue(conversation.contains("Message 1 from A to B"), "First message should be retrievable");
+        assertTrue(conversation.contains("Reply from B to A"), "Reply message should be retrievable");
+        assertTrue(conversation.contains("Message 2 from A to B"), "Second message should be retrievable");
+    }
+
+    @Test
+    void testDeleteMessageSuccess() throws Exception {
+        String sender = "userA_" + System.currentTimeMillis();
+        String receiver = "userB_" + System.currentTimeMillis();
+        server.createUser(sender, "passwordA");
+        server.createUser(receiver, "passwordB");
+
+        int messageId = server.sendMessage(sender, receiver, "Temporary Message");
+        server.deleteMessage(sender, receiver, messageId);
+
+        String conversation = server.getMessage(sender, receiver);
+        assertFalse(conversation.contains("Temporary Message"), "Deleted message should no longer exist");
+    }
+
+    // --- FRIEND OPERATIONS ---
+
+    @Test
+    void testAddFriendSuccess() throws Exception {
+        String userA = "userA_" + System.currentTimeMillis();
+        String userB = "userB_" + System.currentTimeMillis();
+        server.createUser(userA, "passwordA");
+        server.createUser(userB, "passwordB");
+
+        SocialServer.friendUser(userA, userB);
+        ArrayList<String> friendsOfUserA = SocialServer.getFriend(userA);
+        assertTrue(friendsOfUserA.contains(userB), "userB should be a friend of userA");
+    }
+
+    @Test
+    void testRemoveFriendSuccess() throws Exception {
+        String userA = "userA_" + System.currentTimeMillis();
+        String userB = "userB_" + System.currentTimeMillis();
+        server.createUser(userA, "passwordA");
+        server.createUser(userB, "passwordB");
+
+        SocialServer.friendUser(userA, userB);
+        SocialServer.unfriend(userA, userB);
+
+        ArrayList<String> friendsOfUserA = SocialServer.getFriend(userA);
+        assertFalse(friendsOfUserA.contains(userB), "userB should no longer be a friend of userA");
+    }
+
+    // --- BLOCK OPERATIONS ---
 
     @Test
     void testBlockUserSuccess() throws Exception {
-        socialServer.createUser("userA", "password1");
-        socialServer.createUser("userB", "password2");
-        socialServer.blockUser("userA", "userB");
-        assertTrue(blockedUsers.contains("userA -> userB"));
-    }
+        String userA = "userA_" + System.currentTimeMillis();
+        String userB = "userB_" + System.currentTimeMillis();
+        server.createUser(userA, "passwordA");
+        server.createUser(userB, "passwordB");
 
-    @Test
-    void testBlockUserSelf() {
-        Exception exception = assertThrows(InvalidInputException.class, () -> {
-            socialServer.blockUser("userA", "userA");
-        });
-        assertEquals("User cannot block themselves.", exception.getMessage());
+        server.blockUser(userA, userB);
+        ArrayList<String> blockedByUserA = SocialServer.getBlocked(userA);
+        assertTrue(blockedByUserA.contains(userB), "userB should be blocked by userA");
     }
 
     @Test
     void testUnblockUserSuccess() throws Exception {
-        socialServer.createUser("userA", "password1");
-        socialServer.createUser("userB", "password2");
-        socialServer.blockUser("userA", "userB");
-        socialServer.unblock("userA", "userB");
-        assertFalse(blockedUsers.contains("userA -> userB"));
-    }
+        String userA = "userA_" + System.currentTimeMillis();
+        String userB = "userB_" + System.currentTimeMillis();
+        server.createUser(userA, "passwordA");
+        server.createUser(userB, "passwordB");
 
-    @Test
-    void testUnblockUserNotBlocked() {
-        Exception exception = assertThrows(InvalidInputException.class, () -> {
-            socialServer.unblock("userA", "userB");
-        });
-        assertEquals("User is not blocked.", exception.getMessage());
+        server.blockUser(userA, userB);
+        server.unblock(userA, userB);
+
+        ArrayList<String> blockedByUserA = SocialServer.getBlocked(userA);
+        assertFalse(blockedByUserA.contains(userB), "userB should no longer be blocked by userA");
     }
 }
