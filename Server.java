@@ -7,7 +7,7 @@ public interface Server {
             throws IOException, UserNotFoundException, InvalidInputException;
     String handleRequest(String action, String caller, String data)
             throws IOException, UserNotFoundException, InvalidInputException, ClientDataException;
-    void sendMessage(String sender, String receiver, String message)
+    int sendMessage(String sender, String receiver, String message)
             throws IOException, UserNotFoundException, InvalidInputException;
     String getMessage(String sender, String receiver)
             throws IOException, UserNotFoundException, InvalidInputException;

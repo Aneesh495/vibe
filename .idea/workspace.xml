@@ -4,52 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f2579074-c270-4527-a636-fcda1282ee5a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Database/Data/blocked.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Database/Data/blocked.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Database/Data/friends.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Database/Data/friends.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Database/Data/msgs.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Database/Data/msgs.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Database/Data/userInfo.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Database/Data/userInfo.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SocialClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/SocialClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SocialClientTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/SocialClientTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SocialServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/SocialServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SocialServerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/SocialServerTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/Client.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/ClientDataException.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/ClientDataException.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/Data/blocked.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/Data/blocked.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/Data/friends.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/Data/friends.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/Data/msgs.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/Data/msgs.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/Data/userInfo.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/Data/userInfo.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/logo.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/Database/logo.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/InvalidInputException.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/InvalidInputException.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/Server.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/Server.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/ServerException/ClientDataException.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/ServerException/ClientDataException.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/ServerException/CustomException.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/ServerException/CustomException.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/ServerException/InvalidInputException.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/ServerException/InvalidInputException.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/ServerException/UserNotFoundException.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/ServerException/UserNotFoundException.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$2.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$3.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$4.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$4.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$5.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$5.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient$6.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClient.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClientGUI$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClientGUI$2.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClientGUI$3.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClientGUI$4.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClientGUI$5.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClientGUI$6.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClientGUI.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClientTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialClientTest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialServer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialServerTest$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialServerTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/SocialServerTest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/cs180-teamproject/UserNotFoundException.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/cs180-teamproject/UserNotFoundException.class" afterDir="false" />
-    </list>
+    <list default="true" id="f2579074-c270-4527-a636-fcda1282ee5a" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -223,7 +178,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732404970932</updated>
-      <workItem from="1733709697239" duration="6568000" />
+      <workItem from="1733709697239" duration="7568000" />
     </task>
     <servers />
   </component>
@@ -255,7 +210,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/SocialClientTest.java</url>
-          <line>64</line>
+          <line>65</line>
           <properties class="SocialClientTest" method="testLoginValidCredentials">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />

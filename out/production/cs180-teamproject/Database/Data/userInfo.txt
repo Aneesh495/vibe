@@ -1,9 +1,0 @@
-testuser | password | Database/ProfilePicture/default.png | 
-frienduser | password | Database/ProfilePicture/default.png | 
-user1 | password | Database/ProfilePicture/default.png | 
-user2 | password | Database/ProfilePicture/default.png | 
-blockeduser | password | Database/ProfilePicture/default.png | 
-validuser | validpassword | Database/ProfilePicture/default.png | Default Bio
-duplicateuser | password | Database/ProfilePicture/default.png | 
-uniqueuser | uniquepassword | Database/ProfilePicture/default.png | default bio
-newuser | newpassword | Database/ProfilePicture/default.png | default bio
