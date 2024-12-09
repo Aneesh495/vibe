@@ -2,6 +2,8 @@ README.file Phase 3 Team Project - by: Aneesh, Lakshay, Garv, Tasha, and Amelia
 
 ALERT: We extensively worked on the GUI of the Social Meida App on this phase, and a lot of GUI has been completely reworked. 
 
+NOTE: THE SERVER HAS TO BE RUNNING FOR THE CLIENT SIDE TEST CASES TO BE WORKING.
+
 Database: We opt to store the data for our social media app using files. We decided it would be feasible to implement this as we could make use of buffered reader & writer to access user information conviniently.
 
 GUI: 
