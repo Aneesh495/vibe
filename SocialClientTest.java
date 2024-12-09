@@ -1,141 +1,147 @@
 import org.junit.jupiter.api.*;
-import static org.junit.jupiter.api.Assertions.*;
 import java.io.*;
-import java.net.*;
-import javax.swing.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 class SocialClientTest {
-
-    private ServerSocket mockServerSocket;
-    private Socket mockClientSocket;
-    private SocialClient socialClient;
+    private SocialClient client;
+    private SocialServer server;
+    private Thread serverThread;
 
     @BeforeEach
     void setUp() throws IOException {
-        // Set up a mock server to test the client
-        mockServerSocket = new ServerSocket(4242);
+        // Start the server in a separate thread
+        serverThread = new Thread(() -> {
+            try {
+                ServerSocket serverSocket = new ServerSocket(4242);
+                while (true) {
+                    new Thread(new SocialServer(serverSocket.accept())).start();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        serverThread.start();
 
-        // Create the SocialClient instance
-        socialClient = new SocialClient("127.0.0.1", 4242);
-
-        // Accept the connection on the mock server
-        mockClientSocket = mockServerSocket.accept();
+        // Initialize client with the running server
+        client = new SocialClient("127.0.0.1", 4242);
     }
 
     @AfterEach
-    void tearDown() throws IOException {
-        // Close all sockets
-        if (socialClient != null) {
-            socialClient.closeConnection();
-        }
-        if (mockClientSocket != null) {
-            mockClientSocket.close();
-        }
-        if (mockServerSocket != null) {
-            mockServerSocket.close();
-        }
+    void tearDown() {
+        // Close the client connection
+        client.closeConnection();
+
+        // Stop the server thread
+        serverThread.interrupt();
+    }
+
+    //Account test cases.
+
+    @Test
+    void testCreateAccount() {
+        // Simulate user creation
+        String username = "testClientUser_" + System.currentTimeMillis();
+        String password = "testPassword123";
+        String data = username + " | " + password + " | default.png | default bio";
+        String response = client.sendRequest("createUser", "", data);
+
+        assertEquals("User created successfully", response.trim(), "User should be created successfully");
     }
 
     @Test
-    void testSendRequestSuccess() throws IOException {
-        BufferedWriter mockServerWriter = new BufferedWriter(new OutputStreamWriter(mockClientSocket.getOutputStream()));
+    void testLogin() {
+        // Create a user and test login
+        String username = "clientLoginUser_" + System.currentTimeMillis();
+        String password = "securePass";
+        client.sendRequest("createUser", "", username + " | " + password + 
+                " | defaultPic.png | default bio");
 
-        // Mock server sends a response
-        new Thread(() -> {
-            try {
-                mockServerWriter.write("Login successful\n");
-                mockServerWriter.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
+        String loginResponse = client.sendRequest("loginWithPassword", username, password);
+        assertEquals("Login successful", loginResponse.trim(), "Login should be successful with correct credentials");
+    }
 
-        // Send a request and verify the response
-        String response = socialClient.sendRequest("loginWithPassword", "testUser", "password123");
-        assertEquals("Login successful", response);
+    //Friend test cases.
 
-        // Ensure the server received the correct request
-        BufferedReader mockServerReader = new BufferedReader(new InputStreamReader(mockClientSocket.getInputStream()));
-        assertEquals("loginWithPassword ; testUser ; password123", mockServerReader.readLine());
+    @Test
+    void testAddFriend() {
+        String userA = "clientUserA_" + System.currentTimeMillis();
+        String userB = "clientUserB_" + System.currentTimeMillis();
+        client.sendRequest("createUser", "", userA + " | passwordA | default.png | default bio");
+        client.sendRequest("createUser", "", userB + " | passwordB | default.png | default bio");
+
+        // User A friends User b. 
+        String friendResponse = client.sendRequest("friendUser", userA, userB);
+        assertTrue(friendResponse.toLowerCase().contains("friended successfully"), 
+                "User should be friended successfully");
     }
 
     @Test
-    void testSendRequestOverloaded() throws IOException {
-        BufferedWriter mockServerWriter = new BufferedWriter(new OutputStreamWriter(mockClientSocket.getOutputStream()));
+    void testRemoveFriend() {
+        String userA = "clientUserA_" + System.currentTimeMillis();
+        String userB = "clientUserB_" + System.currentTimeMillis();
+        client.sendRequest("createUser", "", userA + " | passwordA | default.png | default bio");
+        client.sendRequest("createUser", "", userB + " | passwordB | default.png | default bio");
+        //User A unfriends User B.
+        client.sendRequest("friendUser", userA, userB);
+        String unfriendResponse = client.sendRequest("unfriend", userA, userB);
+        assertTrue(unfriendResponse.toLowerCase().contains("unfriended successfully"), 
+                "User should be unfriended successfully");
+    }
 
-        // Mock server sends a response
-        new Thread(() -> {
-            try {
-                mockServerWriter.write("User created successfully\n");
-                mockServerWriter.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
+    //Block test cases.
 
-        // Test the overloaded method
-        String response = socialClient.sendRequest("createUser", "newUser | password123");
-        assertEquals("User created successfully", response);
-
-        // Ensure the server received the correct request format
-        BufferedReader mockServerReader = new BufferedReader(new InputStreamReader(mockClientSocket.getInputStream()));
-        assertEquals("createUser ; ; newUser | password123", mockServerReader.readLine());
+    @Test
+    void testBlockUser() {
+        String userA = "clientBlockA_" + System.currentTimeMillis();
+        String userB = "clientBlockB_" + System.currentTimeMillis();
+        client.sendRequest("createUser", "", userA + " | passwordA | default.png | default bio");
+        client.sendRequest("createUser", "", userB + " | passwordB | default.png | default bio");
+        //User A block user B
+        String blockResponse = client.sendRequest("blockUser", userA, userB);
+        assertTrue(blockResponse.toLowerCase().contains("blocked successfully"), "User should be blocked successfully");
     }
 
     @Test
-    void testLoginButtonAction() throws IOException {
-        BufferedWriter mockServerWriter = new BufferedWriter(new OutputStreamWriter(mockClientSocket.getOutputStream()));
+    void testUnblockUser() {
+        // Create two users
+        String userA = "clientBlockA_" + System.currentTimeMillis();
+        String userB = "clientBlockB_" + System.currentTimeMillis();
+        client.sendRequest("createUser", "", userA + " | passwordA | default.png | default bio");
+        client.sendRequest("createUser", "", userB + " | passwordB | default.png | default bio");
 
-        // Mock server sends a response for login
-        new Thread(() -> {
-            try {
-                mockServerWriter.write("Login successful\n");
-                mockServerWriter.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
+        // Block and then unblock userB by userA
+        client.sendRequest("blockUser", userA, userB);
+        String unblockResponse = client.sendRequest("unblock", userA, userB);
+        assertTrue(unblockResponse.toLowerCase().contains("unblocked successfully"), 
+                "User should be unblocked successfully");
+    }
 
-        // Simulate GUI inputs
-        JTextField userField = new JTextField("testUser");
-        JPasswordField passField = new JPasswordField("password123");
+    //Messages Test Cases.
 
-        // Simulate button action
-        String username = userField.getText().trim();
-        String password = new String(passField.getPassword()).trim();
-        String response = socialClient.sendRequest("loginWithPassword", username, password);
-
-        assertEquals("Login successful", response);
+    @Test
+    void testSendMessage() {
+        String sender = "clientSender_" + System.currentTimeMillis();
+        String receiver = "clientReceiver_" + System.currentTimeMillis();
+        client.sendRequest("createUser", "", sender + 
+                " | passwordSender | default.png | default bio");
+        client.sendRequest("createUser", "", receiver + 
+                " | passwordReceiver | default.png | default bio");
+        String sendMessageResponse = client.sendRequest("sendMessage", sender, receiver + " | Hello!");
+        assertNotNull(sendMessageResponse, "Sending a message should return a response.");
     }
 
     @Test
-    void testCreateAccountButtonAction() throws IOException {
-        BufferedWriter mockServerWriter = new BufferedWriter(new OutputStreamWriter(mockClientSocket.getOutputStream()));
+    void testRetrieveMessages() {
+        String sender = "clientSender_" + System.currentTimeMillis();
+        String receiver = "clientReceiver_" + System.currentTimeMillis();
+        client.sendRequest("createUser", "", sender + 
+                " | passwordSender | default.png | default bio");
+        client.sendRequest("createUser", "", receiver + 
+                " | passwordReceiver | default.png | default bio");
 
-        // Mock server sends a response for account creation
-        new Thread(() -> {
-            try {
-                mockServerWriter.write("Account created successfully\n");
-                mockServerWriter.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
-
-        // Simulate GUI inputs
-        JTextField userField = new JTextField("newUser");
-        JPasswordField passField = new JPasswordField("securePass");
-
-        // Simulate button action
-        String username = userField.getText().trim();
-        String password = new String(passField.getPassword()).trim();
-        String response = socialClient.sendRequest("createUser", username + " | " + password);
-
-        assertEquals("Account created successfully", response);
-    }
-
-    @Test
-    void testCloseConnection() {
-        assertDoesNotThrow(() -> socialClient.closeConnection());
+        //Send & receive messages.
+        client.sendRequest("sendMessage", sender, receiver + " | Hello!");
+        String messages = client.sendRequest("getMessage", sender, receiver);
+        assertTrue(messages.contains("Hello!"), "Messages should contain the sent message");
     }
 }
