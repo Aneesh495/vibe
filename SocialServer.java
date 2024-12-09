@@ -354,9 +354,10 @@ public class SocialServer implements Runnable {
         }
     }
 
-    public void sendMessage(String sender, String receiver, String message)
+    public int sendMessage(String sender, String receiver, String message)
             throws IOException, UserNotFoundException, InvalidInputException {
         ArrayList<String> messageLines = new ArrayList<>();
+        int msgId = -1;
         if (!checkUser(sender) || !checkUser(receiver)) {
             throw new UserNotFoundException("One or both users do not exist.");
         }
@@ -374,6 +375,7 @@ public class SocialServer implements Runnable {
                     conversationExists = true;
                     String messages = data[2];
                     int num = messages.split(";").length;
+                    msgId = num;
                     String type = data[0].equals(sender) ? "S" : "R";
                     messages += " ; " + message + "-" + num + "#" + type + "#";
                     messageLines.add(data[0] + " | " + data[1] + " | " + messages);
@@ -388,6 +390,50 @@ public class SocialServer implements Runnable {
             messageLines.add(sender + " | " + receiver + " | " + initialMessage);
         }
         overwriteFile(messageLines, MessageList);
+        return msgId;
+    }
+
+    public void deleteMessage(String sender, String reciever, int messageId) throws IOException, UserNotFoundException{
+        ArrayList<String> messageLine = new ArrayList<>();
+
+        System.out.println("works");
+        // check if users exist
+        if (!checkUser(sender) || !checkUser(reciever)) {
+            throw new UserNotFoundException("User not found");
+        }
+
+        try (BufferedReader userBr = new BufferedReader(new FileReader(MessageList))) {
+            // loop through file
+            String line = userBr.readLine();
+            while (line != null) {
+                // check user info
+                String[] userInfo = line.split(" \\| ");
+                if ((userInfo[0].equals(sender) || userInfo[0].equals(reciever)) &&
+                (userInfo[1].equals(reciever) || userInfo[1].equals(sender))) {
+                    System.out.println(userInfo[2]);
+                    String[] messages = userInfo[2].split("\\s*;\\s*");
+                    String newLine= "";
+                    for(int i=0;i<messages.length;i++){
+                        if(messages[i].contains("-"+messageId+"#S#")){
+                            messages[i]= "";
+                        }else if(messages[i].contains("-"+messageId+"#R#")){
+                            messages[i]= "";
+                        }
+                        newLine += messages[i];
+                        if(i!=messages.length-1 && !messages[i].isEmpty()){
+                            newLine+=" ; ";
+                        }
+                    }
+                    if(!newLine.isEmpty()){
+                        messageLine.add(String.format("%s | %s | %s", userInfo[0], userInfo[1],newLine));
+                    }
+                } else {
+                    messageLine.add(line);
+                }
+                line = userBr.readLine();
+            }
+            overwriteFile(messageLine, MessageList);
+        }
     }
 
 
@@ -429,106 +475,153 @@ public class SocialServer implements Runnable {
         return chatUsers;
     }
 
-    // REQUEST HANDLING
-
-    public String handleRequest(String action, String caller, String data) {
-        try {
-            String[] userInformation = data.split(" \\| ");
-            switch (action) {
-                case "createUser":
-                    if (userInformation.length == 2) {
-                        createUser(userInformation[0], userInformation[1]);
-                        return "User created successfully";
-                    } else if (userInformation.length == 4) {
-                        createUser(userInformation[0], userInformation[1], userInformation[2], userInformation[3]);
-                        return "User created successfully";
-                    } else {
-                        throw new ClientDataException("Invalid user creation data format.");
-                    }
-                case "editUser":
-                    System.out.println(data);
-                    if(userInformation.length>4){
-                        editUser(caller, userInformation[1], userInformation[2], userInformation[3], userInformation[4]);
-                        return "User edited succesfully";
-                    }else{
-                        throw new ClientDataException("Invalid edit user data format");
-                    }
-                case "loginWithPassword":
-                    loginWithPassword(caller, userInformation[0]);
-                    return "Login successful";
-                case "getUser":
-                    return getUser(data);
-                case "blockUser":
-                    if (userInformation.length == 1) {
-                        blockUser(caller, userInformation[0]);
-                        return "User " + userInformation[0] + " blocked successfully by " + caller;
-                    } else {
-                        throw new ClientDataException("Invalid block data format. Expected target user.");
-                    }
-                case "getBlocked":
-                    return "Blocked users by " + caller + ": " + getBlocked(caller);
-                case "unblock":
-                    if (userInformation.length == 1) {
-                        unblock(caller, userInformation[0]);
-                        return "User " + userInformation[0] + " unblocked successfully by " + caller;
-                    } else {
-                        throw new ClientDataException("Invalid unblock data format. Expected target user.");
-                    }
-                case "friendUser":
-                    if (userInformation.length == 1) {
-                        friendUser(caller, userInformation[0]);
-                        return "User " + userInformation[0] + " friended successfully by " + caller;
-                    } else {
-                        throw new ClientDataException("Invalid friend data format. Expected target user.");
-                    }
-                case "getFriend":
-                    return "Friends of " + caller + ": " + getFriend(caller);
-                case "unfriend":
-                    if (userInformation.length == 1) {
-                        unfriend(caller, userInformation[0]);
-                        return "User " + userInformation[0] + " unfriended successfully by " + caller;
-                    } else {
-                        throw new ClientDataException("Invalid unfriend data format. Expected target user.");
-                    }
-                case "sendMessage":
-                    if (userInformation.length >= 2) {
-                        sendMessage(caller, userInformation[0], userInformation[1]);
-                        return "Message sent successfully";
-                    } else {
-                        throw new ClientDataException("Invalid message data format.");
-                    }
-                case "getMessage":
-                    return getMessage(caller, userInformation[0]);
-                case "getChatList":
-                    return String.join(" | ", getChatList(caller));
-                default:
-                    throw new ClientDataException("Invalid action: " + action);
+    public static void editMessage(String sender, String reciever, int messageId, String newMessage) throws IOException, UserNotFoundException{
+            ArrayList<String> messageLine = new ArrayList<>();
+    
+            System.out.println("works");
+            // check if users exist
+            if (!checkUser(sender) || !checkUser(reciever)) {
+                throw new UserNotFoundException("User not found");
             }
-        } catch (UserNotFoundException e) {
-            return "User Error: " + e.getMessage();
-        } catch (InvalidInputException e) {
-            return "Input Error: " + e.getMessage();
-        } catch (ClientDataException e) {
-            return "Client Data Format Error: " + e.getMessage();
-        } catch (IOException e) {
-            return "Server Error: " + e.getMessage();
-        }
-    }
-
-    // Main method
-    public static void main(String[] args) throws UserNotFoundException, IOException {
-        try (ServerSocket serverSocket = new ServerSocket(4242)) {
-            System.out.println("Server running on port 4242...");
-            while (true) {
-                Socket clientSocket = serverSocket.accept();
-                System.out.println("Client Connected");
-                SocialServer server = new SocialServer(clientSocket);
-                Thread clientThread = new Thread(server);
-                clientThread.start();
+    
+            try (BufferedReader userBr = new BufferedReader(new FileReader(MessageList))) {
+                // loop through file
+                String line = userBr.readLine();
+                while (line != null) {
+                    // check user info
+                    String[] userInfo = line.split(" \\| ");
+                    if ((userInfo[0].equals(sender) && userInfo[1].equals(reciever)) ||
+                    (userInfo[0].equals(reciever) && userInfo[1].equals(sender))) {
+                        System.out.println(userInfo[2]);
+                        System.out.println("userFound");
+                        String[] messages = userInfo[2].split("\s*;\s*");
+                        String newLine= "";
+                        for(int i=0;i<messages.length;i++){
+                            if(messages[i].contains("-"+messageId+"#S#")){
+                                messages[i]= String.format("%s-%d#S#",newMessage,messageId);
+                            }else if(messages[i].contains("-"+messageId+"#R#")){
+                                messages[i]= String.format("%s-%d#R#",newMessage,messageId);
+                            }
+                            newLine += messages[i];
+                            if(i!=messages.length-1){
+                                newLine+=" ; ";
+                            }
+                        }
+                        messageLine.add(String.format("%s | %s | %s", userInfo[0], userInfo[1],newLine));
+                    } else {
+                        messageLine.add(line);
+                    }
+                    line = userBr.readLine();
+                }
+                overwriteFile(messageLine, MessageList);
             }
-        } catch (IOException e) {
-            System.out.println("Server failed: " + e.getMessage());
         }
+    
+        // REQUEST HANDLING
+    
+        public String handleRequest(String action, String caller, String data) {
+            try {
+                String[] userInformation = data.split(" \\| ");
+                switch (action) {
+                    case "createUser":
+                        if (userInformation.length == 2) {
+                            createUser(userInformation[0], userInformation[1]);
+                            return "User created successfully";
+                        } else if (userInformation.length == 4) {
+                            createUser(userInformation[0], userInformation[1], userInformation[2], userInformation[3]);
+                            return "User created successfully";
+                        } else {
+                            throw new ClientDataException("Invalid user creation data format.");
+                        }
+                    case "editUser":
+                        System.out.println(data);
+                        if(userInformation.length>4){
+                            editUser(caller, userInformation[1], userInformation[2], userInformation[3], userInformation[4]);
+                            return "User edited succesfully";
+                        }else{
+                            throw new ClientDataException("Invalid edit user data format");
+                        }
+                    case "loginWithPassword":
+                        loginWithPassword(caller, userInformation[0]);
+                        return "Login successful";
+                    case "getUser":
+                        return getUser(data);
+                    case "blockUser":
+                        if (userInformation.length == 1) {
+                            blockUser(caller, userInformation[0]);
+                            return "User " + userInformation[0] + " blocked successfully by " + caller;
+                        } else {
+                            throw new ClientDataException("Invalid block data format. Expected target user.");
+                        }
+                    case "getBlocked":
+                        return "Blocked users by " + caller + ": " + getBlocked(caller);
+                    case "unblock":
+                        if (userInformation.length == 1) {
+                            unblock(caller, userInformation[0]);
+                            return "User " + userInformation[0] + " unblocked successfully by " + caller;
+                        } else {
+                            throw new ClientDataException("Invalid unblock data format. Expected target user.");
+                        }
+                    case "friendUser":
+                        if (userInformation.length == 1) {
+                            friendUser(caller, userInformation[0]);
+                            return "User " + userInformation[0] + " friended successfully by " + caller;
+                        } else {
+                            throw new ClientDataException("Invalid friend data format. Expected target user.");
+                        }
+                    case "getFriend":
+                        return "Friends of " + caller + ": " + getFriend(caller);
+                    case "unfriend":
+                        if (userInformation.length == 1) {
+                            unfriend(caller, userInformation[0]);
+                            return "User " + userInformation[0] + " unfriended successfully by " + caller;
+                        } else {
+                            throw new ClientDataException("Invalid unfriend data format. Expected target user.");
+                        }
+                    case "sendMessage":
+                        if (userInformation.length >= 2) {
+                            return Integer.toString(sendMessage(caller, userInformation[0], userInformation[1]));
+                        } else {
+                            throw new ClientDataException("Invalid message data format.");
+                        }
+                    case "getMessage":
+                        return getMessage(caller, userInformation[0]);
+                    case "getChatList":
+                        return String.join(" | ", getChatList(caller));
+                    case "deleteMessage":
+                        deleteMessage(caller, userInformation[0],Integer.parseInt(userInformation[1]));
+                        return "Message deleted succesfully";
+                    case "editMessage":
+                        editMessage(caller, userInformation[0], Integer.parseInt(userInformation[1]), userInformation[2]);
+                        return "Message Edited";
+                    default:
+                        throw new ClientDataException("Invalid action: " + action);
+                }
+            } catch (UserNotFoundException e) {
+                return "User Error: " + e.getMessage();
+            } catch (InvalidInputException e) {
+                return "Input Error: " + e.getMessage();
+            } catch (ClientDataException e) {
+                return "Client Data Format Error: " + e.getMessage();
+            } catch (IOException e) {
+                return "Server Error: " + e.getMessage();
+            }
+        }
+    
+        // Main method
+        public static void main(String[] args) throws UserNotFoundException, IOException {
+            try (ServerSocket serverSocket = new ServerSocket(4242)) {
+                System.out.println("Server running on port 4242...");
+                while (true) {
+                    Socket clientSocket = serverSocket.accept();
+                    System.out.println("Client Connected");
+                    SocialServer server = new SocialServer(clientSocket);
+                    Thread clientThread = new Thread(server);
+                    clientThread.start();
+                }
+            } catch (IOException e) {
+                System.out.println("Server failed: " + e.getMessage());
+            }
     }
 
     // THREAD MANAGEMENT
