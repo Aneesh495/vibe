@@ -50,7 +50,7 @@ class SocialServerTest {
     @Test
     void testEditUserProfileSuccess() throws Exception {
         String username = "editUser_" + System.currentTimeMillis();
-        server.createUser(username, "password123", "defaultPic.png", "original bio");
+        server.createUser(username, "password123", "default.png", "original bio");
         SocialServer.editUser(username, "newUser", "newPass123", "newPic.png",
                 "updated bio");
         String updatedUserInfo = SocialServer.getUser(username);
