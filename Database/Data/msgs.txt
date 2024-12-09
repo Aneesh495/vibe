@@ -1,6 +1,2 @@
 dragon | alice | Hello Alice!-0#S# ; I'm seeing how messages work-1#S# ; #FILE#:Database/Files/dragonalicebrain scrampled egg.jpg-2#S# ; hellooooo-3#S# ; test-4#S# ; hallo-5#S# ; test-6#S#
-garvt27 | lakshaym | #FILE#:Database/Files/lakshaymgarvt27Screenshot 2024-09-23 at 2.13.26 PM.png-6#R# ; #FILE#:Database/Files/lakshaymgarvt27Screenshot 2024-11-04 at 3.33.12 PM.png-7#R# ;  ; hey-3#R#
 garvt27 | alice | hi alice garv here-0#S# ; #FILE#:Database/Files/garvt27aliceScreenshot 2024-05-08 at 12.27.40 PM.png-1#S# ; #FILE#:Database/Files/garvt27aliceScreenshot 2024-06-29 at 11.24.55 AM.png-2#S# ; #FILE#:Database/Files/garvt27aliceScreenshot 2024-05-02 at 2.37.15 PM.png-3#S#
-dragon | garvt27 | test-0#S# ; another test-1#S#
-dragon | wolf | hello, me-0#S# ; I'm trying to get it to show up but now it's glitching-1#S# ; Still glitching...but at least it works?-2#S# ; testing deletion-3#S# ; testing message panel glitching?-4#S# ; :OOOOO IT WORKED!!!-5#S# ; testing deletion again?-6#S# ; darn it-7#S# ; yeah, I know, it's annoying-8#R# ; #FILE#:Database/Files/wolfdragonbrain scrampled egg.jpg-9#R# ; the pictures don't send-10#S#
-lakshaym | johnnyNew | this is edit hey1233333-0#S# ; hey-1#S# ; whattup-2#S# ; my name is bobby type shi-3#S# ; hi-4#S# ; hey-5#S# ; je-6#S# ; w-7#S#

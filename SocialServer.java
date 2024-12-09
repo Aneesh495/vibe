@@ -410,6 +410,7 @@ public class SocialServer implements Runnable {
                 String[] userInfo = line.split(" \\| ");
                 if ((userInfo[0].equals(sender) || userInfo[0].equals(reciever)) &&
                 (userInfo[1].equals(reciever) || userInfo[1].equals(sender))) {
+                    System.out.println(userInfo[2]);
                     String[] messages = userInfo[2].split("\\s*;\\s*");
                     String newLine= "";
                     for(int i=0;i<messages.length;i++){
@@ -423,7 +424,9 @@ public class SocialServer implements Runnable {
                             newLine+=" ; ";
                         }
                     }
-                    messageLine.add(String.format("%s | %s | %s", userInfo[0], userInfo[1],newLine));
+                    if(!newLine.isEmpty()){
+                        messageLine.add(String.format("%s | %s | %s", userInfo[0], userInfo[1],newLine));
+                    }
                 } else {
                     messageLine.add(line);
                 }
