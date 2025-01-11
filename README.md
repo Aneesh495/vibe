@@ -59,14 +59,6 @@ Test Files:
 2. friendsExample.txt - List of example users and their example friend lists.
 3. userInfoExample.txt - List of example users with their user info.
 
-Groupmember Contributions - Phase 1:
-
-1. Aneesh: Authored ReadMe file, Group Report, and editMessage/deleteMessage functions.
-2. Garv: Authored clientServer.java, server and home page GUI.
-3. Lakshay: Authored socialServer.java, and messaging GUI.
-4. Tasha: Co-authored group presentation
-5. Amelia: Oversaw operations
-
 Citations:
 
 1. Stack overflow - https://docs.oracle.com/javase/6/docs/api/java/lang/StackOverflowError.html
