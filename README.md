@@ -1,65 +1,181 @@
-README.file Phase 3 Team Project - by: Aneesh, Lakshay, Garv, Tasha, and Amelia
+# Vibe Social Media App
 
-ALERT: We extensively worked on the GUI of the Social Meida App on this phase, and a lot of GUI has been completely reworked. 
+A Java-based social media application with a graphical user interface that allows users to connect, message, and manage their social network. Built with Java Swing for the frontend and file-based storage for the backend.
 
-NOTE: THE SERVER HAS TO BE RUNNING FOR THE CLIENT SIDE TEST CASES TO BE WORKING.
+## 🚀 Features
 
-Database: We opt to store the data for our social media app using files. We decided it would be feasible to implement this as we could make use of buffered reader & writer to access user information conviniently.
+- **User Authentication**: Login and registration system
+- **Real-time Messaging**: Direct messaging between users with WhatsApp-style chat bubbles
+- **Friend Management**: Add, remove, and view friends
+- **Block System**: Block and unblock users
+- **Profile Management**: Edit username, password, profile picture, and bio
+- **Message Management**: Send, edit, and delete messages
+- **Modern GUI**: Dark theme with intuitive user interface inspired by popular social media platforms
 
-GUI: 
-In phase 3, we focused on implementing complex GUI for our social media app.
-1. For messaging, we took inspiration from WhatsApp to implement dark-grey and light-green bubbles to differentiate messages sent between user 1 and 2.
-2. For edit and delete messages, we took inspiration from Discord to impleent a 'pencil' icon to model the edit message function and a 'trash' icon to model the delete message function.
-3. We decided to design the home screen on our own to keep it original and give our social media an app a flavor of our own. We did this using Apache Netbeans
+## 🛠️ Technology Stack
 
-Files:
-1. blocked.txt - Consists of a list of every user and who they have blocked.
-2. friends.txt - Consists of a list of every user and their list of friends.
-3. msgs.txt - Consists of a list of every direct message chat history.
-4. userInfo.txt - Conists of every user's profile information such as username as user bio.
-5. userPasswords.txt - Consists of every user's current password used for login.
-6. deafult.png - Consists of the default PFP if user doesn't provide a PFP image. 
+- **Backend**: Java (JDK 8+)
+- **Frontend**: Java Swing (GUI)
+- **Storage**: File-based database (text files)
+- **Networking**: Java Socket programming
+- **Testing**: JUnit 4
 
-Exceptions:
-1. ClientDataException.java - Throws an exception when a user tries accessing invalid data.
-2. CustomException.java - Used for throwing custom exceptions for rare cases not covered by other exceptions.
-3. InvalidInputException.java - Throws an exception when a user inputs contains errors.
-4. UserNotFound.java - Throws an exception when a function is called with an invalid username as paramater.
+## 📁 Project Structure
 
-Social Client:
-Initializes a "localhost" on socket 8080. Shows GUI to Login. If entered username isn't found, prompts user to create new account. If a correct username is entered, prompts user to confirm login with password.
+```
+VibeSocialMedia/
+├── SocialClient.java          # Main client application with GUI
+├── SocialServer.java          # Server application
+├── SocialClientTest.java      # Client test cases
+├── SocialServerTest.java      # Server test cases
+├── Database/
+│   ├── Data/
+│   │   ├── userInfo.txt      # User profile information
+│   │   ├── friends.txt       # Friend relationships
+│   │   ├── blocked.txt       # Blocked user relationships
+│   │   ├── msgs.txt          # Message history
+│   │   └── userPassword.txt  # User authentication data
+│   ├── ProfilePicture/
+│   │   └── default.png       # Default profile picture
+│   └── logo.jpg              # Application logo
+├── ServerException/
+│   ├── ClientDataException.java
+│   ├── CustomException.java
+│   ├── InvalidInputException.java
+│   └── UserNotFoundException.java
+└── lib/                      # JUnit testing libraries
+```
 
-Social Server:
-Stores user info and user's list of messages, friends and blocked users in respective text files by providing the path for it. Creates a new user with all user info, and provides seperate method to create new user with just username and password. 
-1. getUser - Searcher for user based on username and returns user's information.
-2. changeUserInfo - Edits user's username, password, PFP, and bio information based on input.
-3. getBlocked - Returns user1's list of blocked users.
-4. blockUser - If user2 isn't already blocked by user1, blocks user 2. 
-5. unblockUser - If user2 is blocked by user1, unblocks user2. 
-6. getFriend - Returns user1's list of blocked users.
-7. friendUser - Adds user2 to user1's friend list if not already there.
-8. unfriend - Removes user2 from user1's friend list if user is there.
-9. getMessage - Returns user's message history.
-10. message - Enables user1 to message user2.
-11. checkUser - Searches to see if user with given username exists.
-12. checkBlocked - Searches to see if user2 is blocked by user1.
-13. writeToFile - Uses print writer to write to file.
-14. overwriteFile - Used to edit information already existing in text files.
-15. handleRequests - Used to carry out all user functions.
-16. Main method - Connects to client.
+## 🚀 Getting Started
 
-Test Client: 
-Establishes connection with the server. 
-1. sendRequest - requests to connect with server.
-2. closeConnection - closes the connection with server.
-3. Main method - Provides options to: create user, get user info, change user info, block user, get blocked users, unblock user, friend user, get friend list, unfriend user, send message, get messages and exit. Sets up each choice with subsequent prompts for user input.
+### Prerequisites
 
-Test Files:
-1. blockedExample.txt - List of example users and their example blocked lists. 
-2. friendsExample.txt - List of example users and their example friend lists.
-3. userInfoExample.txt - List of example users with their user info.
+- Java Development Kit (JDK) 8 or higher
+- Git (for cloning the repository)
 
-Citations:
+### Installation
 
-1. Stack overflow - https://docs.oracle.com/javase/6/docs/api/java/lang/StackOverflowError.html
-2. JPass - https://docs.oracle.com/javase/tutorial/uiswing/components/passwordfield.html
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd VibeSocialMedia
+   ```
+
+2. **Compile the Java files**
+   ```bash
+   javac -cp "lib/*" *.java ServerException/*.java
+   ```
+
+## 🏃‍♂️ Running the Application
+
+### Starting the Server
+
+1. **Open a terminal/command prompt**
+2. **Navigate to the project directory**
+3. **Run the server**
+   ```bash
+   java SocialServer
+   ```
+   
+   The server will start on port 4242 and display:
+   ```
+   Server running on port 4242...
+   ```
+
+### Starting the Client
+
+1. **Open another terminal/command prompt**
+2. **Navigate to the project directory**
+3. **Run the client**
+   ```bash
+   java SocialClient
+   ```
+   
+   The client will connect to `localhost:4242` and open the login GUI.
+
+### Using the Application
+
+1. **Login/Register**: 
+   - Enter username and password
+   - If the user doesn't exist, you'll be prompted to create an account
+   - If the user exists, enter the correct password to login
+
+2. **Main Features**:
+   - **Chat**: Click on any user in the chat list to start messaging
+   - **Friends**: Add and manage friends from the friends panel
+   - **Block**: Block unwanted users from the blocked panel
+   - **Profile**: Edit your profile information including picture and bio
+   - **Search**: Search for users to add as friends
+
+## 🧪 Running Tests
+
+### Prerequisites for Testing
+- **IMPORTANT**: The server must be running for client tests to work
+- JUnit libraries are included in the `lib/` directory
+
+### Running Client Tests
+```bash
+java -cp ".:lib/*" org.junit.runner.JUnitCore SocialClientTest
+```
+
+### Running Server Tests
+```bash
+java -cp ".:lib/*" org.junit.runner.JUnitCore SocialServerTest
+```
+
+## 📊 Database Schema
+
+The application uses text files for data storage:
+
+- **userInfo.txt**: `username | password | profilePicture | bio`
+- **friends.txt**: `username | friend1 | friend2 | ...`
+- **blocked.txt**: `username | blockedUser1 | blockedUser2 | ...`
+- **msgs.txt**: `sender | receiver | message1 ; message2 ; ...`
+- **userPassword.txt**: `username | password`
+
+## 🔧 Configuration
+
+### Server Configuration
+- **Port**: 4242 (default)
+- **Host**: localhost
+- **Max Connections**: Unlimited (multi-threaded)
+
+### Client Configuration
+- **Server Address**: 127.0.0.1
+- **Server Port**: 4242
+- **GUI Theme**: Dark theme with custom styling
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+1. **"Failed to connect to server"**
+   - Ensure the server is running before starting the client
+   - Check if port 4242 is available
+
+2. **"Server failed"**
+   - Check if port 4242 is already in use
+   - Ensure you have proper permissions to bind to the port
+
+3. **Tests failing**
+   - Make sure the server is running before executing tests
+   - Verify JUnit libraries are in the classpath
+
+4. **GUI not displaying properly**
+   - Ensure you're running on a system with GUI support
+   - Check Java Swing dependencies
+
+### Port Conflicts
+If port 4242 is already in use, you can modify the port in:
+- `SocialServer.java` line 608: `new ServerSocket(4242)`
+- `SocialClient.java` line 119: `new SocialClient("127.0.0.1", 4242)`
+
+## 📚 Dependencies
+
+- **JUnit 4.13.1**: Testing framework
+- **JUnit Jupiter 5.8.1**: Additional testing utilities
+- **Apache NetBeans**: GUI development inspiration
+
+---
+
+**Note**: The server must be running for the client application and test cases to function properly.
