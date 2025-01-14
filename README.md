@@ -2,7 +2,7 @@
 
 A Java-based social media application with a graphical user interface that allows users to connect, message, and manage their social network. Built with Java Swing for the frontend and file-based storage for the backend.
 
-## 🚀 Features
+## Features
 
 - **User Authentication**: Login and registration system
 - **Real-time Messaging**: Direct messaging between users with WhatsApp-style chat bubbles
@@ -12,7 +12,7 @@ A Java-based social media application with a graphical user interface that allow
 - **Message Management**: Send, edit, and delete messages
 - **Modern GUI**: Dark theme with intuitive user interface inspired by popular social media platforms
 
-## 🛠️ Technology Stack
+## Techn Stack
 
 - **Backend**: Java (JDK 8+)
 - **Frontend**: Java Swing (GUI)
@@ -20,7 +20,7 @@ A Java-based social media application with a graphical user interface that allow
 - **Networking**: Java Socket programming
 - **Testing**: JUnit 4
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 VibeSocialMedia/
@@ -46,7 +46,7 @@ VibeSocialMedia/
 └── lib/                      # JUnit testing libraries
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -107,23 +107,7 @@ VibeSocialMedia/
    - **Profile**: Edit your profile information including picture and bio
    - **Search**: Search for users to add as friends
 
-## 🧪 Running Tests
-
-### Prerequisites for Testing
-- **IMPORTANT**: The server must be running for client tests to work
-- JUnit libraries are included in the `lib/` directory
-
-### Running Client Tests
-```bash
-java -cp ".:lib/*" org.junit.runner.JUnitCore SocialClientTest
-```
-
-### Running Server Tests
-```bash
-java -cp ".:lib/*" org.junit.runner.JUnitCore SocialServerTest
-```
-
-## 📊 Database Schema
+## Database Schema
 
 The application uses text files for data storage:
 
@@ -133,7 +117,7 @@ The application uses text files for data storage:
 - **msgs.txt**: `sender | receiver | message1 ; message2 ; ...`
 - **userPassword.txt**: `username | password`
 
-## 🔧 Configuration
+## Configuration
 
 ### Server Configuration
 - **Port**: 4242 (default)
@@ -143,39 +127,3 @@ The application uses text files for data storage:
 ### Client Configuration
 - **Server Address**: 127.0.0.1
 - **Server Port**: 4242
-- **GUI Theme**: Dark theme with custom styling
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **"Failed to connect to server"**
-   - Ensure the server is running before starting the client
-   - Check if port 4242 is available
-
-2. **"Server failed"**
-   - Check if port 4242 is already in use
-   - Ensure you have proper permissions to bind to the port
-
-3. **Tests failing**
-   - Make sure the server is running before executing tests
-   - Verify JUnit libraries are in the classpath
-
-4. **GUI not displaying properly**
-   - Ensure you're running on a system with GUI support
-   - Check Java Swing dependencies
-
-### Port Conflicts
-If port 4242 is already in use, you can modify the port in:
-- `SocialServer.java` line 608: `new ServerSocket(4242)`
-- `SocialClient.java` line 119: `new SocialClient("127.0.0.1", 4242)`
-
-## 📚 Dependencies
-
-- **JUnit 4.13.1**: Testing framework
-- **JUnit Jupiter 5.8.1**: Additional testing utilities
-- **Apache NetBeans**: GUI development inspiration
-
----
-
-**Note**: The server must be running for the client application and test cases to function properly.
