@@ -1,4 +1,4 @@
-# Vibe Social Media App
+# Vibe Social Network
 
 A Java-based social media application with a graphical user interface that allows users to connect, message, and manage their social network. Built with Java Swing for the frontend and file-based storage for the backend.
 
