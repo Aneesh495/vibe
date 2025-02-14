@@ -12,7 +12,7 @@ A Java-based social media application with a graphical user interface that allow
 - **Message Management**: Send, edit, and delete messages
 - **Modern GUI**: Dark theme with intuitive user interface inspired by popular social media platforms
 
-## Techn Stack
+## Stack
 
 - **Backend**: Java (JDK 8+)
 - **Frontend**: Java Swing (GUI)
@@ -57,7 +57,7 @@ VibeSocialMedia/
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/Aneesh495/VibeSocialMedia.git
    cd VibeSocialMedia
    ```
 
