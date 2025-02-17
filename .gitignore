@@ -1,4 +1,44 @@
-
-.idea/material_theme_project_new.xml
+# OS & Editors
 .DS_Store
-/.idea
+.AppleDouble
+.LSOverride
+._*
+.idea/
+*.iml
+.vscode/
+*.swp
+*~
+
+# Java & Gradle
+build/
+.gradle/
+*.class
+*.jar
+!legacy/lib/*.jar
+!gradle/wrapper/gradle-wrapper.jar
+*.war
+*.ear
+
+# Node & Web
+node_modules/
+dist/
+.wireit/
+*.tsbuildinfo
+.env.local
+.env.*.local
+
+# Vibe runtime artifacts
+/data/
+/logs/
+/run/
+/wal/
+/snapshots/
+/ratis/
+/attachments/
+certs/dev-ca.key
+certs/*.key
+certs/*.p12
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
