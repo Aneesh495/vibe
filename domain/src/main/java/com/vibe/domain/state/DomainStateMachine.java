@@ -34,10 +34,15 @@ public final class DomainStateMachine {
 
     private final SocialGraph socialGraph = new SocialGraph();
     private final IdempotencyTracker idempotencyTracker = new IdempotencyTracker();
+    private final com.vibe.domain.search.ConversationSearchIndex searchIndex = new com.vibe.domain.search.ConversationSearchIndex();
 
     private final AtomicLong lastAppliedIndex = new AtomicLong(0L);
 
     public DomainStateMachine() {
+    }
+
+    public com.vibe.domain.search.ConversationSearchIndex searchIndex() {
+        return searchIndex;
     }
 
     public long lastAppliedIndex() {
@@ -327,16 +332,19 @@ public final class DomainStateMachine {
                 cmd.timestamp(),
                 0L,
                 false,
-                cmd.attachment()
+                cmd.attachment(),
+                cmd.replyToMessageId()
         );
 
         conversationMessages.computeIfAbsent(conv.conversationId(), k -> new ConcurrentHashMap<>())
                 .put(assignedSeq, message);
         messagesById.put(message.messageId(), message);
+        searchIndex.indexMessage(message);
 
         MessageSentEvent event = new MessageSentEvent(
                 UUID.randomUUID(), conv.conversationId(), assignedSeq, cmd.callerUserId(),
-                cmd.timestamp(), message.messageId(), cmd.clientMessageId(), cmd.content(), cmd.attachment()
+                cmd.timestamp(), message.messageId(), cmd.clientMessageId(), cmd.content(), cmd.attachment(),
+                cmd.replyToMessageId()
         );
 
         byte[] payload = message.messageId().toString().getBytes(StandardCharsets.UTF_8);
@@ -360,6 +368,7 @@ public final class DomainStateMachine {
 
         long assignedSeq = conv.nextSeq();
         message.edit(cmd.newContent(), cmd.timestamp());
+        searchIndex.updateMessage(message.messageId(), cmd.newContent(), cmd.timestamp());
 
         MessageEditedEvent event = new MessageEditedEvent(
                 UUID.randomUUID(), conv.conversationId(), assignedSeq, cmd.callerUserId(),
@@ -390,6 +399,7 @@ public final class DomainStateMachine {
 
         long assignedSeq = conv.nextSeq();
         message.delete(cmd.timestamp());
+        searchIndex.removeMessage(message.messageId());
 
         MessageDeletedEvent event = new MessageDeletedEvent(
                 UUID.randomUUID(), conv.conversationId(), assignedSeq, cmd.callerUserId(),
@@ -522,6 +532,33 @@ public final class DomainStateMachine {
         return idempotencyTracker;
     }
 
+    public SnapshotCodec.DomainSnapshot createSnapshot() {
+        List<User.UserSnapshot> userSnapshots = new ArrayList<>();
+        allUsers().values().forEach(u -> userSnapshots.add(u.toSnapshot()));
+
+        List<Conversation.ConversationSnapshot> convSnapshots = new ArrayList<>();
+        allConversations().values().forEach(c -> convSnapshots.add(c.toSnapshot()));
+
+        List<Message.MessageSnapshot> messageSnapshots = new ArrayList<>();
+        for (Conversation c : allConversations().values()) {
+            List<Message> msgs = getMessages(c.conversationId(), 1L, 100_000);
+            msgs.forEach(m -> messageSnapshots.add(m.toSnapshot()));
+        }
+
+        return new SnapshotCodec.DomainSnapshot(
+                lastAppliedIndex(),
+                userSnapshots,
+                convSnapshots,
+                messageSnapshots,
+                socialGraph().toSnapshot(),
+                new ArrayList<>(idempotencyTracker().allRecords().values())
+        );
+    }
+
+    public synchronized void restoreFromSnapshot(SnapshotCodec.DomainSnapshot snapshot) {
+        restore(snapshot);
+    }
+
     public synchronized void restore(SnapshotCodec.DomainSnapshot snapshot) {
         if (snapshot == null) {
             return;
@@ -588,6 +625,7 @@ public final class DomainStateMachine {
         }
 
         setLastAppliedIndex(snapshot.lastAppliedIndex());
+        searchIndex.rebuild(this);
         log.info("Restored DomainStateMachine from snapshot at index {}", snapshot.lastAppliedIndex());
     }
 

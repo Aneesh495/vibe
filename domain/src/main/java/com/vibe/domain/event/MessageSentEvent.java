@@ -17,8 +17,23 @@ public record MessageSentEvent(
         UUID messageId,
         String clientMessageId,
         String content,
-        AttachmentInfo attachment
+        AttachmentInfo attachment,
+        UUID replyToMessageId
 ) implements DomainEvent {
+
+    public MessageSentEvent(
+            UUID eventId,
+            UUID conversationId,
+            long seqNumber,
+            String senderUserId,
+            long timestamp,
+            UUID messageId,
+            String clientMessageId,
+            String content,
+            AttachmentInfo attachment
+    ) {
+        this(eventId, conversationId, seqNumber, senderUserId, timestamp, messageId, clientMessageId, content, attachment, null);
+    }
 
     public MessageSentEvent {
         Objects.requireNonNull(eventId, "eventId must not be null");
@@ -36,7 +51,9 @@ public record MessageSentEvent(
 
     @Override
     public ByteBuffer encodePayload() {
-        int size = 16 + PayloadCodecUtil.stringByteLength(clientMessageId) + PayloadCodecUtil.stringByteLength(content) + 1;
+        int size = 16 + PayloadCodecUtil.stringByteLength(clientMessageId) + PayloadCodecUtil.stringByteLength(content)
+                + 1 // has attachment flag
+                + 1 + (replyToMessageId != null ? 16 : 0); // has replyTo flag
         if (attachment != null) {
             size += 16 + PayloadCodecUtil.stringByteLength(attachment.fileName())
                     + PayloadCodecUtil.stringByteLength(attachment.mimeType())
@@ -56,6 +73,13 @@ public record MessageSentEvent(
             buf.putLong(attachment.sizeBytes());
             buf.putInt(attachment.checksumCRC32C());
             buf.put((byte) (attachment.completed() ? 1 : 0));
+        } else {
+            buf.put((byte) 0);
+        }
+
+        if (replyToMessageId != null) {
+            buf.put((byte) 1);
+            PayloadCodecUtil.writeUUID(buf, replyToMessageId);
         } else {
             buf.put((byte) 0);
         }
@@ -87,9 +111,14 @@ public record MessageSentEvent(
             attach = new AttachmentInfo(attachId, fileName, mimeType, sizeBytes, crc, completed);
         }
 
+        UUID replyTo = null;
+        if (payloadBuf.hasRemaining() && payloadBuf.get() == 1) {
+            replyTo = PayloadCodecUtil.readUUID(payloadBuf);
+        }
+
         return new MessageSentEvent(
                 eventId, conversationId, seqNumber, senderUserId, timestamp,
-                messageId, clientMessageId, content, attach
+                messageId, clientMessageId, content, attach, replyTo
         );
     }
 }

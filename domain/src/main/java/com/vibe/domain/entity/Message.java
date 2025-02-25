@@ -19,6 +19,7 @@ public final class Message {
     private boolean deleted;
     private final Map<String, Set<String>> reactions = new ConcurrentHashMap<>();
     private AttachmentInfo attachment;
+    private final UUID replyToMessageId;
 
     public Message(
             UUID messageId,
@@ -32,6 +33,22 @@ public final class Message {
             boolean deleted,
             AttachmentInfo attachment
     ) {
+        this(messageId, conversationId, seq, senderUserId, clientMessageId, content, sentAt, editedAt, deleted, attachment, null);
+    }
+
+    public Message(
+            UUID messageId,
+            UUID conversationId,
+            long seq,
+            String senderUserId,
+            String clientMessageId,
+            String content,
+            long sentAt,
+            long editedAt,
+            boolean deleted,
+            AttachmentInfo attachment,
+            UUID replyToMessageId
+    ) {
         this.messageId = Objects.requireNonNull(messageId, "messageId must not be null");
         this.conversationId = Objects.requireNonNull(conversationId, "conversationId must not be null");
         this.seq = seq;
@@ -42,6 +59,11 @@ public final class Message {
         this.editedAt = editedAt;
         this.deleted = deleted;
         this.attachment = attachment;
+        this.replyToMessageId = replyToMessageId;
+    }
+
+    public UUID replyToMessageId() {
+        return replyToMessageId;
     }
 
     public UUID messageId() {
@@ -125,7 +147,7 @@ public final class Message {
         reactions.forEach((k, v) -> copiedReactions.put(k, new ArrayList<>(v)));
         return new MessageSnapshot(
                 messageId, conversationId, seq, senderUserId, clientMessageId,
-                content, sentAt, editedAt, deleted, attachment, copiedReactions
+                content, sentAt, editedAt, deleted, attachment, copiedReactions, replyToMessageId
         );
     }
 
@@ -140,7 +162,23 @@ public final class Message {
             long editedAt,
             boolean deleted,
             AttachmentInfo attachment,
-            Map<String, List<String>> reactions
+            Map<String, List<String>> reactions,
+            UUID replyToMessageId
     ) {
+        public MessageSnapshot(
+                UUID messageId,
+                UUID conversationId,
+                long seq,
+                String senderUserId,
+                String clientMessageId,
+                String content,
+                long sentAt,
+                long editedAt,
+                boolean deleted,
+                AttachmentInfo attachment,
+                Map<String, List<String>> reactions
+        ) {
+            this(messageId, conversationId, seq, senderUserId, clientMessageId, content, sentAt, editedAt, deleted, attachment, reactions, null);
+        }
     }
 }

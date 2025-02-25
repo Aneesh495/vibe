@@ -17,8 +17,23 @@ public record SendMessageCommand(
         UUID messageId,
         UUID conversationId,
         String content,
-        AttachmentInfo attachment
+        AttachmentInfo attachment,
+        UUID replyToMessageId
 ) implements DomainCommand {
+
+    public SendMessageCommand(
+            UUID commandId,
+            long timestamp,
+            String callerUserId,
+            String callerDeviceId,
+            String clientMessageId,
+            UUID messageId,
+            UUID conversationId,
+            String content,
+            AttachmentInfo attachment
+    ) {
+        this(commandId, timestamp, callerUserId, callerDeviceId, clientMessageId, messageId, conversationId, content, attachment, null);
+    }
 
     public SendMessageCommand {
         Objects.requireNonNull(commandId, "commandId must not be null");
@@ -48,7 +63,8 @@ public record SendMessageCommand(
                 + PayloadCodecUtil.stringByteLength(clientMessageId)
                 + 16 + 16
                 + PayloadCodecUtil.stringByteLength(content)
-                + 1; // has attachment flag
+                + 1 // has attachment flag
+                + 1 + (replyToMessageId != null ? 16 : 0); // has replyTo flag
 
         if (attachment != null) {
             size += 16
@@ -80,6 +96,13 @@ public record SendMessageCommand(
             buf.put((byte) 0);
         }
 
+        if (replyToMessageId != null) {
+            buf.put((byte) 1);
+            PayloadCodecUtil.writeUUID(buf, replyToMessageId);
+        } else {
+            buf.put((byte) 0);
+        }
+
         buf.flip();
         return buf;
     }
@@ -105,9 +128,14 @@ public record SendMessageCommand(
             attach = new AttachmentInfo(attachId, fileName, mimeType, sizeBytes, crc, completed);
         }
 
+        UUID replyTo = null;
+        if (src.hasRemaining() && src.get() == 1) {
+            replyTo = PayloadCodecUtil.readUUID(src);
+        }
+
         return new SendMessageCommand(
                 commandId, timestamp, callerUserId, callerDeviceId, clientMessageId,
-                messageId, conversationId, content, attach
+                messageId, conversationId, content, attach, replyTo
         );
     }
 }

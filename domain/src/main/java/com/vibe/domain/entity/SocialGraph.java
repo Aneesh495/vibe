@@ -10,8 +10,44 @@ public final class SocialGraph {
 
     private final Map<String, Set<String>> friends = new ConcurrentHashMap<>();
     private final Map<String, Set<String>> blocked = new ConcurrentHashMap<>();
+    private final Map<String, Set<String>> pendingRequests = new ConcurrentHashMap<>();
 
     public SocialGraph() {
+    }
+
+    public synchronized boolean sendFriendRequest(String fromUser, String toUser) {
+        if (fromUser.equals(toUser) || isBlockedEitherWay(fromUser, toUser) || isFriend(fromUser, toUser)) {
+            return false;
+        }
+        // If the other user already requested friendship, automatically establish mutual friend relation
+        Set<String> fromUserInbox = pendingRequests.get(fromUser);
+        if (fromUserInbox != null && fromUserInbox.remove(toUser)) {
+            addFriend(fromUser, toUser);
+            return true;
+        }
+        pendingRequests.computeIfAbsent(toUser, k -> Collections.synchronizedSet(new LinkedHashSet<>())).add(fromUser);
+        return true;
+    }
+
+    public synchronized boolean acceptFriendRequest(String recipient, String requester) {
+        Set<String> requests = pendingRequests.get(recipient);
+        if (requests != null && requests.remove(requester)) {
+            if (!isBlockedEitherWay(recipient, requester)) {
+                addFriend(recipient, requester);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public synchronized boolean rejectFriendRequest(String recipient, String requester) {
+        Set<String> requests = pendingRequests.get(recipient);
+        return requests != null && requests.remove(requester);
+    }
+
+    public Set<String> getPendingRequests(String userId) {
+        Set<String> reqs = pendingRequests.get(userId);
+        return reqs != null ? Collections.unmodifiableSet(new LinkedHashSet<>(reqs)) : Collections.emptySet();
     }
 
     public synchronized void addFriend(String userA, String userB) {
@@ -80,12 +116,16 @@ public final class SocialGraph {
         Map<String, List<String>> blockedCopy = new HashMap<>();
         blocked.forEach((u, set) -> blockedCopy.put(u, new ArrayList<>(set)));
 
-        return new SocialGraphSnapshot(friendsCopy, blockedCopy);
+        Map<String, List<String>> pendingCopy = new HashMap<>();
+        pendingRequests.forEach((u, set) -> pendingCopy.put(u, new ArrayList<>(set)));
+
+        return new SocialGraphSnapshot(friendsCopy, blockedCopy, pendingCopy);
     }
 
     public synchronized void restore(SocialGraphSnapshot snapshot) {
         friends.clear();
         blocked.clear();
+        pendingRequests.clear();
         if (snapshot != null) {
             if (snapshot.friends() != null) {
                 snapshot.friends().forEach((u, list) ->
@@ -95,12 +135,17 @@ public final class SocialGraph {
                 snapshot.blocked().forEach((u, list) ->
                         blocked.put(u, Collections.synchronizedSet(new LinkedHashSet<>(list))));
             }
+            if (snapshot.pendingRequests() != null) {
+                snapshot.pendingRequests().forEach((u, list) ->
+                        pendingRequests.put(u, Collections.synchronizedSet(new LinkedHashSet<>(list))));
+            }
         }
     }
 
     public record SocialGraphSnapshot(
             Map<String, List<String>> friends,
-            Map<String, List<String>> blocked
+            Map<String, List<String>> blocked,
+            Map<String, List<String>> pendingRequests
     ) {
     }
 }

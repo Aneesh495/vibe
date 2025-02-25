@@ -14,7 +14,16 @@ public final class Conversation {
     private final long createdAt;
     private final String creatorUserId;
     private long currentSeq;
+    private HistoryVisibility historyVisibility = HistoryVisibility.ALL;
     private final Map<String, ConversationMember> members = new ConcurrentHashMap<>();
+
+    public HistoryVisibility historyVisibility() {
+        return historyVisibility;
+    }
+
+    public void setHistoryVisibility(HistoryVisibility historyVisibility) {
+        this.historyVisibility = Objects.requireNonNull(historyVisibility);
+    }
 
     public Conversation(
             UUID conversationId,
