@@ -67,21 +67,37 @@ public final class RatisDurabilityAdapter implements DurabilityAdapter {
 
     @Override
     public synchronized void start() throws Exception {
+        startInternal(false);
+    }
+
+    /**
+     * Starts this adapter in recovery mode, rejoining the cluster from persisted state
+     * rather than formatting a fresh storage directory.
+     */
+    public synchronized void startRecover() throws Exception {
+        startInternal(true);
+    }
+
+    private void startInternal(boolean recover) throws Exception {
         if (isRunning) {
             return;
         }
 
-        log.info("Starting RatisDurabilityAdapter for peer {} on port {}", config.peerId(), config.port());
+        log.info("Starting RatisDurabilityAdapter for peer {} on port {} (recover={})",
+                config.peerId(), config.port(), recover);
         RaftProperties properties = config.createProperties();
         RaftGroup group = config.raftGroup();
 
-        this.server = RaftServer.newBuilder()
+        RaftServer.Builder builder = RaftServer.newBuilder()
                 .setServerId(config.peerId())
-                .setGroup(group)
                 .setProperties(properties)
-                .setStateMachine(ratisStateMachine)
-                .build();
+                .setStateMachine(ratisStateMachine);
 
+        if (!recover) {
+            builder.setGroup(group);
+        }
+
+        this.server = builder.build();
         server.start();
 
         this.client = RaftClient.newBuilder()

@@ -30,6 +30,7 @@ public final class RatisCluster implements Closeable {
     private final int nodeCount;
     private final List<Integer> ports;
     private final List<RaftPeer> peers;
+    private final List<RatisClusterConfig> configs;
     private final List<RatisDurabilityAdapter> adapters;
     private final List<DomainStateMachine> stateMachines;
 
@@ -38,6 +39,7 @@ public final class RatisCluster implements Closeable {
         this.nodeCount = nodeCount;
         this.ports = new ArrayList<>(nodeCount);
         this.peers = new ArrayList<>(nodeCount);
+        this.configs = new ArrayList<>(nodeCount);
         this.adapters = new ArrayList<>(nodeCount);
         this.stateMachines = new ArrayList<>(nodeCount);
 
@@ -62,6 +64,7 @@ public final class RatisCluster implements Closeable {
                     peers,
                     RatisClusterConfig.DEFAULT_GROUP_ID
             );
+            configs.add(config);
 
             DomainStateMachine sm = new DomainStateMachine();
             stateMachines.add(sm);
@@ -115,9 +118,37 @@ public final class RatisCluster implements Closeable {
         return adapters.get(index);
     }
 
+    public int getLeaderIndex() {
+        for (int i = 0; i < adapters.size(); i++) {
+            if (adapters.get(i).isLeader()) return i;
+        }
+        return -1;
+    }
+
     public void stopNode(int index) throws IOException {
         log.info("Stopping Ratis node index {}", index);
         adapters.get(index).close();
+    }
+
+    public void restartNode(int index) throws Exception {
+        log.info("Restarting Ratis node index {}", index);
+        try { adapters.get(index).close(); } catch (Exception ignored) {}
+        RatisDurabilityAdapter newAdapter = new RatisDurabilityAdapter(configs.get(index), stateMachines.get(index));
+        adapters.set(index, newAdapter);
+        newAdapter.startRecover();
+    }
+
+    public RatisDurabilityAdapter awaitLeaderExcept(int excludedIndex, long timeout, TimeUnit unit) throws InterruptedException {
+        long deadline = System.currentTimeMillis() + unit.toMillis(timeout);
+        while (System.currentTimeMillis() < deadline) {
+            for (int i = 0; i < adapters.size(); i++) {
+                if (i != excludedIndex && adapters.get(i).isLeader()) {
+                    return adapters.get(i);
+                }
+            }
+            Thread.sleep(100);
+        }
+        throw new IllegalStateException("No new leader elected (excluding " + excludedIndex + ") within " + timeout + " " + unit);
     }
 
     @Override
