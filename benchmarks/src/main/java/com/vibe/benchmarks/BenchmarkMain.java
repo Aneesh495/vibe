@@ -15,6 +15,8 @@ public final class BenchmarkMain {
                 .include(DomainCommandCodecBenchmark.class.getSimpleName())
                 .include(FrameCodecBenchmark.class.getSimpleName())
                 .include(WalAppendBenchmark.class.getSimpleName())
+                .include(LocalDurabilityBenchmark.class.getSimpleName())
+                .include(RatisDurabilityBenchmark.class.getSimpleName())
                 .forks(1)
                 .warmupIterations(1)
                 .measurementIterations(2)

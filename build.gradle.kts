@@ -136,6 +136,7 @@ project(":benchmarks") {
         "implementation"(project(":transport-nio"))
         "implementation"(project(":protocol"))
         "implementation"(project(":storage-local"))
+        "implementation"(project(":storage-ratis"))
         "implementation"(project(":domain"))
         "implementation"(project(":delivery"))
         "implementation"("org.openjdk.jmh:jmh-core:1.37")

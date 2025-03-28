@@ -38,4 +38,30 @@ class BenchmarkSmokeTest {
             bench.teardownTrial();
         }
     }
+
+    @Test
+    void testLocalDurabilityBenchmarkExecution() throws Exception {
+        LocalDurabilityBenchmark bench = new LocalDurabilityBenchmark();
+        bench.setupTrial();
+        try {
+            var res = bench.benchDurableMessageExecution();
+            assertThat(res).isNotNull();
+            assertThat(res.isSuccess()).isTrue();
+        } finally {
+            bench.teardownTrial();
+        }
+    }
+
+    @Test
+    void testRatisDurabilityBenchmarkExecution() throws Exception {
+        RatisDurabilityBenchmark bench = new RatisDurabilityBenchmark();
+        bench.setupTrial();
+        try {
+            var res = bench.benchRatisQuorumCommit();
+            assertThat(res).isNotNull();
+            assertThat(res.isSuccess()).isTrue();
+        } finally {
+            bench.teardownTrial();
+        }
+    }
 }
