@@ -24,6 +24,20 @@ class VibeDesktopSmokeTest {
             // In headless CI/test environments, verify model integrity without opening display window
             assertThat(state.getConnectionState()).isNotNull();
             assertThat(state.getConversationListModel()).isNotNull();
+            assertThat(state.getMessageListModel()).isNotNull();
         }
+    }
+
+    @Test
+    void testThreeColumnComponentsInstantiation() {
+        VibeDarkTheme.applyGlobalTheme();
+        DesktopState state = new DesktopState();
+        var left = new com.vibe.desktop.ui.ConversationListPanel(state);
+        var center = new com.vibe.desktop.ui.ChatThreadPanel(state);
+        var right = new com.vibe.desktop.ui.ContextDetailsSidebarPanel(state);
+
+        assertThat(left).isNotNull();
+        assertThat(center).isNotNull();
+        assertThat(right).isNotNull();
     }
 }

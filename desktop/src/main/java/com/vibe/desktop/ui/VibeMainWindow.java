@@ -43,14 +43,40 @@ public final class VibeMainWindow extends JFrame {
         tabbedPane.setBackground(VibeDarkTheme.BG_DARKEST);
         tabbedPane.setForeground(VibeDarkTheme.TEXT_PRIMARY);
 
-        // Tab 1: Messenger (Split pane)
+        // Tab 1: 3-Column Messenger Layout
         ConversationListPanel leftList = new ConversationListPanel(state);
-        ChatThreadPanel rightThread = new ChatThreadPanel(state);
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftList, rightThread);
-        splitPane.setDividerLocation(300);
-        splitPane.setDividerSize(1);
-        splitPane.setBorder(BorderFactory.createEmptyBorder());
-        tabbedPane.addTab("💬 Messenger", splitPane);
+        ChatThreadPanel centerThread = new ChatThreadPanel(state);
+        ContextDetailsSidebarPanel rightSidebar = new ContextDetailsSidebarPanel(state);
+
+        JSplitPane centerRightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, centerThread, rightSidebar);
+        centerRightSplit.setResizeWeight(1.0);
+        centerRightSplit.setDividerLocation(520);
+        centerRightSplit.setDividerSize(1);
+        centerRightSplit.setBorder(BorderFactory.createEmptyBorder());
+
+        JSplitPane mainSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftList, centerRightSplit);
+        mainSplit.setDividerLocation(260);
+        mainSplit.setDividerSize(1);
+        mainSplit.setBorder(BorderFactory.createEmptyBorder());
+
+        // Top Connection & Outbox Banner
+        JPanel bannerPanel = new JPanel(new BorderLayout());
+        bannerPanel.setBackground(new Color(245, 158, 11, 40));
+        bannerPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(245, 158, 11)),
+                new EmptyBorder(6, 16, 6, 16)
+        ));
+        JLabel bannerText = new JLabel("⚡ Offline Mode: Operating from local SQLite cache. Outbox will automatically drain upon reconnection.");
+        bannerText.setFont(VibeDarkTheme.FONT_SMALL);
+        bannerText.setForeground(new Color(251, 191, 36));
+        bannerPanel.add(bannerText, BorderLayout.CENTER);
+        bannerPanel.setVisible(false);
+
+        JPanel messengerTab = new JPanel(new BorderLayout());
+        messengerTab.add(bannerPanel, BorderLayout.NORTH);
+        messengerTab.add(mainSplit, BorderLayout.CENTER);
+
+        tabbedPane.addTab("💬 Messenger", messengerTab);
 
         // Tab 2: Contacts & Network
         ContactsPanel contactsPanel = new ContactsPanel(state);
@@ -87,7 +113,11 @@ public final class VibeMainWindow extends JFrame {
 
         cardLayout.show(rootPanel, "AUTH");
 
-        state.addStateListener(this::updateStatusBar);
+        state.addStateListener(() -> {
+            updateStatusBar();
+            boolean isOnline = state.getClient() != null && state.getClient().isAuthenticated();
+            bannerPanel.setVisible(!isOnline);
+        });
     }
 
     private void showMainAppView() {

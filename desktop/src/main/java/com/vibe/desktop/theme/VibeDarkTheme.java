@@ -98,6 +98,19 @@ public final class VibeDarkTheme {
         return btn;
     }
 
+    public static JButton createDangerButton(String text) {
+        JButton btn = new JButton(text);
+        btn.setFont(FONT_BODY_BOLD);
+        btn.setForeground(Color.WHITE);
+        btn.setBackground(STATUS_DANGER);
+        btn.setFocusPainted(false);
+        btn.setBorderPainted(false);
+        btn.setOpaque(true);
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btn.setBorder(new EmptyBorder(6, 12, 6, 12));
+        return btn;
+    }
+
     public static JTextField createTextField() {
         JTextField tf = new JTextField();
         tf.setFont(FONT_BODY);

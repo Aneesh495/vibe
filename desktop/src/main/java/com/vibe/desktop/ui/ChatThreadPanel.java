@@ -43,7 +43,12 @@ public final class ChatThreadPanel extends JPanel {
     private final JProgressBar uploadProgress = new JProgressBar(0, 100);
 
     private volatile AttachmentInfo stagedAttachment = null;
+    private volatile UUID stagedReplyToMessageId = null;
     private final JLabel attachmentPreview = new JLabel(" ");
+    private final JPanel replyBanner = new JPanel(new BorderLayout());
+    private final JLabel replyBannerText = new JLabel(" ");
+    private final JButton cancelReplyBtn = VibeDarkTheme.createSecondaryButton("✕");
+    private final JButton emojiBtn = VibeDarkTheme.createSecondaryButton("😀");
 
     public ChatThreadPanel(DesktopState state) {
         this.state = state;
@@ -74,6 +79,36 @@ public final class ChatThreadPanel extends JPanel {
         messageList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         messageList.setCellRenderer(new MessageCellRenderer(state));
 
+        // Right-click context menu for messages (Reply & Reactions)
+        JPopupMenu contextMenu = new JPopupMenu();
+        JMenuItem replyItem = new JMenuItem("💬 Reply to Message");
+        replyItem.addActionListener(e -> {
+            StoredMessage selected = messageList.getSelectedValue();
+            if (selected != null) {
+                stagedReplyToMessageId = selected.messageId();
+                String snippet = selected.content().length() > 35 ? selected.content().substring(0, 32) + "..." : selected.content();
+                replyBannerText.setText("Replying to @" + selected.senderId() + ": \"" + snippet + "\"");
+                replyBanner.setVisible(true);
+                inputField.requestFocusInWindow();
+            }
+        });
+        contextMenu.add(replyItem);
+        contextMenu.addSeparator();
+
+        String[] quickEmojis = {"👍", "❤️", "😂", "🎉", "🔥", "🚀"};
+        for (String emoji : quickEmojis) {
+            JMenuItem emojiItem = new JMenuItem("React " + emoji);
+            emojiItem.addActionListener(e -> {
+                StoredMessage selected = messageList.getSelectedValue();
+                StoredConversation conv = state.getSelectedConversation();
+                if (selected != null && conv != null && state.getClient() != null) {
+                    state.getClient().addReaction(conv.conversationId(), selected.messageId(), emoji);
+                }
+            });
+            contextMenu.add(emojiItem);
+        }
+        messageList.setComponentPopupMenu(contextMenu);
+
         JScrollPane scrollPane = new JScrollPane(messageList);
         VibeDarkTheme.customizeScrollBar(scrollPane);
         add(scrollPane, BorderLayout.CENTER);
@@ -87,6 +122,20 @@ public final class ChatThreadPanel extends JPanel {
                 new EmptyBorder(8, 12, 8, 12)
         ));
 
+        // Reply banner
+        replyBanner.setBackground(VibeDarkTheme.BG_SECONDARY);
+        replyBanner.setBorder(new EmptyBorder(4, 8, 4, 8));
+        replyBanner.setVisible(false);
+        replyBannerText.setFont(VibeDarkTheme.FONT_SMALL);
+        replyBannerText.setForeground(VibeDarkTheme.TEXT_SECONDARY);
+        cancelReplyBtn.setPreferredSize(new Dimension(24, 20));
+        cancelReplyBtn.addActionListener(e -> {
+            stagedReplyToMessageId = null;
+            replyBanner.setVisible(false);
+        });
+        replyBanner.add(replyBannerText, BorderLayout.CENTER);
+        replyBanner.add(cancelReplyBtn, BorderLayout.EAST);
+
         uploadProgress.setVisible(false);
         uploadProgress.setMaximumSize(new Dimension(Integer.MAX_VALUE, 4));
         uploadProgress.setForeground(VibeDarkTheme.ACCENT_PRIMARY);
@@ -96,12 +145,19 @@ public final class ChatThreadPanel extends JPanel {
         attachmentPreview.setForeground(VibeDarkTheme.STATUS_INFO);
         attachmentPreview.setVisible(false);
 
+        JPanel leftBtns = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+        leftBtns.setBackground(VibeDarkTheme.BG_PRIMARY);
+        leftBtns.add(attachBtn);
+        leftBtns.add(emojiBtn);
+
         JPanel inputRow = new JPanel(new BorderLayout(8, 0));
         inputRow.setBackground(VibeDarkTheme.BG_PRIMARY);
-        inputRow.add(attachBtn, BorderLayout.WEST);
+        inputRow.add(leftBtns, BorderLayout.WEST);
         inputRow.add(inputField, BorderLayout.CENTER);
         inputRow.add(sendBtn, BorderLayout.EAST);
 
+        bottomContainer.add(replyBanner);
+        bottomContainer.add(Box.createVerticalStrut(2));
         bottomContainer.add(uploadProgress);
         bottomContainer.add(attachmentPreview);
         bottomContainer.add(inputRow);
@@ -110,6 +166,7 @@ public final class ChatThreadPanel extends JPanel {
         // Event Bindings
         sendBtn.addActionListener(e -> sendMessage());
         attachBtn.addActionListener(e -> chooseAttachment());
+        emojiBtn.addActionListener(e -> showEmojiPicker(emojiBtn));
 
         inputField.addKeyListener(new KeyAdapter() {
             @Override
@@ -126,6 +183,29 @@ public final class ChatThreadPanel extends JPanel {
         state.addStateListener(this::onStateChanged);
     }
 
+    private void showEmojiPicker(Component invoker) {
+        JPopupMenu popup = new JPopupMenu();
+        String[] emojis = {"👍", "❤️", "😂", "🎉", "🔥", "🚀", "👀", "✨"};
+        JPanel emojiGrid = new JPanel(new GridLayout(2, 4, 4, 4));
+        emojiGrid.setBackground(VibeDarkTheme.BG_SECONDARY);
+        emojiGrid.setBorder(new EmptyBorder(6, 6, 6, 6));
+
+        for (String emoji : emojis) {
+            JButton btn = new JButton(emoji);
+            btn.setBackground(VibeDarkTheme.BG_TERTIARY);
+            btn.setForeground(Color.WHITE);
+            btn.setFocusPainted(false);
+            btn.addActionListener(e -> {
+                inputField.setText(inputField.getText() + emoji);
+                popup.setVisible(false);
+                inputField.requestFocusInWindow();
+            });
+            emojiGrid.add(btn);
+        }
+        popup.add(emojiGrid);
+        popup.show(invoker, 0, -popup.getPreferredSize().height - 4);
+    }
+
     private void onStateChanged() {
         StoredConversation conv = state.getSelectedConversation();
         if (conv != null) {
@@ -133,11 +213,15 @@ public final class ChatThreadPanel extends JPanel {
             inputField.setEnabled(true);
             sendBtn.setEnabled(true);
             attachBtn.setEnabled(true);
+            emojiBtn.setEnabled(true);
         } else {
             headerTitle.setText("Select a conversation");
             inputField.setEnabled(false);
             sendBtn.setEnabled(false);
             attachBtn.setEnabled(false);
+            emojiBtn.setEnabled(false);
+            stagedReplyToMessageId = null;
+            replyBanner.setVisible(false);
         }
     }
 
@@ -199,7 +283,11 @@ public final class ChatThreadPanel extends JPanel {
         stagedAttachment = null;
         attachmentPreview.setVisible(false);
 
-        state.getClient().sendMessage(conv.conversationId(), text, att).thenAccept(res -> {
+        UUID replyTo = stagedReplyToMessageId;
+        stagedReplyToMessageId = null;
+        replyBanner.setVisible(false);
+
+        state.getClient().sendMessage(conv.conversationId(), text, att, replyTo).thenAccept(res -> {
             SwingUtilities.invokeLater(() -> {
                 state.refreshMessagesForSelected();
                 state.refreshConversations();

@@ -361,6 +361,15 @@ public final class VibeClient implements AutoCloseable {
             String content,
             AttachmentInfo attachment
     ) {
+        return sendMessage(conversationId, content, attachment, null);
+    }
+
+    public CompletableFuture<CommandResultPayload> sendMessage(
+            UUID conversationId,
+            String content,
+            AttachmentInfo attachment,
+            UUID replyToMessageId
+    ) {
         ensureAuthenticated();
         UUID messageId = UUID.randomUUID();
         String clientMsgId = "m-" + UUID.randomUUID();
@@ -369,7 +378,7 @@ public final class VibeClient implements AutoCloseable {
         SendMessageCommand cmd = new SendMessageCommand(
                 UUID.randomUUID(), now,
                 authenticatedUserId, config.deviceId(), clientMsgId,
-                messageId, conversationId, content, attachment
+                messageId, conversationId, content, attachment, replyToMessageId
         );
 
         ByteBuffer buf = cmd.encode();
