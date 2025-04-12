@@ -17,6 +17,11 @@ export interface StoredMessage {
   content: string;
   timestamp: number;
   status: MessageDeliveryStatus;
+  attachmentId?: string;
+  attachmentName?: string;
+  attachmentSize?: number;
+  replyToMessageId?: string;
+  reactions?: Record<string, string[]>;
 }
 
 export interface OutboxItem {

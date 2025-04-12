@@ -3,6 +3,7 @@ import { StoredConversation, VibeClient } from '@vibe/sdk';
 import { AuthModal } from './components/AuthModal';
 import { ChatSidebar } from './components/ChatSidebar';
 import { ChatThread } from './components/ChatThread';
+import { ChatDetailsSidebar } from './components/ChatDetailsSidebar';
 import { OperationalInspector } from './components/OperationalInspector';
 
 interface RawFrameLog {
@@ -23,6 +24,8 @@ export const App: React.FC = () => {
   const [conversations, setConversations] = useState<StoredConversation[]>([]);
   const [selectedConv, setSelectedConv] = useState<StoredConversation | null>(null);
   const [rawFrames, setRawFrames] = useState<RawFrameLog[]>([]);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isConnected, setIsConnected] = useState(true);
 
   const handleAuthSuccess = (c: VibeClient, username: string) => {
     setClient(c);
@@ -45,6 +48,10 @@ export const App: React.FC = () => {
 
     c.on('message', () => {
       refreshConversations(c);
+    });
+
+    c.on('stateChange', (state) => {
+      setIsConnected(state === 'OPEN');
     });
 
     refreshConversations(c);
@@ -98,14 +105,29 @@ export const App: React.FC = () => {
           <span style={{ color: 'var(--text-secondary)' }}>
             Signed in as <b style={{ color: 'var(--text-primary)' }}>@{currentUser}</b>
           </span>
-          <span style={{ color: 'var(--status-success)', fontWeight: 600 }}>● Connected</span>
+          <span style={{ color: isConnected ? 'var(--status-success)' : 'var(--status-warning)', fontWeight: 600 }}>
+            ● {isConnected ? 'Connected' : 'Offline (Local Cache)'}
+          </span>
         </div>
       </header>
 
-      {/* Main Content Area */}
+      {/* Offline Alert Banner */}
+      {!isConnected && (
+        <div style={{
+          background: 'rgba(245, 158, 11, 0.15)', borderBottom: '1px solid var(--status-warning)',
+          padding: '6px 16px', fontSize: 12, color: 'var(--status-warning)',
+          display: 'flex', alignItems: 'center', gap: 8
+        }}>
+          <span>⚡</span>
+          <span>Operating offline from browser cache. Messages queued in outbox will commit upon reconnect.</span>
+        </div>
+      )}
+
+      {/* Main Content Area: 3-column layout */}
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
         {activeTab === 'messenger' ? (
           <>
+            {/* Column 1: Conversations List */}
             <ChatSidebar
               client={client}
               conversations={conversations}
@@ -113,11 +135,29 @@ export const App: React.FC = () => {
               onSelect={setSelectedConv}
               onRefresh={() => refreshConversations(client)}
             />
+
+            {/* Column 2: Message Stream */}
             <ChatThread
               client={client}
               conversation={selectedConv}
               currentUserId={currentUser}
+              sidebarOpen={sidebarOpen}
+              onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
             />
+
+            {/* Column 3: Context Details Sidebar */}
+            {sidebarOpen && (
+              <ChatDetailsSidebar
+                client={client}
+                conversation={selectedConv}
+                currentUserId={currentUser}
+                onClose={() => setSidebarOpen(false)}
+                onLeave={() => {
+                  setSelectedConv(null);
+                  refreshConversations(client);
+                }}
+              />
+            )}
           </>
         ) : (
           <OperationalInspector
