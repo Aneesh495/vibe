@@ -1,0 +1,46 @@
+> Task :protocol:compileJava UP-TO-DATE
+> Task :domain:compileJava UP-TO-DATE
+> Task :transport-nio:compileJava UP-TO-DATE
+> Task :delivery:compileJava UP-TO-DATE
+> Task :storage-local:compileJava UP-TO-DATE
+> Task :storage-ratis:compileJava UP-TO-DATE
+> Task :benchmarks:compileJava UP-TO-DATE
+> Task :benchmarks:processResources NO-SOURCE
+> Task :benchmarks:classes UP-TO-DATE
+> Task :benchmarks:compileTestJava UP-TO-DATE
+> Task :benchmarks:processTestResources NO-SOURCE
+> Task :benchmarks:testClasses UP-TO-DATE
+> Task :delivery:processResources NO-SOURCE
+> Task :delivery:classes UP-TO-DATE
+> Task :delivery:jar UP-TO-DATE
+> Task :domain:processResources NO-SOURCE
+> Task :domain:classes UP-TO-DATE
+> Task :domain:jar UP-TO-DATE
+> Task :protocol:processResources NO-SOURCE
+> Task :protocol:classes UP-TO-DATE
+> Task :protocol:jar UP-TO-DATE
+> Task :storage-local:processResources NO-SOURCE
+> Task :storage-local:classes UP-TO-DATE
+> Task :storage-local:jar UP-TO-DATE
+> Task :storage-ratis:processResources NO-SOURCE
+> Task :storage-ratis:classes UP-TO-DATE
+> Task :storage-ratis:jar UP-TO-DATE
+> Task :transport-nio:processResources NO-SOURCE
+> Task :transport-nio:classes UP-TO-DATE
+> Task :transport-nio:jar UP-TO-DATE
+
+> Task :benchmarks:test
+
+BenchmarkSmokeTest > testWalAppendBenchmarkExecution() PASSED
+
+BenchmarkSmokeTest > testLocalDurabilityBenchmarkExecution() PASSED
+
+BenchmarkSmokeTest > testRatisDurabilityBenchmarkExecution() PASSED
+
+BenchmarkSmokeTest > testDomainCommandCodecBenchmarkExecution() PASSED
+
+BenchmarkSmokeTest > testFrameCodecBenchmarkExecution() PASSED
+
+BUILD SUCCESSFUL in 4s
+15 actionable tasks: 1 executed, 14 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.8.0/userguide/configuration_cache_enabling.html

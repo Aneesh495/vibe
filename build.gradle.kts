@@ -142,4 +142,18 @@ project(":benchmarks") {
         "implementation"("org.openjdk.jmh:jmh-core:1.37")
         "annotationProcessor"("org.openjdk.jmh:jmh-generator-annprocess:1.37")
     }
+
+    tasks.register<JavaExec>("runLoadClient") {
+        group = "benchmark"
+        description = "Runs the standalone VibeLoadClient"
+        classpath = sourceSets["main"].runtimeClasspath
+        mainClass.set("com.vibe.benchmarks.VibeLoadClient")
+    }
+
+    tasks.register<JavaExec>("runBenchmarks") {
+        group = "benchmark"
+        description = "Runs the JMH microbenchmarks"
+        classpath = sourceSets["main"].runtimeClasspath
+        mainClass.set("com.vibe.benchmarks.BenchmarkMain")
+    }
 }

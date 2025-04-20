@@ -1,0 +1,16 @@
+Module               | Files    | Substantive LOC   
+----------------------------------------------------
+protocol             | 27       | 1131              
+transport-nio        | 12       | 1269              
+domain               | 48       | 3261              
+storage-local        | 13       | 959               
+storage-ratis        | 5        | 500               
+delivery             | 8        | 517               
+server               | 10       | 1448              
+sdk-java             | 11       | 1330              
+desktop              | 11       | 1595              
+sdk-typescript       | 9        | 1276              
+web                  | 8        | 1075              
+benchmarks           | 7        | 527               
+----------------------------------------------------
+TOTAL                | 169      | 14888             

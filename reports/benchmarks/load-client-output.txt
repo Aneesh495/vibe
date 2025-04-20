@@ -1,0 +1,49 @@
+> Task :protocol:compileJava UP-TO-DATE
+> Task :domain:compileJava UP-TO-DATE
+> Task :transport-nio:compileJava UP-TO-DATE
+> Task :delivery:compileJava UP-TO-DATE
+> Task :storage-local:compileJava UP-TO-DATE
+> Task :storage-ratis:compileJava UP-TO-DATE
+> Task :benchmarks:compileJava UP-TO-DATE
+> Task :benchmarks:processResources NO-SOURCE
+> Task :benchmarks:classes UP-TO-DATE
+> Task :delivery:processResources NO-SOURCE
+> Task :delivery:classes UP-TO-DATE
+> Task :delivery:jar UP-TO-DATE
+> Task :domain:processResources NO-SOURCE
+> Task :domain:classes UP-TO-DATE
+> Task :domain:jar UP-TO-DATE
+> Task :protocol:processResources NO-SOURCE
+> Task :protocol:classes UP-TO-DATE
+> Task :protocol:jar UP-TO-DATE
+> Task :storage-local:processResources NO-SOURCE
+> Task :storage-local:classes UP-TO-DATE
+> Task :storage-local:jar UP-TO-DATE
+> Task :storage-ratis:processResources NO-SOURCE
+> Task :storage-ratis:classes UP-TO-DATE
+> Task :storage-ratis:jar UP-TO-DATE
+> Task :transport-nio:processResources NO-SOURCE
+> Task :transport-nio:classes UP-TO-DATE
+> Task :transport-nio:jar UP-TO-DATE
+
+> Task :benchmarks:runLoadClient
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+=== Vibe Load Report ===
+Clients:            10
+Messages/client:    100
+Total offered:      1000
+Total committed:    417
+Total errors:       583
+Duration:           2.48 s
+Throughput:         168.0 msg/s
+p50 latency:        25.05 ms
+p95 latency:        29.60 ms
+p99 latency:        33.62 ms
+max latency:        38.49 ms
+
+
+BUILD SUCCESSFUL in 3s
+14 actionable tasks: 1 executed, 13 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.8.0/userguide/configuration_cache_enabling.html
