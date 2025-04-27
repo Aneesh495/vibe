@@ -123,38 +123,38 @@ stateDiagram-v2
 Errors are transmitted in the `ERROR` frame (`0x0F`) with a 16-bit categorized error code, human-readable UTF-8 message, and optional contextual payload.
 
 ### 5.1 Protocol Errors (`0x1000` - `0x1FFF`)
-- `0x1001`: `ERR_PROTOCOL_MALFORMED_HEADER` — Magic mismatch, header CRC failure, or truncated header.
-- `0x1002`: `ERR_PROTOCOL_UNSUPPORTED_VERSION` — Version mismatch.
-- `0x1003`: `ERR_PROTOCOL_FRAME_TOO_LARGE` — Frame size exceeds maximum threshold.
-- `0x1004`: `ERR_PROTOCOL_INVALID_STATE` — Frame type disallowed in current connection state.
-- `0x1005`: `ERR_PROTOCOL_DECODING_FAILURE` — Payload does not conform to message schema.
+- `0x1001`: `ERR_PROTOCOL_MALFORMED_HEADER`: Magic mismatch, header CRC failure, or truncated header.
+- `0x1002`: `ERR_PROTOCOL_UNSUPPORTED_VERSION`: Version mismatch.
+- `0x1003`: `ERR_PROTOCOL_FRAME_TOO_LARGE`: Frame size exceeds maximum threshold.
+- `0x1004`: `ERR_PROTOCOL_INVALID_STATE`: Frame type disallowed in current connection state.
+- `0x1005`: `ERR_PROTOCOL_DECODING_FAILURE`: Payload does not conform to message schema.
 
 ### 5.2 Authorization Failures (`0x2000` - `0x2FFF`)
-- `0x2001`: `ERR_AUTH_INVALID_CREDENTIALS` — Incorrect username or password.
-- `0x2002`: `ERR_AUTH_TOKEN_EXPIRED` — Session token expired; refresh required.
-- `0x2003`: `ERR_AUTH_TOKEN_INVALID` — Cryptographic signature check failed on token.
-- `0x2004`: `ERR_AUTH_FORBIDDEN` — User lacks permission for target conversation or administrative action.
-- `0x2005`: `ERR_AUTH_DEVICE_REVOKED` — Device has been logged out or revoked.
+- `0x2001`: `ERR_AUTH_INVALID_CREDENTIALS`: Incorrect username or password.
+- `0x2002`: `ERR_AUTH_TOKEN_EXPIRED`: Session token expired; refresh required.
+- `0x2003`: `ERR_AUTH_TOKEN_INVALID`: Cryptographic signature check failed on token.
+- `0x2004`: `ERR_AUTH_FORBIDDEN`: User lacks permission for target conversation or administrative action.
+- `0x2005`: `ERR_AUTH_DEVICE_REVOKED`: Device has been logged out or revoked.
 
 ### 5.3 Overload & Backpressure (`0x3000` - `0x3FFF`)
-- `0x3001`: `ERR_OVERLOAD_QUEUE_FULL` — Server mailbox / inbound task queue full.
-- `0x3002`: `ERR_OVERLOAD_RATE_LIMIT_EXCEEDED` — Client exceeded token bucket send rate.
-- `0x3003`: `ERR_OVERLOAD_SLOW_CONSUMER` — Client delivery queue overflowed; server disconnected client with resumable cursor.
+- `0x3001`: `ERR_OVERLOAD_QUEUE_FULL`: Server mailbox / inbound task queue full.
+- `0x3002`: `ERR_OVERLOAD_RATE_LIMIT_EXCEEDED`: Client exceeded token bucket send rate.
+- `0x3003`: `ERR_OVERLOAD_SLOW_CONSUMER`: Client delivery queue overflowed; server disconnected client with resumable cursor.
 
 ### 5.4 Unavailable Durability (`0x4000` - `0x4FFF`)
-- `0x4001`: `ERR_DURABILITY_QUORUM_LOST` — Raft consensus group lost majority.
-- `0x4002`: `ERR_DURABILITY_LEADER_STEPDOWN` — Raft leader stepped down during consensus commit; client should retry.
-- `0x4003`: `ERR_DURABILITY_DISK_FULL` — Local write-ahead log cannot allocate space for group fsync.
-- `0x4004`: `ERR_DURABILITY_TIMEOUT` — Durability engine did not achieve quorum within configured deadline.
+- `0x4001`: `ERR_DURABILITY_QUORUM_LOST`: Raft consensus group lost majority.
+- `0x4002`: `ERR_DURABILITY_LEADER_STEPDOWN`: Raft leader stepped down during consensus commit; client should retry.
+- `0x4003`: `ERR_DURABILITY_DISK_FULL`: Local write-ahead log cannot allocate space for group fsync.
+- `0x4004`: `ERR_DURABILITY_TIMEOUT`: Durability engine did not achieve quorum within configured deadline.
 
 ### 5.5 Business & Domain Rejections (`0x5000` - `0x5FFF`)
-- `0x5001`: `ERR_DOMAIN_USER_NOT_FOUND` — Specified user does not exist.
-- `0x5002`: `ERR_DOMAIN_USER_ALREADY_EXISTS` — Username already registered.
-- `0x5003`: `ERR_DOMAIN_USER_BLOCKED` — Communication blocked by sender or recipient privacy settings.
-- `0x5004`: `ERR_DOMAIN_CONVERSATION_NOT_FOUND` — Conversation ID unknown to state machine.
-- `0x5005`: `ERR_DOMAIN_NOT_A_MEMBER` — User is not a participant in target conversation.
-- `0x5006`: `ERR_DOMAIN_IDEMPOTENCY_CONFLICT` — `clientMessageId` reused with different content or parameters.
-- `0x5007`: `ERR_DOMAIN_MESSAGE_NOT_FOUND` — Target message ID for edit/reaction/deletion does not exist.
+- `0x5001`: `ERR_DOMAIN_USER_NOT_FOUND`: Specified user does not exist.
+- `0x5002`: `ERR_DOMAIN_USER_ALREADY_EXISTS`: Username already registered.
+- `0x5003`: `ERR_DOMAIN_USER_BLOCKED`: Communication blocked by sender or recipient privacy settings.
+- `0x5004`: `ERR_DOMAIN_CONVERSATION_NOT_FOUND`: Conversation ID unknown to state machine.
+- `0x5005`: `ERR_DOMAIN_NOT_A_MEMBER`: User is not a participant in target conversation.
+- `0x5006`: `ERR_DOMAIN_IDEMPOTENCY_CONFLICT`: `clientMessageId` reused with different content or parameters.
+- `0x5007`: `ERR_DOMAIN_MESSAGE_NOT_FOUND`: Target message ID for edit/reaction/deletion does not exist.
 
 ---
 
