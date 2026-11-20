@@ -74,4 +74,4 @@ verify:
 
 clean:
 	@./gradlew clean
-	@rm -rf run/ reports/
+	@rm -rf run/
