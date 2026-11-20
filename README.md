@@ -166,6 +166,7 @@ make demo
 make benchmark
 ```
 Raw outputs are saved in `reports/benchmarks/`.
+`make clean` removes build outputs and local runtime data in `run/`. Verification reports in `reports/` stay available.
 
 ## Architecture Decision Records (ADRs)
 
